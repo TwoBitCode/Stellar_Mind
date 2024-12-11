@@ -89,3 +89,136 @@ Stellar Mind's primary goal is to strengthen working memory while teaching kids 
 ---
 
 
+# Assignment 4 explenation
+The Game is built from a few mini games, for Assignment4 we implemented 2 mini games connected to improving memory and consentration.
+
+## The 2 mini games are:
+### 1. Memory Game - Capsule Shuffle 🎮
+This is a memory game where capsules of different colors are shuffled, and the player must rearrange them in the correct order. The player can drag and drop capsules in a grid, and the game provides the option to check the answer, restart the game, and prevent further actions until a restart is triggered.
+
+Features 🌟
+- **Capsule Shuffle**: Randomly shuffle capsules and move them to a stack after a set delay.
+- **Drag and Drop**: Allows players to drag and drop capsules into the correct order.
+- **Answer Check**: The game checks if the capsules are in the correct order and displays a message.
+- **Restart Option**: The game can be restarted with new colors and random positions.
+- **Freeze on Failure**: After a failure, capsules are frozen and cannot be moved until the restart button is pressed.
+- **Dynamic Capsule Count**: The number of capsules is set dynamically based on a variable (`numObjects`).
+
+---
+
+---
+
+## Scripts Breakdown 📝
+
+### `GameManager`
+
+- Handles the main logic of the game including capsule shuffling, checking answers, and restarting.
+- Controls when the game is frozen (capsules can't be moved after a failure).
+- Regenerates new capsules and positions on restart.
+
+### `DraggableItem`
+
+- Enables the drag-and-drop functionality for the capsules.
+- Handles the movement of capsules within the grid and stack.
+
+### `Slot`
+
+- Manages the interaction when a capsule is dropped into a grid slot.
+- Ensures only one capsule is placed in each slot at a time.
+
+---
+
+## Gameplay Logic 🧠
+
+1. **Shuffling**:
+   - Capsules are shuffled randomly after a delay and moved to the stack.
+   
+2. **Freezing Capsules**:
+   - If the player fails (incorrect order), the capsules are frozen (dragging disabled) until the restart button is clicked.
+   
+3. **Check Answer**:
+   - If the capsules are in the correct order, the game will display a "Correct Order!" message.
+   - If the order is wrong, the game shows "Incorrect Order! Try Again!" and the restart button will appear.
+
+4. **Restarting the Game**:
+   - The game will reset with new colors and random positions for the capsules.
+
+
+
+
+
+### 2. Sorting Game - Asteroid Sorting Challenge 🎮🪐
+This is a sorting game where asteroids of different colors are randomly assigned to the left or right side. The player needs to drag and drop them into the correct area based on their assigned color. The game features a countdown timer, random item assignments, and a scoring system. Upon game completion, the final score is displayed in the game-over scene.
+
+---
+
+## Features 🌟
+
+- **Random Item Assignment** 🔄: Asteroids are randomly assigned to either the left or right area at the start of the game.
+- **Drag and Drop** 🖱️: Players can drag and drop asteroids into the correct area (left or right) based on their color.
+- **Game Timer** ⏳: The game includes a timer that starts after the instructions are displayed.
+- **Scoring System** 💰: The player earns points for correctly sorting asteroids.
+- **Final Score Display** 🏆: The final score is displayed in the game-over scene after the timer runs out.
+- **Instructions** 📋: The game shows instructions about which color goes in which area before starting.
+
+---
+
+## How to Play 🕹️
+
+1. **Game Start**: When the game begins, the player sees instructions about which color goes in which area (left or right).
+2. **Random Assignment**: Asteroids are randomly assigned a color and a side (left or right).
+3. **Rearrange Asteroids**: The player drags and drops the asteroids into the correct area.
+4. **Timer Countdown**: The timer starts after the instructions are displayed and continues until time runs out.
+5. **Check Answer**: At the end of the timer, the score is calculated based on the number of correctly placed asteroids.
+6. **Game Over**: After the game ends, the final score is displayed in the game-over scene.
+
+---
+
+## Scripts Breakdown 📝
+
+### `GameTimer` 🕰️
+
+- **Function**: Manages the countdown timer, starting when the game begins and stopping when the timer reaches zero.
+- **Main Tasks**: Updates the timer text, triggers the end of the game, and loads the game-over scene.
+
+### `SortingGameManager` 🛠️
+
+- **Function**: Controls the overall gameplay, including random assignment of asteroid colors, spawning asteroids, and managing the game’s start and end.
+- **Main Tasks**: Handles game state, starts the timer, and manages asteroid spawning and placement.
+
+### `SortingDraggableItem` 🛸
+
+- **Function**: Manages the draggable functionality of asteroids.
+- **Main Tasks**: Ensures asteroids are dragged and dropped in the correct area based on their randomly assigned color.
+
+### `ScoreManager` 💰
+
+- **Function**: Tracks and updates the score based on correct asteroid placements.
+- **Main Tasks**: Adds points for correct placements and updates the UI with the current score.
+
+---
+
+## Gameplay Logic 🧠
+
+1. **Random Assignment**:
+   - Asteroids are randomly assigned a color (either "blue" or "yellow") and a side (left or right).
+   
+2. **Drag and Drop**:
+   - The player drags an asteroid to the correct area based on the color assigned.
+   
+3. **Timer**:
+   - The game includes a timer that starts after the instructions and counts down until time runs out.
+   
+4. **Scoring**:
+   - Points are awarded for correctly placed asteroids.
+   
+5. **Game Over**:
+   - When the timer reaches zero, the game ends, and the final score is displayed in the game-over scene.
+
+---
+
+## How to Customize ✨
+
+- **Timer Duration**: Adjust the `gameDuration` variable in the `GameTimer` script to change the game’s time limit.
+- **Asteroid Colors**: Modify the random color generation logic in the `SortingDraggableItem` script to customize asteroid colors.
+- **UI Elements**: Customize the look of the UI, including the timer text, instructions, and buttons.
