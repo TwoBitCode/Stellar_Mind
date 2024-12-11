@@ -1,4 +1,6 @@
 # 🚀 Stellar Mind: A Space Adventure for Cognitive Growth 🌌
+I added a detailed explenation for Assignment4 at the end.
+itch game link: https://twobitcode.itch.io/steller-mind
 
 **Stellar Mind** is an engaging, space-themed educational game designed to help children with ADHD improve their working memory and executive functions. Through interactive missions, captivating narratives, and strategic challenges, children develop practical skills while embarking on an interstellar journey to save the galaxy! 🌟
 ![download (1)](https://github.com/user-attachments/assets/cf21a9cf-fbb7-49ae-9f23-6ad5ebd2b307)
@@ -93,7 +95,7 @@ Stellar Mind's primary goal is to strengthen working memory while teaching kids 
 The Game is built from a few mini games, for Assignment4 we implemented 2 mini games connected to improving memory and consentration.
 
 ## The 2 mini games are:
-### 1. Memory Game - Capsule Shuffle 🎮
+## 1. Memory Game - Capsule Shuffle 🎮
 This is a memory game where capsules of different colors are shuffled, and the player must rearrange them in the correct order. The player can drag and drop capsules in a grid, and the game provides the option to check the answer, restart the game, and prevent further actions until a restart is triggered.
 
 Features 🌟
@@ -147,7 +149,7 @@ Features 🌟
 
 
 
-### 2. Sorting Game - Asteroid Sorting Challenge 🎮🪐
+## 2. Sorting Game - Asteroid Sorting Challenge 🎮🪐
 This is a sorting game where asteroids of different colors are randomly assigned to the left or right side. The player needs to drag and drop them into the correct area based on their assigned color. The game features a countdown timer, random item assignments, and a scoring system. Upon game completion, the final score is displayed in the game-over scene.
 
 ---
