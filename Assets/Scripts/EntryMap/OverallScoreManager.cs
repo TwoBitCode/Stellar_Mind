@@ -5,7 +5,7 @@ using UnityEngine.SocialPlatforms.Impl;
 public class OverallScoreManager : MonoBehaviour
 {
     [SerializeField] public static OverallScoreManager Instance; // Singleton instance
-    [SerializeField] public int OverallScore  = 0; // Encapsulated overall score
+    [SerializeField] public int OverallScore = 0; // Encapsulated overall score
 
     private void Awake()
     {
