@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SortingGameManager : MonoBehaviour
 {
@@ -24,8 +25,8 @@ public class SortingGameManager : MonoBehaviour
 
     #region Constants for Asteroid Types
 
-    private const string BlueType = "blue";
-    private const string YellowType = "yellow";
+    [SerializeField] private const string BlueType = "blue";
+    [SerializeField] private const string YellowType = "yellow";
 
     #endregion
 
@@ -52,6 +53,9 @@ public class SortingGameManager : MonoBehaviour
     [HideInInspector] public string rightType = ""; // Type assigned to the right area
 
     [SerializeField] private GameTimer gameTimer; // Reference to the GameTimer script
+
+
+    [SerializeField] private ScoreManager scoreManager;  // Reference to the UI Text element to display the score
 
     #endregion
 
@@ -119,10 +123,15 @@ public class SortingGameManager : MonoBehaviour
         draggable.itemType = Random.value > randomAssignThreshold ? leftType : rightType;
     }
 
-    private void StopGame()
+    public void StopGame()
     {
         isGameActive = false; // Stop asteroid spawning
         CancelInvoke(nameof(SpawnAsteroid)); // Cancel further asteroid spawns
+        if (OverallScoreManager.Instance != null)
+        {
+            OverallScoreManager.Instance.AddScore(scoreManager.score);
+
+        }
     }
 
     private void HideInstructions()

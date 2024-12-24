@@ -12,26 +12,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string INCORRECT_ORDER_TEXT = "Incorrect Order!";
     [Tooltip("Text shown when the order is correct")]
     [SerializeField] private string CORRECT_ORDER_TEXT = "Correct Order!";
-    private const string GAME_OVER_SCENE_NAME = "GameOverScene"; // Game Over scene name
+    [Tooltip("Game Over scene name")]
+    [SerializeField] private const string GAME_OVER_SCENE_NAME = "GameOverScene";
 
     [Header("Grid Settings")]
-    public GameObject gridElementPrefab;  // Prefab for the grid element (containing the capsule)
-    public Transform grid;  // The parent container for the grid elements
+    [SerializeField] private GameObject gridElementPrefab;  // Prefab for the grid element (containing the capsule)
+    [SerializeField] private Transform grid;  // The parent container for the grid elements
     [Tooltip("Default number of capsules to create")]
-    [SerializeField] public int numObjects = 4;  // Number of capsules to create
-    private GameObject[] gridElements;  // To store references to the grid elements
-    private Color[] initialColors;  // To store the initial order of capsule colors
+    [SerializeField] private int numObjects = 4;  // Number of capsules to create
+    private GameObject[] gridElements;  // To store references to the grid elements, used inside code
+    private Color[] initialColors;  // To store the initial order of capsule colors, used inside code
 
     [Header("Stack Settings")]
-    public GameObject stackElementPrefab;  // Prefab for the stack element (containing the capsule)
-    public Transform stack; // The parent container for the stack grid elements
+    [SerializeField] private GameObject stackElementPrefab;  // Prefab for the stack element (containing the capsule)
+    [SerializeField] private Transform stack; // The parent container for the stack grid elements
     private GameObject[] stackElements; // To store references to the stack grid elements
 
     [Header("UI Elements")]
-    public TextMeshProUGUI resultText; // UI Text element to display the result
-    public Button restartButton; // Restart button
-    public Button checkAnswerButton; // Check Answer button
-    public Button returnToMenuButton; // Return to Menu button
+    [SerializeField] private TextMeshProUGUI resultText; // UI Text element to display the result
+    [SerializeField] private TextMeshProUGUI countdownText; // Countdown Text
+    [SerializeField] private Button restartButton; // Restart button
+    [SerializeField] private Button checkAnswerButton; // Check Answer button
+    [SerializeField] private Button returnToMenuButton; // Return to Menu button
+
+
+    [SerializeField] private ScoreManager scoreManager;
+    [SerializeField] private int PointsToAdd = 50;
+
+    [SerializeField] float suspence_delay = 1f;
 
     private void Start()
     {
@@ -122,11 +130,31 @@ public class GameManager : MonoBehaviour
         // If all colors match the original order
         resultText.text = CORRECT_ORDER_TEXT;
         restartButton.gameObject.SetActive(false); // Hide Restart button if correct
+        scoreManager.AddScore(PointsToAdd);
+        if (OverallScoreManager.Instance != null)
+        {
+            OverallScoreManager.Instance.AddScore(scoreManager.score);
+
+        }
     }
 
     IEnumerator ShuffleAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        float countdown = delay;
+
+        // Update the countdown text during the delay
+        while (countdown > 0)
+        {
+            //countdownText.text = $"Shuffling in {Mathf.Ceil(countdown)} seconds...";
+            countdownText.text = Mathf.Ceil(countdown).ToString();
+            yield return new WaitForSeconds(suspence_delay);
+            countdown -= suspence_delay;
+        }
+
+        countdownText.text = ""; // Clear the countdown text after the delay
+
+
+        //yield return new WaitForSeconds(delay);
         ShuffleCapsules();
 
         // Move capsules to stack after shuffling

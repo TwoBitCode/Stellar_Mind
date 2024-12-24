@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: d59b55cffe374ea46bf60142977b6be4
   - enabled: 1
+    path: Assets/Scenes/InstructionsScene.unity
+    guid: e7459810fff54cf468e822b8bb9c37f7
+  - enabled: 1
+    path: Assets/Scenes/gameEntryMap.unity
+    guid: ebc1883f3dc2a2a46a85d823d276179f
+  - enabled: 1
     path: Assets/Scenes/MemoryGame.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
@@ -17,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameOverScene.unity
     guid: 27af003d417790347aa54bd0580ee91a
+  - enabled: 1
+    path: Assets/Scenes/OverallGameOver.unity
+    guid: b253092983ec9cc40a452020a6bc5099
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

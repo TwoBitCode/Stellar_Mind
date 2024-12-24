@@ -8,7 +8,7 @@ public class ScoreManager : MonoBehaviour
     private const string SCORE_LABEL = "Score: ";
 
     public TextMeshProUGUI scoreText;  // Reference to the UI Text element to display the score
-    private int score = 0;  // The player's score
+    public int score = 0;  // The player's score
 
     private void Start()
     {

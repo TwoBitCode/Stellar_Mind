@@ -24,20 +24,20 @@ public class SortingDraggableItem : DraggableItem
     [SerializeField] private string gameManagerName = "GameManager";
 
     // Constants for item types (these don't need to be serialized)
-    private const string BLUE_ITEM_TYPE = "blue";
-    private const string YELLOW_ITEM_TYPE = "yellow";
+    [SerializeField] private const string BLUE_ITEM_TYPE = "blue";
+    [SerializeField] private const string YELLOW_ITEM_TYPE = "yellow";
 
     // References to UI and game elements
     private RectTransform leftArea;  // Reference to the left area
     private RectTransform rightArea; // Reference to the right area
-    public string itemType; // Define the type of asteroid, e.g., "blue" or "yellow"
+    [SerializeField] public string itemType; // Define the type of asteroid, e.g., "blue" or "yellow"
 
     private Image asteroidImage; // Reference to the Image component
     private ScoreManager scoreManager; // Reference to the ScoreManager
     private SortingGameManager gameManager; // Reference to the SortingGameManager
 
-    public GameObject correctIndicatorPrefab;  // Reference to the correct indicator prefab
-    public GameObject incorrectIndicatorPrefab;  // Reference to the incorrect indicator prefab
+    [SerializeField] private GameObject correctIndicatorPrefab;  // Reference to the correct indicator prefab
+    [SerializeField] private GameObject incorrectIndicatorPrefab;  // Reference to the incorrect indicator prefab
     private Color originalColor;  // To store original color for incorrect feedback
 
     private void Start()

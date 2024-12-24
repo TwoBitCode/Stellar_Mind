@@ -6,19 +6,23 @@ using UnityEngine.UI;
 public class GameTimer : MonoBehaviour
 {
     // Constants for timer durations and formatting
-    private const string GAME_OVER_SCENE_NAME = "GameOverScene"; // Name of the Game Over scene
-    private const string TIMER_FORMAT = "{0:00}:{1:00}"; // Timer format string
+    [SerializeField] private string GAME_OVER_SCENE_NAME = "GameOverScene"; // Name of the Game Over scene
+    [SerializeField] private string TIMER_FORMAT = "{0:00}:{1:00}"; // Timer format string
 
     [Header("Game Settings")]
     [Tooltip("Total game time in seconds")]
     [SerializeField] private float gameDuration = 60f; // Total game time in seconds
-    public TextMeshProUGUI timerText; // Reference to a UI Text element to display the timer
+    [SerializeField] public TextMeshProUGUI timerText; // Reference to a UI Text element to display the timer
 
     private float timeRemaining;
     private bool isGameOver = false;
     private bool gameStarted = false; // Flag to track if the game has started
 
-    public SceneSwitcher sceneSwitcher;
+    [SerializeField] private SceneSwitcher sceneSwitcher;
+
+    //public OverallScoreManager scoreSumManager;
+    [SerializeField] private ScoreManager scoreManager;  // Reference to the UI Text element to display the score
+    [SerializeField] private SortingGameManager sortingGameManager;
 
     private void Start()
     {
@@ -55,6 +59,8 @@ public class GameTimer : MonoBehaviour
 
     private void EndGame()
     {
+        sortingGameManager.StopGame();
+
         isGameOver = true;
         Debug.Log("Game Over!");
         // OnGameOver?.Invoke(); // Trigger the Game Over event

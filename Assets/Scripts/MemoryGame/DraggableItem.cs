@@ -5,13 +5,16 @@ using UnityEngine.EventSystems;
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [Header("UI Elements")]
-    public Image image;
+    [SerializeField] public Image image;
 
     [HideInInspector] public Transform parentAfterDrag;
 
-    private const string LOG_BEGIN_DRAG = "Begin drag";
-    private const string LOG_DRAGGING = "dragging";
-    private const string LOG_END_DRAG = "End drag";
+    [Tooltip("log text when draggin starts")]
+    [SerializeField] private const string LOG_BEGIN_DRAG = "Begin drag";
+    [Tooltip("log text while draggin")]
+    [SerializeField] private const string LOG_DRAGGING = "dragging";
+    [Tooltip("log text when draggin ends")]
+    [SerializeField] private const string LOG_END_DRAG = "End drag";
 
     public void OnBeginDrag(PointerEventData eventData)
     {

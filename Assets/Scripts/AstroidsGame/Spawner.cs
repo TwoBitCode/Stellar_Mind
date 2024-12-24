@@ -18,12 +18,12 @@ public class AsteroidSpawner : MonoBehaviour
     [Tooltip("Initial value for the timer")]
     [SerializeField] private float initialTimer = 0f;  // Initial value for the timer
 
-    private const int STARTING_RANGE = 0;  // Start range for random selection of asteroid prefab
+    [SerializeField] private const int STARTING_RANGE = 0;  // Start range for random selection of asteroid prefab
 
     // References to asteroid prefabs
-    public GameObject[] asteroidPrefabs; // Array for two types of asteroids
+    [SerializeField] private GameObject[] asteroidPrefabs; // Array for two types of asteroids
 
-    private float timer;
+    [SerializeField] private float timer;
 
     void Update()
     {
