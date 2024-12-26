@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      door-removebg-preview_0: 2564602478651707332
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
