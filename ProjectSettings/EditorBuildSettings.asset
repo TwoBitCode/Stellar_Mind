@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/InstructionsScene.unity
     guid: e7459810fff54cf468e822b8bb9c37f7
   - enabled: 1
-    path: Assets/Scenes/gameEntryMapOLD.unity
+    path: Assets/Scenes/gameEntryMap.unity
     guid: ebc1883f3dc2a2a46a85d823d276179f
   - enabled: 1
     path: Assets/Scenes/MemoryGame.unity

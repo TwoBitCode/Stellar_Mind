@@ -27,12 +27,14 @@ public class DialogueUIHandler : MonoBehaviour
         dialogueManager.OnDialogueUpdated += UpdateDialogueUI;
         dialogueManager.OnDialogueEnded += ShowStartGameButton;
 
-        nextLineButton.onClick.AddListener(() => {
+        nextLineButton.onClick.AddListener(() =>
+        {
             PlayButtonClickSound();
             dialogueManager.DisplayNextLine();
         });
 
-        startGameButton.onClick.AddListener(() => {
+        startGameButton.onClick.AddListener(() =>
+        {
             PlayButtonClickSound();
             StartGame();
         });
