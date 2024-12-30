@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 65f368d11ed8af940a13bb255dce7e80
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 160659
+  packageName: Bidirectional Horizontal Layout for Unity UI (RTL & LTR)
+  packageVersion: 1.3
+  assetPath: Assets/BidirectionalHorizontalLayoutGroup/BHLG-manual.pdf
+  uploadId: 380325

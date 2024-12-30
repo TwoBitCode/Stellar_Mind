@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      blue_arrow-removebg-preview_0: 6729731149527606916
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
