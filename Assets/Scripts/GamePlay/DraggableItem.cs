@@ -19,9 +19,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         set => parentAfterDrag = value;
     }
 
-    private const string LOG_BEGIN_DRAG = "Begin drag";
-    private const string LOG_DRAGGING = "Dragging";
-    private const string LOG_END_DRAG = "End drag";
+    [SerializeField] private const string LOG_BEGIN_DRAG = "Begin drag";
+    [SerializeField] private const string LOG_DRAGGING = "Dragging";
+    [SerializeField] private const string LOG_END_DRAG = "End drag";
 
     public void OnBeginDrag(PointerEventData eventData)
     {
