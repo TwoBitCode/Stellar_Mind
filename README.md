@@ -228,3 +228,77 @@ This is a sorting game where asteroids of different colors are randomly assigned
 - **Timer Duration**: Adjust the `gameDuration` variable in the `GameTimer` script to change the game’s time limit.
 - **Asteroid Colors**: Modify the random color generation logic in the `SortingDraggableItem` script to customize asteroid colors.
 - **UI Elements**: Customize the look of the UI, including the timer text, instructions, and buttons.
+
+- 
+# UML Diagram for Project
+
+```plaintext
++------------------------+         +--------------------+         +--------------------+
+|      GameManager      |         |     ScoreManager    |         |   GameFlowManager  |
+|------------------------|         |--------------------|         |--------------------|
+| - gridManager         |         | - currentScore     |         | - goalScore        |
+| - stackManager        |         | - scoreText        |         | - sceneTransition  |
+|------------------------|         |--------------------|         |--------------------|
+| + InitializeGame()    |         | + AddScore()       |         | + HandleTransition()|
+| + CheckOrder()        |         | + ResetScore()     |         |--------------------|
++------------------------+         +--------------------+         +--------------------+
+         |                             |                               |
+         |                             |                               |
+ +-------+------+             +--------+--------+             +-------+--------+
+ |  GridManager  |             |   UIManager    |             | SceneTransition |
+ |---------------|             |----------------|             |-----------------|
+ | - slots       |             | - timerText    |             | - nextSceneName |
+ |---------------|             | - scoreDisplay |             |-----------------|
+ | + SetupGrid() |             |----------------|             | + LoadScene()   |
+ | + ResetGrid() |             | + UpdateTimer()|             +-----------------+
+ +---------------+             | + UpdateScore()|
+                                +----------------+
+
++-----------------------+         +----------------------+         +--------------------+
+|     StackManager      |         |     DraggableItem    |         |   DialogueSetup    |
+|-----------------------|         |----------------------|         |--------------------|
+| - stackItems          |         | - itemType           |         | - dialogueSequence |
+|-----------------------|         |----------------------|         |--------------------|
+| + AddToStack()        |         | + OnDrag()           |         | + Initialize()     |
+| + CheckOrder()        |         | + OnDrop()           |         |--------------------|
++-----------------------+         +----------------------+         +--------------------+
+
++----------------------+         +----------------------+         +-----------------------+
+| CharacterSelection  |         | PlayerDataManager    |         | SortingDraggableItem |
+|----------------------|         |----------------------|         |-----------------------|
+| - selectedCharacter |         | - playerName         |         | - pointsForCorrect   |
+|----------------------|         | - targetScore        |         | - leftAreaName       |
+| + SelectCharacter() |         |----------------------|         | - rightAreaName      |
+| + ConfirmSelection()|         | + SaveData()         |         |-----------------------|
++----------------------+         | + LoadData()         |         | + HandleCorrect()    |
+                                +----------------------+         | + HandleIncorrect()  |
+                                                                +-----------------------+
+```
+
+### Explanation of UML Diagram:
+
+1. **Game Management**:
+   - `GameManager`: Handles memory game flow, including grid setup and order checking.
+   - `GameFlowManager`: Handles scene transitions based on scores and conditions.
+   - `ScoreManager`: Tracks and updates the player's score dynamically.
+
+2. **UI Management**:
+   - `UIManager`: Updates and manages UI elements like timers and scores.
+
+3. **Gameplay Mechanics**:
+   - `GridManager`: Manages the game grid, resetting and setting it up.
+   - `StackManager`: Handles stack-based gameplay and checks item order.
+   - `DraggableItem`: Implements generic drag-and-drop functionality.
+   - `SortingDraggableItem`: Extends `DraggableItem` to implement sorting-specific behavior.
+
+4. **Dialogue Management**:
+   - `DialogueSetup`: Prepares and coordinates dialogue sequences.
+
+5. **Data Management**:
+   - `PlayerDataManager`: Saves and loads player-specific data, such as name and target score.
+
+6. **Other Features**:
+   - `CharacterSelection`: Allows players to choose a character.
+   - `SceneTransition`: Manages transitions between scenes.
+
+
