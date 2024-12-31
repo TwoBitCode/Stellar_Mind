@@ -52,7 +52,7 @@
 ### Explanation of UML Diagram:
 
 1. **Game Management**:
-   - `GameManager`: Handles memory game flow, including grid setup and order checking.
+   - `TubeGameManager`: Handles memory game flow, including grid setup and order checking.
    - `GameFlowManager`: Handles scene transitions based on scores and conditions.
    - `ScoreManager`: Tracks and updates the player's score dynamically.
 
