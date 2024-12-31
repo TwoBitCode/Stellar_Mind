@@ -336,10 +336,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneNames:
   - MemoryGame
-  - 2
+  - SortingAsteroid
   - 3
   - 4
-  - 5
+  - Sorting Asteroid
   - 6
   - 7
 --- !u!114 &220993059
@@ -357,14 +357,18 @@ MonoBehaviour:
   doorText: {fileID: 314992275}
   gameNames:
   - Tubes
-  - h
+  - r
   - t
   - e
-  - e
+  - Sorting Asteroid
   - e
   - e
   sceneNames:
   - MemoryGame
+  - 
+  - 
+  - 
+  - SortingAsteroid
   doors:
   - {fileID: 221132705}
   - {fileID: 719347701}

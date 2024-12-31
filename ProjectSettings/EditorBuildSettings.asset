@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MemoryGame.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/sortingAsteroids.unity
+    path: Assets/Scenes/SortingAsteroid.unity
     guid: e033e187826b10b4f8b4a5ce76235720
   - enabled: 1
     path: Assets/Scenes/GameOverScene.unity
@@ -29,6 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameMapScene-V.unity
     guid: a91074e972b5b874a9c56f3b6b268072
+  - enabled: 1
+    path: Assets/Scenes/WelcomeScene-vivi.unity
+    guid: d1ea131f6019fdc4b9c9320976221376
+  - enabled: 1
+    path: Assets/Scenes/SelectPlayerScene-vivi.unity
+    guid: ef2b57957b5c8db4d885a242fd736639
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
