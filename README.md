@@ -8,7 +8,7 @@
 
 ```plaintext
 +------------------------+         +--------------------+         +--------------------+
-|      GameManager      |         |     ScoreManager    |         |   GameFlowManager  |
+|      TubeGameManager      |      |     ScoreManager    |         |   GameFlowManager  |
 |------------------------|         |--------------------|         |--------------------|
 | - gridManager         |         | - currentScore     |         | - goalScore        |
 | - stackManager        |         | - scoreText        |         | - sceneTransition  |
