@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62a335485e814794e8080ac9b2f3c9c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: InstructionsScene
+  nextSceneName: GameMapScene-V
   audioSource: {fileID: 259851534}
   clickSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
 --- !u!1 &265804995
@@ -366,7 +366,6 @@ GameObject:
   - component: {fileID: 265804998}
   - component: {fileID: 265804997}
   - component: {fileID: 265805001}
-  - component: {fileID: 265805002}
   m_Layer: 5
   m_Name: BoyButton
   m_TagString: Untagged
@@ -585,19 +584,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &265805002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265804995}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ac1764470483c54bae0ea9a9002e8dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hoverSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
 --- !u!1 &374422637
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,7 +672,6 @@ GameObject:
   - component: {fileID: 863907970}
   - component: {fileID: 863907969}
   - component: {fileID: 863907973}
-  - component: {fileID: 863907974}
   m_Layer: 5
   m_Name: 'GirlButton '
   m_TagString: Untagged
@@ -905,19 +890,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &863907974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 863907967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ac1764470483c54bae0ea9a9002e8dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hoverSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
 --- !u!1 &865297309
 GameObject:
   m_ObjectHideFlags: 0

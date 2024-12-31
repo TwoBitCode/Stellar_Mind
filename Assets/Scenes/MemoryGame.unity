@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 199941419}
   - component: {fileID: 199941418}
   m_Layer: 5
-  m_Name: stack
+  m_Name: Stack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -475,26 +475,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 365361044}
-  - component: {fileID: 365361043}
+  - component: {fileID: 365361045}
   m_Layer: 0
-  m_Name: SceneSwitcher
+  m_Name: SceneTransitionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &365361043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 365361042}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cde167e350f1394ab99067dc11dbbda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &365361044
 Transform:
   m_ObjectHideFlags: 0
@@ -510,6 +498,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &365361045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365361042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62a335485e814794e8080ac9b2f3c9c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextSceneName: GameSelectionScene
+  audioSource: {fileID: 0}
+  clickSound: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,7 +1097,7 @@ GameObject:
   - component: {fileID: 706823555}
   - component: {fileID: 706823554}
   m_Layer: 5
-  m_Name: countdownText
+  m_Name: CountDownText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1231,7 +1234,7 @@ GameObject:
   - component: {fileID: 708307491}
   - component: {fileID: 708307490}
   m_Layer: 5
-  m_Name: grid
+  m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1600,7 +1603,7 @@ GameObject:
   - component: {fileID: 831873537}
   - component: {fileID: 831873536}
   m_Layer: 5
-  m_Name: score
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1758,7 +1761,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 30.263}
   m_SizeDelta: {x: 1000, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &993477810
@@ -1809,6 +1812,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1016497773}
   - component: {fileID: 1016497772}
+  - component: {fileID: 1016497775}
+  - component: {fileID: 1016497774}
   m_Layer: 0
   m_Name: MemoryGameManager
   m_TagString: Untagged
@@ -1828,21 +1833,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a0b26f9963aaf4c97a266195cecaab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DEFAULT_SHUFFLE_DELAY: 2
-  INCORRECT_ORDER_TEXT: Incorrect Order!
-  CORRECT_ORDER_TEXT: Correct Order!
-  gridElementPrefab: {fileID: 6688124407794529442, guid: fe47677d4dde23d4f9a830e8cceeb3f1, type: 3}
-  grid: {fileID: 708307489}
+  shuffleDelay: 5
   numObjects: 4
-  stackElementPrefab: {fileID: 6177746526403677538, guid: c1ffa625d3b9eef41ac174bbbe796171, type: 3}
-  stack: {fileID: 1041948413}
-  resultText: {fileID: 661901912}
-  countdownText: {fileID: 706823554}
-  restartButton: {fileID: 1343903004}
-  checkAnswerButton: {fileID: 819813302}
-  returnToMenuButton: {fileID: 1047073047}
+  pointsToAdd: 50
+  gridManager: {fileID: 1016497775}
+  stackManager: {fileID: 1016497774}
   scoreManager: {fileID: 1966236993}
-  PointsToAdd: 20
+  uiManager: {fileID: 1312667779}
+  sceneTransitionManager: {fileID: 365361045}
+  mapSceneName: GameMapScene-V
+  gameOverSceneName: OverallGameOver
 --- !u!4 &1016497773
 Transform:
   m_ObjectHideFlags: 0
@@ -1858,6 +1858,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1016497774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016497771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eba909021cde6c47bd65b00867946cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stackElementPrefab: {fileID: 6177746526403677538, guid: c1ffa625d3b9eef41ac174bbbe796171, type: 3}
+  stack: {fileID: 1041948413}
+--- !u!114 &1016497775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016497771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bc149828b608e046b02273de5e7d655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridElementPrefab: {fileID: 6688124407794529442, guid: fe47677d4dde23d4f9a830e8cceeb3f1, type: 3}
+  grid: {fileID: 708307489}
+  tubeColors:
+  - {r: 0.26315784, g: 0, b: 1, a: 1}
+  - {r: 0.93436146, g: 0, b: 1, a: 1}
+  - {r: 0, g: 1, b: 0.18312049, a: 1}
+  - {r: 0.5773585, g: 0.020697676, b: 0.2529759, a: 1}
+  - {r: 0.8867924, g: 0.80240566, b: 0, a: 1}
+  - {r: 0.21568629, g: 0.21568629, b: 0.21568629, a: 1}
+  - {r: 0.60188675, g: 0.9428078, b: 1, a: 1}
+  - {r: 0.044888683, g: 0.23018861, b: 0, a: 1}
 --- !u!1 &1041948412
 GameObject:
   m_ObjectHideFlags: 0
@@ -1871,7 +1908,7 @@ GameObject:
   - component: {fileID: 1041948415}
   - component: {fileID: 1041948414}
   m_Layer: 5
-  m_Name: grid
+  m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2041,7 +2078,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 365361043}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SceneSwitcher, Assembly-CSharp
         m_MethodName: LoadSceneByName
         m_Mode: 5
@@ -2050,7 +2087,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: MainMenu
+          m_StringArgument: WelcomeScene-vivi
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1047073048
@@ -2103,7 +2140,7 @@ GameObject:
   - component: {fileID: 1063235720}
   - component: {fileID: 1063235719}
   m_Layer: 5
-  m_Name: box
+  m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2279,6 +2316,54 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1312667778
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1312667780}
+  - component: {fileID: 1312667779}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1312667779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312667778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d60c80450e671444e964a4fabcb5fef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resultText: {fileID: 661901912}
+  countdownText: {fileID: 706823554}
+  restartButton: {fileID: 1343903004}
+  checkAnswerButton: {fileID: 819813302}
+--- !u!4 &1312667780
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312667778}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 319.3636, y: 232.32623, z: 34.393574}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1343903002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2560,7 +2645,7 @@ GameObject:
   - component: {fileID: 1643053357}
   - component: {fileID: 1643053356}
   m_Layer: 5
-  m_Name: stack
+  m_Name: StackText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2767,10 +2852,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 365361043}
-        m_TargetAssemblyTypeName: SceneSwitcher, Assembly-CSharp
-        m_MethodName: LoadSceneByName
-        m_Mode: 5
+      - m_Target: {fileID: 1016497772}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: HandleSceneTransition
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2792,7 +2877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6226415, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2983,6 +3068,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 831873536}
+  scoreLabel: 'Score: '
   score: 0
 --- !u!4 &1966236994
 Transform:
@@ -3028,7 +3114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c97c76ef894c4d4c9ea01718c2ba993, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OverallScore: 0
 --- !u!4 &2128248745
 Transform:
   m_ObjectHideFlags: 0
@@ -3056,3 +3141,4 @@ SceneRoots:
   - {fileID: 365361044}
   - {fileID: 2128248745}
   - {fileID: 1966236994}
+  - {fileID: 1312667780}
