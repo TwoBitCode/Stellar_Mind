@@ -1,10 +1,4 @@
 # 🚀 Stellar Mind: A Space Adventure for Cognitive Growth 🌌
-I added a detailed explenation for Assignment4 at the end.
-
-itch game link - Assignment 6: https://twobitcode.itch.io/stellar-mind-with-story
-
-itch game link - Assignment 4: https://twobitcode.itch.io/steller-mind
-
 
 **Stellar Mind** is an engaging, space-themed educational game designed to help children with ADHD improve their working memory and executive functions. Through interactive missions, captivating narratives, and strategic challenges, children develop practical skills while embarking on an interstellar journey to save the galaxy! 🌟
 ![download (1)](https://github.com/user-attachments/assets/cf21a9cf-fbb7-49ae-9f23-6ad5ebd2b307)
@@ -298,6 +292,10 @@ This is a sorting game where asteroids of different colors are randomly assigned
 - **Timer Duration**: Adjust the `gameDuration` variable in the `GameTimer` script to change the game’s time limit.
 - **Asteroid Colors**: Modify the random color generation logic in the `SortingDraggableItem` script to customize asteroid colors.
 - **UI Elements**: Customize the look of the UI, including the timer text, instructions, and buttons.
+
+itch game link - Assignment 6: https://twobitcode.itch.io/stellar-mind-with-story
+
+itch game link - Assignment 4: https://twobitcode.itch.io/steller-mind
 
 - 
 
