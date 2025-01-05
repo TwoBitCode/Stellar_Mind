@@ -2,20 +2,30 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class SymbolPracticeManager : MonoBehaviour
 {
+    public static SymbolPracticeManager Instance; // Singleton for global access
+
     public SymbolManager symbolManager; // Reference to SymbolManager
     public TMP_Text instructionText; // Text to display the question
     public TMP_Text feedbackText; // Text to display feedback
     public TMP_Text strategyText; // Text to display learning strategies
     public SymbolLearningManager symbolLearningManager; // Reference to the Learning Manager
 
-    [TextArea] public string[] learningStrategies; // Array for learning strategies
+    public bool isVoiceMode; // Toggle between symbols and voices
+    public AudioSource audioSource; // To play voice clips
 
-    private List<int> availableSymbolIndices; // Tracks which symbols haven't been practiced yet
+    private List<int> availableSymbolIndices; // Tracks which items haven't been practiced yet
     private int currentSymbolIndex;
     private int incorrectAttempts;
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject); // Prevent duplicate managers
+    }
 
     void Start()
     {
@@ -24,16 +34,19 @@ public class SymbolPracticeManager : MonoBehaviour
 
     public void StartPractice()
     {
-        // Initialize the list of available symbols for this practice session
+        // Initialize the list of available items (symbols or voices) for this practice session
         availableSymbolIndices = new List<int>();
-        for (int i = 0; i < symbolManager.GetSymbolCount(); i++)
+        int count = isVoiceMode ? symbolManager.GetVoiceCount() : symbolManager.GetSymbolCount();
+        for (int i = 0; i < count; i++)
         {
             availableSymbolIndices.Add(i);
         }
 
         feedbackText.text = ""; // Clear feedback
         strategyText.text = ""; // Clear strategies
-        instructionText.text = "Match the meaning to the correct symbol!";
+        instructionText.text = isVoiceMode
+            ? "Listen to the voice and choose the correct meaning!"
+            : "Match the meaning to the correct symbol!";
         NextRound();
     }
 
@@ -41,24 +54,40 @@ public class SymbolPracticeManager : MonoBehaviour
     {
         if (availableSymbolIndices.Count == 0)
         {
-            // All meanings have been practiced
             LevelComplete();
             return;
+        }
+
+        // Re-enable all buttons at the start of the round
+        foreach (Button button in SymbolGameUIManager.Instance.answerButtons)
+        {
+            button.interactable = true;
         }
 
         feedbackText.text = ""; // Clear feedback
         strategyText.text = ""; // Clear any strategy text
         incorrectAttempts = 0; // Reset attempts for the new question
 
-        // Pick a random symbol from the available list
+        // Pick a random item from the available list
         int randomIndex = Random.Range(0, availableSymbolIndices.Count);
         currentSymbolIndex = availableSymbolIndices[randomIndex];
-        availableSymbolIndices.RemoveAt(randomIndex); // Remove the symbol from the list
+        availableSymbolIndices.RemoveAt(randomIndex); // Remove the item from the list
 
-        string currentMeaning = symbolManager.GetMeaning(currentSymbolIndex);
-        SymbolGameUIManager.Instance.DisplayQuestion(currentMeaning);
+        if (isVoiceMode)
+        {
+            string currentMeaning = symbolManager.GetVoiceMeaning(currentSymbolIndex);
+            SymbolGameUIManager.Instance.DisplayQuestion($"What is the sound of this meaning: {currentMeaning}?");
+        }
+        else
+        {
+            string currentMeaning = symbolManager.GetMeaning(currentSymbolIndex);
+            SymbolGameUIManager.Instance.DisplayQuestion($"What symbol represents: {currentMeaning}?");
+        }
+
         SetupAnswerButtons();
     }
+
+
 
     private void SetupAnswerButtons()
     {
@@ -67,28 +96,93 @@ public class SymbolPracticeManager : MonoBehaviour
         for (int i = 0; i < SymbolGameUIManager.Instance.answerButtons.Length; i++)
         {
             Button button = SymbolGameUIManager.Instance.answerButtons[i];
-            button.onClick.RemoveAllListeners();
+            button.onClick.RemoveAllListeners(); // Clear previous listeners
+
+            AudioSource buttonAudioSource = button.GetComponent<AudioSource>();
 
             if (i == correctButtonIndex)
             {
-                button.GetComponent<Image>().sprite = symbolManager.GetSymbol(currentSymbolIndex);
-                button.onClick.AddListener(() => CheckAnswer(true));
+                if (isVoiceMode)
+                {
+                    // Set the correct sound for the button in voice mode
+                    buttonAudioSource.clip = symbolManager.GetVoice(currentSymbolIndex);
+
+                    // Add listener for correct answer
+                    button.onClick.AddListener(() => CheckAnswer(true));
+                }
+                else
+                {
+                    // Set the correct symbol for the button in symbol mode
+                    button.GetComponent<Image>().sprite = symbolManager.GetSymbol(currentSymbolIndex);
+
+                    // Add listener for correct answer
+                    button.onClick.AddListener(() => CheckAnswer(true));
+                }
             }
             else
             {
                 int randomIndex;
                 do
                 {
-                    randomIndex = Random.Range(0, symbolManager.GetSymbolCount());
+                    randomIndex = Random.Range(0, isVoiceMode ? symbolManager.GetVoiceCount() : symbolManager.GetSymbolCount());
                 } while (randomIndex == currentSymbolIndex);
 
-                button.GetComponent<Image>().sprite = symbolManager.GetSymbol(randomIndex);
-                button.onClick.AddListener(() => CheckAnswer(false));
+                if (isVoiceMode)
+                {
+                    // Set a random sound for the button in voice mode
+                    buttonAudioSource.clip = symbolManager.GetVoice(randomIndex);
+
+                    // Add listener for incorrect answer
+                    button.onClick.AddListener(() => CheckAnswer(false));
+                }
+                else
+                {
+                    // Set a random symbol for the button in symbol mode
+                    button.GetComponent<Image>().sprite = symbolManager.GetSymbol(randomIndex);
+
+                    // Add listener for incorrect answer
+                    button.onClick.AddListener(() => CheckAnswer(false));
+                }
             }
+
+            // Add hover sound functionality
+            AddHoverSound(button, buttonAudioSource);
         }
     }
 
-    private void CheckAnswer(bool isCorrect)
+
+
+    private void AddHoverSound(Button button, AudioSource audioSource)
+    {
+        EventTrigger trigger = button.GetComponent<EventTrigger>();
+        if (trigger == null)
+        {
+            trigger = button.gameObject.AddComponent<EventTrigger>();
+        }
+
+        // Clear previous triggers
+        trigger.triggers.Clear();
+
+        // Add hover event
+        EventTrigger.Entry entry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerEnter
+        };
+        entry.callback.AddListener((eventData) => PlayHoverSound(audioSource));
+        trigger.triggers.Add(entry);
+    }
+
+    private void PlayHoverSound(AudioSource audioSource)
+    {
+        if (audioSource != null && audioSource.clip != null)
+        {
+            audioSource.Play();
+        }
+    }
+
+
+
+    public void CheckAnswer(bool isCorrect)
     {
         if (isCorrect)
         {
@@ -100,59 +194,38 @@ public class SymbolPracticeManager : MonoBehaviour
             incorrectAttempts++;
             SymbolGameUIManager.Instance.DisplayFeedback(false);
 
+            // Show a tip and return to learning if too many incorrect attempts
             if (incorrectAttempts >= 2)
             {
-                // Show a tip and return to learning
                 ShowLearningStrategy();
             }
         }
     }
 
+
     private void ShowLearningStrategy()
     {
-        // Display a random strategy as a tip
         string strategy = symbolManager.GetRandomTip();
         SymbolGameUIManager.Instance.DisplayStrategy(strategy);
 
-        // Delay for tip display, then return to the learning phase
         Invoke(nameof(ReturnToLearningPhase), 3f);
     }
 
     private void ReturnToLearningPhase()
     {
-        // Restart the learning phase for reinforcement
         symbolLearningManager.RestartLearning();
-
-        // Switch the UI to learning mode
         SymbolGameUIManager.Instance.ShowLearningUI();
     }
-
-
-    //private void ShowLearningStrategy()
-    //{
-    //    string strategy = symbolManager.GetRandomTip();
-    //    SymbolGameUIManager.Instance.DisplayStrategy(strategy);
-    //}
-
-
-    //private void ReturnToLearningPhase()
-    //{
-    //    symbolLearningManager.RestartLearning();
-    //    SymbolGameUIManager.Instance.ShowLearningUI();
-    //}
 
     private void LevelComplete()
     {
         SymbolGameUIManager.Instance.DisplayCompletion();
         SymbolGameUIManager.Instance.DisableAnswerButtons();
-
-        // Transition to the next stage
-        Invoke(nameof(LoadNextStage), 3f); // Delay for completion message
+        Invoke(nameof(LoadNextStage), 3f);
     }
 
     private void LoadNextStage()
     {
         FindAnyObjectByType<StageManager>().AdvanceToNextStage();
     }
-
 }

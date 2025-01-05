@@ -3,16 +3,28 @@ using UnityEngine;
 public class SymbolManager : MonoBehaviour
 {
     public SymbolStage currentStage; // Reference to the active stage
+    public VoiceStage currentVoiceStage; // Added for voice stages
 
     public void LoadStage(SymbolStage stage)
     {
         currentStage = stage;
-
         if (currentStage.symbols.Count != currentStage.meanings.Count)
         {
             Debug.LogError("Symbols and meanings count mismatch! Check the stage setup.");
         }
     }
+
+    public void LoadVoiceStage(VoiceStage stage)
+    {
+        currentVoiceStage = stage;
+        if (currentVoiceStage.voices.Count != currentVoiceStage.meanings.Count)
+        {
+            Debug.LogError("Voices and meanings count mismatch! Check the stage setup.");
+        }
+    }
+
+
+
 
     public Sprite GetSymbol(int index)
     {
@@ -45,5 +57,28 @@ public class SymbolManager : MonoBehaviour
             return currentStage.tips[randomIndex];
         }
         return "No tips available.";
+    }
+
+    public AudioClip GetVoice(int index)
+    {
+        if (index >= 0 && index < currentVoiceStage.voices.Count)
+        {
+            return currentVoiceStage.voices[index];
+        }
+        return null;
+    }
+
+    public string GetVoiceMeaning(int index)
+    {
+        if (index >= 0 && index < currentVoiceStage.meanings.Count)
+        {
+            return currentVoiceStage.meanings[index];
+        }
+        return null;
+    }
+
+    public int GetVoiceCount()
+    {
+        return currentVoiceStage.voices.Count;
     }
 }

@@ -24,7 +24,19 @@ public class SymbolGameUIManager : MonoBehaviour
         learningCanvas.gameObject.SetActive(true);
         practiceCanvas.gameObject.SetActive(false);
         ResetUI();
+
+        // Adjust instructions for the current mode
+        if (SymbolPracticeManager.Instance.isVoiceMode)
+        {
+            instructionText.text = "Listen carefully to learn the voice meanings!";
+        }
+        else
+        {
+            instructionText.text = "Observe carefully to learn the symbol meanings!";
+        }
     }
+
+
 
     public void ShowPracticeUI()
     {
