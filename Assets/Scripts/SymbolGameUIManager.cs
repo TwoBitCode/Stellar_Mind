@@ -1,0 +1,75 @@
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
+public class SymbolGameUIManager : MonoBehaviour
+{
+    public static SymbolGameUIManager Instance; // Singleton for global access
+
+    public Canvas learningCanvas; // Learning UI Canvas
+    public Canvas practiceCanvas; // Practice UI Canvas
+    public TMP_Text instructionText; // Text for instructions
+    public TMP_Text feedbackText; // Text for feedback
+    public TMP_Text strategyText; // Text for strategies
+    public Button[] answerButtons; // Buttons for practice answers
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject); // Prevent duplicate managers
+    }
+
+    public void ShowLearningUI()
+    {
+        learningCanvas.gameObject.SetActive(true);
+        practiceCanvas.gameObject.SetActive(false);
+        ResetUI();
+    }
+
+    public void ShowPracticeUI()
+    {
+        learningCanvas.gameObject.SetActive(false);
+        practiceCanvas.gameObject.SetActive(true);
+        ResetUI();
+    }
+
+    public void DisplayQuestion(string meaning)
+    {
+        instructionText.text = $"What symbol represents: {meaning}?";
+        feedbackText.text = "";
+        strategyText.text = "";
+    }
+
+    public void DisplayFeedback(bool isCorrect)
+    {
+        feedbackText.text = isCorrect ? "Correct! Great job!" : "Oops! Try again.";
+        feedbackText.color = isCorrect ? Color.green : Color.red;
+    }
+
+    public void DisplayStrategy(string strategy)
+    {
+        strategyText.text = $"Robot's Tip: {strategy}";
+    }
+
+    public void DisplayCompletion()
+    {
+        instructionText.text = "Great job! You've completed the practice session!";
+        feedbackText.text = "Level Complete!";
+        feedbackText.color = Color.green;
+    }
+
+    public void DisableAnswerButtons()
+    {
+        foreach (Button button in answerButtons)
+        {
+            button.interactable = false; // Disable interaction
+        }
+    }
+
+    public void ResetUI()
+    {
+        instructionText.text = "";
+        feedbackText.text = "";
+        strategyText.text = "";
+    }
+}
