@@ -93,49 +93,66 @@ public class SymbolPracticeManager : MonoBehaviour
         if (isCorrect)
         {
             SymbolGameUIManager.Instance.DisplayFeedback(true);
-            Invoke(nameof(NextRound), 2f);
+            Invoke(nameof(NextRound), 2f); // Move to the next question after a delay
         }
         else
         {
             incorrectAttempts++;
+            SymbolGameUIManager.Instance.DisplayFeedback(false);
+
             if (incorrectAttempts >= 2)
             {
+                // Show a tip and return to learning
                 ShowLearningStrategy();
-            }
-            else
-            {
-                SymbolGameUIManager.Instance.DisplayFeedback(false);
             }
         }
     }
 
     private void ShowLearningStrategy()
     {
-        // Display a random strategy from the array
-        if (learningStrategies.Length > 0)
-        {
-            string strategy = learningStrategies[Random.Range(0, learningStrategies.Length)];
-            SymbolGameUIManager.Instance.DisplayStrategy(strategy);
-        }
-        else
-        {
-            SymbolGameUIManager.Instance.DisplayStrategy("No strategies available. Please add some!");
-        }
+        // Display a random strategy as a tip
+        string strategy = symbolManager.GetRandomTip();
+        SymbolGameUIManager.Instance.DisplayStrategy(strategy);
 
-        // Wait before transitioning to learning
+        // Delay for tip display, then return to the learning phase
         Invoke(nameof(ReturnToLearningPhase), 3f);
     }
 
     private void ReturnToLearningPhase()
     {
+        // Restart the learning phase for reinforcement
         symbolLearningManager.RestartLearning();
+
+        // Switch the UI to learning mode
         SymbolGameUIManager.Instance.ShowLearningUI();
     }
 
+
+    //private void ShowLearningStrategy()
+    //{
+    //    string strategy = symbolManager.GetRandomTip();
+    //    SymbolGameUIManager.Instance.DisplayStrategy(strategy);
+    //}
+
+
+    //private void ReturnToLearningPhase()
+    //{
+    //    symbolLearningManager.RestartLearning();
+    //    SymbolGameUIManager.Instance.ShowLearningUI();
+    //}
+
     private void LevelComplete()
     {
-        // Display level completion message
         SymbolGameUIManager.Instance.DisplayCompletion();
         SymbolGameUIManager.Instance.DisableAnswerButtons();
+
+        // Transition to the next stage
+        Invoke(nameof(LoadNextStage), 3f); // Delay for completion message
     }
+
+    private void LoadNextStage()
+    {
+        FindAnyObjectByType<StageManager>().AdvanceToNextStage();
+    }
+
 }

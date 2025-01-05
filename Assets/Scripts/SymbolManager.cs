@@ -1,39 +1,49 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SymbolManager : MonoBehaviour
 {
-    public List<Sprite> symbols; // List of symbol sprites
-    public List<string> meanings; // List of meanings corresponding to symbols
+    public SymbolStage currentStage; // Reference to the active stage
 
-    void Awake()
+    public void LoadStage(SymbolStage stage)
     {
-        if (symbols.Count != meanings.Count)
+        currentStage = stage;
+
+        if (currentStage.symbols.Count != currentStage.meanings.Count)
         {
-            Debug.LogError("Symbols and meanings count mismatch! Check the SymbolManager setup.");
+            Debug.LogError("Symbols and meanings count mismatch! Check the stage setup.");
         }
     }
 
     public Sprite GetSymbol(int index)
     {
-        if (index >= 0 && index < symbols.Count)
+        if (index >= 0 && index < currentStage.symbols.Count)
         {
-            return symbols[index];
+            return currentStage.symbols[index];
         }
         return null;
     }
 
     public string GetMeaning(int index)
     {
-        if (index >= 0 && index < meanings.Count)
+        if (index >= 0 && index < currentStage.meanings.Count)
         {
-            return meanings[index];
+            return currentStage.meanings[index];
         }
         return null;
     }
 
     public int GetSymbolCount()
     {
-        return symbols.Count;
+        return currentStage.symbols.Count;
+    }
+
+    public string GetRandomTip()
+    {
+        if (currentStage.tips.Count > 0)
+        {
+            int randomIndex = Random.Range(0, currentStage.tips.Count);
+            return currentStage.tips[randomIndex];
+        }
+        return "No tips available.";
     }
 }
