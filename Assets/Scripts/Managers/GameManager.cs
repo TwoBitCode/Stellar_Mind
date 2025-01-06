@@ -15,11 +15,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIManager uiManager;
     [SerializeField] private SceneTransitionManager sceneTransitionManager;
 
-    [Header("Scene Configuration")]
-    [Tooltip("Name of the map scene to load")]
-    [SerializeField] private string mapSceneName = "MapScene";
-    [Tooltip("Name of the game over scene to load")]
-    [SerializeField] private string gameOverSceneName = "GameOverScene";
+    //[Header("Scene Configuration")]
+    //[Tooltip("Name of the map scene to load")]
+    //[SerializeField] private string mapSceneName = "MapScene";
+    //[Tooltip("Name of the game over scene to load")]
+    //[SerializeField] private string gameOverSceneName = "GameOverScene";
 
     private void Start()
     {
@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour
         {
             uiManager.UpdateResultText("Correct Order!", true);
             scoreManager.AddScore(pointsToAdd);
-            UpdateOverallScore(pointsToAdd);
+            //UpdateOverallScore(pointsToAdd);
         }
         else
         {
@@ -128,17 +128,17 @@ public class GameManager : MonoBehaviour
         uiManager.ShowRestartButton();
     }
 
-    private void UpdateOverallScore(int points)
-    {
-        if (OverallScoreManager.Instance != null)
-        {
-            OverallScoreManager.Instance.AddScore(points);
-        }
-        else
-        {
-            Debug.LogError("OverallScoreManager instance not found!");
-        }
-    }
+    //private void UpdateOverallScore(int points)
+    //{
+    //    if (OverallScoreManager.Instance != null)
+    //    {
+    //        OverallScoreManager.Instance.AddScore(points);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("OverallScoreManager instance not found!");
+    //    }
+    //}
 
     public void RestartGame()
     {
@@ -152,19 +152,19 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game restarted successfully with new colors!");
     }
 
-    public void HandleSceneTransition()
-    {
-        if (OverallScoreManager.Instance != null)
-        {
-            string targetScene = OverallScoreManager.Instance.OverallScore >= OverallScoreManager.Instance.TargetScore
-                ? gameOverSceneName
-                : mapSceneName;
+    //public void HandleSceneTransition()
+    //{
+    //    if (OverallScoreManager.Instance != null)
+    //    {
+    //        string targetScene = OverallScoreManager.Instance.OverallScore >= OverallScoreManager.Instance.TargetScore
+    //            ? gameOverSceneName
+    //            : mapSceneName;
 
-            sceneTransitionManager.LoadScene(targetScene);
-        }
-        else
-        {
-            Debug.LogError("OverallScoreManager instance not found!");
-        }
-    }
+    //        sceneTransitionManager.LoadScene(targetScene);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("OverallScoreManager instance not found!");
+    //    }
+    //}
 }
