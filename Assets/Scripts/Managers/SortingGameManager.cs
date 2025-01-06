@@ -97,6 +97,4 @@ public class SortingGameManager : MonoBehaviour
         CancelInvoke(nameof(SpawnAsteroid));
         //HandleSceneTransition();
     }
-
- 
 }
