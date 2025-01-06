@@ -47,8 +47,11 @@ public class SceneTransitionManager : MonoBehaviour
     /// </summary>
     private IEnumerator WaitAndLoadScene(string sceneName, float delay)
     {
+        // Optional: Add fade-out animation or other transitions here
         yield return new WaitForSeconds(delay);
-        LoadSceneImmediately(sceneName);
+
+        ResetSceneState(); // Clean up current scene states before loading the new one
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
     /// <summary>
@@ -58,11 +61,31 @@ public class SceneTransitionManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(sceneName))
         {
-            SceneManager.LoadScene(sceneName);
+            ResetSceneState(); // Clean up current scene states before loading the new one
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single); // Ensure only the new scene is loaded
         }
         else
         {
             Debug.LogError("Scene name is not provided for transition.");
         }
+    }
+
+    /// <summary>
+    /// Resets any lingering states or objects in the current scene.
+    /// </summary>
+    private void ResetSceneState()
+    {
+        // Reset UI or other scene-specific states here
+        Debug.Log("Resetting scene state before transitioning.");
+
+        // Ensure EventSystem is active (avoids UI issues)
+        var eventSystem = FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>();
+        if (eventSystem != null)
+        {
+            eventSystem.gameObject.SetActive(false);
+            eventSystem.gameObject.SetActive(true);
+        }
+
+        // Optional: Clear or reset other persistent objects if needed
     }
 }

@@ -8,6 +8,8 @@ public class SymbolLearningManager : MonoBehaviour
     public TMP_Text meaningText; // Text to display meaning
     public Image symbolDisplay; // UI Image to display the symbol
     public GameObject nextButton; // Next button to proceed
+    public AudioSource audioSource; // AudioSource for playing voice clips
+    public bool isVoiceMode; // Toggle between symbols and voices
 
     private int currentIndex = 0;
 
@@ -18,15 +20,26 @@ public class SymbolLearningManager : MonoBehaviour
 
     public void InitializeLearningPhase()
     {
-        currentIndex = 0; // Reset to the first symbol
-        ShowNextSymbol();
+        currentIndex = 0; // Reset to the first item
+        ShowNextItem();
     }
 
-    public void ShowNextSymbol()
+    public void ShowNextItem()
+    {
+        if (isVoiceMode)
+        {
+            ShowNextVoice();
+        }
+        else
+        {
+            ShowNextSymbol();
+        }
+    }
+
+    private void ShowNextSymbol()
     {
         if (currentIndex < symbolManager.GetSymbolCount())
         {
-            // Display the current symbol and meaning
             Sprite currentSymbol = symbolManager.GetSymbol(currentIndex);
             symbolDisplay.sprite = currentSymbol;
 
@@ -44,22 +57,37 @@ public class SymbolLearningManager : MonoBehaviour
         }
     }
 
+    private void ShowNextVoice()
+    {
+        if (currentIndex < symbolManager.GetVoiceCount())
+        {
+            AudioClip currentVoice = symbolManager.GetVoice(currentIndex);
+            audioSource.clip = currentVoice;
+            audioSource.Play();
+
+            // Show the meaning text
+            meaningText.text = $"This voice means: {symbolManager.GetVoiceMeaning(currentIndex)}";
+
+            nextButton.SetActive(true); // Enable "Next" button
+        }
+        else
+        {
+            EndLearningPhase();
+        }
+    }
+
     public void NextButtonPressed()
     {
         nextButton.SetActive(false); // Hide the "Next" button
         currentIndex++;
-        ShowNextSymbol();
-    }
-
-    public void RestartLearning()
-    {
-        InitializeLearningPhase();
+        ShowNextItem();
     }
 
     private void EndLearningPhase()
     {
         // Display completion message
-        meaningText.text = "You’ve learned all the symbols!";
+        meaningText.text = "You’ve learned all the items!";
+
         nextButton.SetActive(false);
 
         // Transition to Practice Phase
@@ -69,9 +97,13 @@ public class SymbolLearningManager : MonoBehaviour
 
     private void SetImageAlpha(Image image, float alpha)
     {
-        // Adjust the alpha value of the image color
         Color color = image.color;
-        color.a = alpha; // Set alpha to full opacity (1f)
+        color.a = alpha;
         image.color = color;
     }
+    public void RestartLearning()
+    {
+        InitializeLearningPhase(); // Resets the learning phase
+    }
+
 }

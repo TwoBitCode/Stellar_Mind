@@ -247,16 +247,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 789037358}
-        m_TargetAssemblyTypeName: SortingGameManager, Assembly-CSharp
-        m_MethodName: HandleReturnToMap
-        m_Mode: 1
+      - m_Target: {fileID: 1818661233}
+        m_TargetAssemblyTypeName: SceneTransitionManager, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: gameEntryMap
+          m_StringArgument: GameMapScene-V
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &111803016
@@ -512,7 +512,6 @@ GameObject:
   m_Component:
   - component: {fileID: 789037359}
   - component: {fileID: 789037358}
-  - component: {fileID: 789037363}
   - component: {fileID: 789037362}
   - component: {fileID: 789037361}
   m_Layer: 0
@@ -543,7 +542,6 @@ MonoBehaviour:
   spawnVerticalRange: 90
   randomAssignThreshold: 0.5
   instructionsText: {fileID: 1323251067}
-  gameFlowManager: {fileID: 789037363}
   scoreManager: {fileID: 3131472}
   gameTimer: {fileID: 162895869}
 --- !u!4 &789037359
@@ -588,23 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad9f0935bed1dbe41915eb0d56fb6b82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreText: {fileID: 0}
---- !u!114 &789037363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 789037357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da42fb0ddd4ae1f408b7529800698e86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  goalScore: 100
-  mapSceneName: GameMapScene-V
-  gameOverSceneName: GameOverScene
-  sceneTransitionManager: {fileID: 1818661233}
+  scoreText: {fileID: 1719206576}
 --- !u!1 &1031948326
 GameObject:
   m_ObjectHideFlags: 0
@@ -1727,7 +1709,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1806825258}
-  - component: {fileID: 1806825257}
   m_Layer: 0
   m_Name: PlayerDataManager
   m_TagString: Untagged
@@ -1735,20 +1716,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1806825257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1806825256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05df8c4049304ed49a8b09414f0e3dd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultPlayerName: DefaultPlayer
-  defaultTargetScore: 100
 --- !u!4 &1806825258
 Transform:
   m_ObjectHideFlags: 0

@@ -13,6 +13,17 @@ public class ScoreManager : MonoBehaviour
     public void AddScore(int points)
     {
         currentScore += points;
+
+        // Update OverallScoreManager
+        if (OverallScoreManager.Instance != null)
+        {
+            OverallScoreManager.Instance.AddScore(points);
+        }
+        else
+        {
+            Debug.LogError("OverallScoreManager is not available in the scene!");
+        }
+
         UpdateScoreUI();
         Debug.Log($"Score updated: {currentScore}");
     }

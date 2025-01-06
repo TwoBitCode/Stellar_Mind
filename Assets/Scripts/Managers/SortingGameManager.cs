@@ -19,7 +19,7 @@ public class SortingGameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI instructionsText;
 
     [Header("Game Components")]
-    [SerializeField] private GameFlowManager gameFlowManager; // Manages scene transitions and game flow
+    //[SerializeField] private GameFlowManager gameFlowManager; // Manages scene transitions and game flow
     [SerializeField] private ScoreManager scoreManager; // Tracks and updates score
     [SerializeField] private GameTimer gameTimer; // Manages the timer for the game
 
@@ -95,24 +95,6 @@ public class SortingGameManager : MonoBehaviour
     {
         isGameActive = false;
         CancelInvoke(nameof(SpawnAsteroid));
-        UpdateOverallScore();
-        HandleSceneTransition();
-    }
-
-    private void UpdateOverallScore()
-    {
-        if (OverallScoreManager.Instance != null)
-        {
-            OverallScoreManager.Instance.AddScore(scoreManager.CurrentScore);
-        }
-        else
-        {
-            Debug.LogError("OverallScoreManager instance not found!");
-        }
-    }
-
-    private void HandleSceneTransition()
-    {
-        gameFlowManager.HandleSceneTransition();
+        //HandleSceneTransition();
     }
 }

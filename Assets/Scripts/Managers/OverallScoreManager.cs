@@ -6,20 +6,26 @@ public class OverallScoreManager : MonoBehaviour
     private int overallScore; // Encapsulated overall score
     private int targetScore;  // Target score loaded from PlayerDataManager
 
-    private void Awake()
+    void Awake()
     {
-        // Ensure only one instance exists
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Persist across scenes
-            InitializeTargetScore(); // Load the target score from PlayerDataManager
+            DontDestroyOnLoad(gameObject);
+
+            // Initialize score
+            if (!PlayerPrefs.HasKey("OverallScore"))
+            {
+                PlayerPrefs.SetInt("OverallScore", 0); // Default score
+            }
+            overallScore = PlayerPrefs.GetInt("OverallScore");
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate instances
+            Destroy(gameObject);
         }
     }
+
 
     // Property to access the overall score
     public int OverallScore
@@ -58,6 +64,11 @@ public class OverallScoreManager : MonoBehaviour
             Debug.Log("PlayerDataManager not found! Using default TargetScore.");
             targetScore = 100; // Default target score
         }
+    }
+    public void AddScoreFromStage(string stageName, int score)
+    {
+        overallScore += score; // Update the overall score
+        Debug.Log($"Stage '{stageName}' added {score} points. New OverallScore: {overallScore}");
     }
 
 }
