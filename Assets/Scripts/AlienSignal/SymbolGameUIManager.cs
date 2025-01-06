@@ -11,12 +11,19 @@ public class SymbolGameUIManager : MonoBehaviour
     public TMP_Text instructionText; // Text for instructions
     public TMP_Text feedbackText; // Text for feedback
     public TMP_Text strategyText; // Text for strategies
+    public TMP_Text learningScoreText; // Score for learning canvas
+    public TMP_Text practiceScoreText; // Score for practice canvas
     public Button[] answerButtons; // Buttons for practice answers
 
     void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject); // Prevent duplicate managers
+    }
+
+    void Update()
+    {
+        UpdateScoreDisplay();
     }
 
     public void ShowLearningUI()
@@ -35,8 +42,6 @@ public class SymbolGameUIManager : MonoBehaviour
             instructionText.text = "Observe carefully to learn the symbol meanings!";
         }
     }
-
-
 
     public void ShowPracticeUI()
     {
@@ -83,5 +88,23 @@ public class SymbolGameUIManager : MonoBehaviour
         instructionText.text = "";
         feedbackText.text = "";
         strategyText.text = "";
+    }
+
+    private void UpdateScoreDisplay()
+    {
+        if (OverallScoreManager.Instance != null)
+        {
+            string scoreText = "Score: " + OverallScoreManager.Instance.OverallScore.ToString();
+
+            if (learningScoreText != null)
+            {
+                learningScoreText.text = scoreText;
+            }
+
+            if (practiceScoreText != null)
+            {
+                practiceScoreText.text = scoreText;
+            }
+        }
     }
 }

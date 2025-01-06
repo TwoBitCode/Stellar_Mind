@@ -59,5 +59,10 @@ public class OverallScoreManager : MonoBehaviour
             targetScore = 100; // Default target score
         }
     }
+    public void AddScoreFromStage(string stageName, int score)
+    {
+        overallScore += score; // Update the overall score
+        Debug.Log($"Stage '{stageName}' added {score} points. New OverallScore: {overallScore}");
+    }
 
 }

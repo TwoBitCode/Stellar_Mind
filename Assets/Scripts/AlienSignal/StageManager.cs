@@ -7,7 +7,8 @@ public class StageManager : MonoBehaviour
     public SymbolPracticeManager practiceManager;
 
     public StageData[] stages; // Array of stages
-    private int currentStageIndex = 0;
+    public int currentStageIndex = 0;
+    private bool isStageComplete = false; // Tracks if the current stage is completed
 
     void Start()
     {
@@ -18,6 +19,7 @@ public class StageManager : MonoBehaviour
     {
         if (currentStageIndex < stages.Length)
         {
+            isStageComplete = false; // Reset stage completion flag
             StageData currentStage = stages[currentStageIndex];
             Debug.Log($"[StageManager] Loading stage {currentStageIndex}: IsVoiceStage = {currentStage.isVoiceStage}");
 
@@ -30,7 +32,6 @@ public class StageManager : MonoBehaviour
                     practiceManager.isVoiceMode = true;
                     learningManager.isVoiceMode = true;
 
-                    // Show the learning UI for voice mode
                     SymbolGameUIManager.Instance.ShowLearningUI();
                 }
                 else
@@ -47,7 +48,6 @@ public class StageManager : MonoBehaviour
                     practiceManager.isVoiceMode = false;
                     learningManager.isVoiceMode = false;
 
-                    // Show the learning UI for symbol mode
                     SymbolGameUIManager.Instance.ShowLearningUI();
                 }
                 else
@@ -56,7 +56,6 @@ public class StageManager : MonoBehaviour
                 }
             }
 
-            // Start the learning phase for the new stage
             learningManager.InitializeLearningPhase();
         }
         else
@@ -65,17 +64,43 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    public void CompleteStage()
+    {
+        if (!isStageComplete)
+        {
+            isStageComplete = true; // Mark the stage as complete
+
+            // Award points for the current stage
+            StageData currentStage = stages[currentStageIndex];
+            if (OverallScoreManager.Instance != null && currentStage != null)
+            {
+                OverallScoreManager.Instance.AddScoreFromStage($"Stage {currentStageIndex}", currentStage.scoreReward);
+                Debug.Log($"Stage {currentStageIndex} completed. Awarded {currentStage.scoreReward} points.");
+            }
+            else
+            {
+                Debug.LogError("OverallScoreManager instance or currentStage is null!");
+            }
+        }
+    }
 
     public void AdvanceToNextStage()
     {
-        currentStageIndex++;
-        if (currentStageIndex < stages.Length)
+        if (isStageComplete && currentStageIndex < stages.Length)
         {
-            LoadCurrentStage();
+            currentStageIndex++;
+            if (currentStageIndex < stages.Length)
+            {
+                LoadCurrentStage();
+            }
+            else
+            {
+                Debug.Log("[StageManager] All stages completed!");
+            }
         }
         else
         {
-            Debug.Log("[StageManager] No more stages to load! Game has reached the end.");
+            Debug.LogError("Cannot advance to the next stage. Stage is not complete or no more stages available!");
         }
     }
 

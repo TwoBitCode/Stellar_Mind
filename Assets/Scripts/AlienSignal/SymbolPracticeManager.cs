@@ -221,8 +221,23 @@ public class SymbolPracticeManager : MonoBehaviour
     {
         SymbolGameUIManager.Instance.DisplayCompletion();
         SymbolGameUIManager.Instance.DisableAnswerButtons();
-        Invoke(nameof(LoadNextStage), 3f);
+
+        // Notify StageManager that the stage is complete
+        StageManager stageManager = FindAnyObjectByType<StageManager>();
+        if (stageManager != null)
+        {
+            stageManager.CompleteStage(); // Mark the stage as complete
+            stageManager.AdvanceToNextStageWithDelay(3f); // Delay advancing to the next stage
+        }
+        else
+        {
+            Debug.LogError("StageManager not found!");
+        }
     }
+
+
+
+
 
     private void LoadNextStage()
     {
