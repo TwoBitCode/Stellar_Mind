@@ -59,6 +59,13 @@
 ---
 ## מהם המיקומים של החפצים העיקריים במשחק? 🌌
 
+<div style="display: flex; justify-content: space-around; align-items: center;">
+    <img src="https://github.com/user-attachments/assets/0e01b4d5-495d-4040-a125-e763175da4ce" alt="Image 1" width="300" />
+    <img src="https://github.com/user-attachments/assets/292d12fb-3be0-4b20-bfe8-644f656799f2" alt="Image 2" width="300" />
+    <img src="https://github.com/user-attachments/assets/8c554451-1848-4dbf-91ad-ede0d07708c7" alt="Image 3" width="300" />
+    <img src="https://github.com/user-attachments/assets/3a4419b3-fc3e-4e8b-a143-ff600f7125af" alt="Image 4" width="300" />
+</div>
+
 ### 1. **מיקומים מוגדרים**:
    - החפצים ממוקמים באופן שמאתגר את השחקן תוך שמירה על סביבה חזותית מאוזנת ולא עמוסה.
    - **אסטרואידים**: מופיעים במרכז המסך כדי לאפשר לשחקן לגרור אותם בקלות לצדדים בהתאם להוראות.
