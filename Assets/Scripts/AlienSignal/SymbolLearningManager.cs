@@ -11,7 +11,13 @@ public class SymbolLearningManager : MonoBehaviour
     public AudioSource audioSource; // AudioSource for playing voice clips
     public bool isVoiceMode; // Toggle between symbols and voices
 
+    // Tracks the current item being displayed (symbol or voice)
+    [SerializeField, Tooltip("The index of the current symbol or voice being displayed during learning.")]
     private int currentIndex = 0;
+
+    [Header("Settings")]
+    [SerializeField] private float fullOpacity = 1f; // Opacity for the symbol image
+    [SerializeField] private string learningCompleteMessage = "You’ve learned all the items!"; // Completion message
 
     void Start()
     {
@@ -44,7 +50,7 @@ public class SymbolLearningManager : MonoBehaviour
             symbolDisplay.sprite = currentSymbol;
 
             // Ensure full opacity for the symbol image
-            SetImageAlpha(symbolDisplay, 1f);
+            SetImageAlpha(symbolDisplay, fullOpacity);
 
             // Show the meaning text
             meaningText.text = $"This symbol means: {symbolManager.GetMeaning(currentIndex)}";
@@ -79,14 +85,14 @@ public class SymbolLearningManager : MonoBehaviour
     public void NextButtonPressed()
     {
         nextButton.SetActive(false); // Hide the "Next" button
-        currentIndex++;
+        currentIndex++; // Move to the next item
         ShowNextItem();
     }
 
     private void EndLearningPhase()
     {
         // Display completion message
-        meaningText.text = "You�ve learned all the items!";
+        meaningText.text = learningCompleteMessage;
 
         nextButton.SetActive(false);
 
@@ -101,9 +107,9 @@ public class SymbolLearningManager : MonoBehaviour
         color.a = alpha;
         image.color = color;
     }
+
     public void RestartLearning()
     {
         InitializeLearningPhase(); // Resets the learning phase
     }
-
 }

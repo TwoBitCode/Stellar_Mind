@@ -7,11 +7,21 @@ public class StageManager : MonoBehaviour
     public SymbolPracticeManager practiceManager;
 
     public StageData[] stages; // Array of stages
-    public int currentStageIndex = 0;
+
+    [Header("Stage Index")]
+    [SerializeField]
+    private int startingStageIndex = 0; // The starting index for stages
+    public int currentStageIndex { get; private set; } // Tracks the current stage index
+
+    [Header("Stage Settings")]
+    [SerializeField]
+    private float defaultAdvanceDelay = 1f; // Default delay for advancing to the next stage
     private bool isStageComplete = false; // Tracks if the current stage is completed
 
     void Start()
     {
+        // Initialize the starting stage index
+        currentStageIndex = startingStageIndex;
         LoadCurrentStage();
     }
 
@@ -106,6 +116,8 @@ public class StageManager : MonoBehaviour
 
     public void AdvanceToNextStageWithDelay(float delay)
     {
-        Invoke(nameof(AdvanceToNextStage), delay);
+        // Use defaultAdvanceDelay if no delay is specified
+        float delayToUse = delay > 0 ? delay : defaultAdvanceDelay;
+        Invoke(nameof(AdvanceToNextStage), delayToUse);
     }
 }
