@@ -11,10 +11,7 @@ public class SymbolLearningManager : MonoBehaviour
     public AudioSource audioSource; // AudioSource for playing voice clips
     public bool isVoiceMode; // Toggle between symbols and voices
 
-    [SerializeField]
-    private int startingIndex = 0; // Starting index for the learning phase
-
-    private int currentIndex;
+    private int currentIndex = 0;
 
     void Start()
     {
@@ -23,11 +20,10 @@ public class SymbolLearningManager : MonoBehaviour
 
     public void InitializeLearningPhase()
     {
-        currentIndex = startingIndex; // Reset to the starting index
+        currentIndex = 0; // Reset to the first item
         ShowNextItem();
     }
 
-    // Shows the next item based on the current mode (symbol or voice)
     public void ShowNextItem()
     {
         if (isVoiceMode)
@@ -40,12 +36,10 @@ public class SymbolLearningManager : MonoBehaviour
         }
     }
 
-    // Shows the next symbol in the learning phase
     private void ShowNextSymbol()
     {
         if (currentIndex < symbolManager.GetSymbolCount())
         {
-            // Display the current symbol and its meaning
             Sprite currentSymbol = symbolManager.GetSymbol(currentIndex);
             symbolDisplay.sprite = currentSymbol;
 
@@ -63,16 +57,15 @@ public class SymbolLearningManager : MonoBehaviour
         }
     }
 
-    // Shows the next voice in the learning phase
     private void ShowNextVoice()
     {
         if (currentIndex < symbolManager.GetVoiceCount())
         {
-            // Play the current voice and display its meaning
             AudioClip currentVoice = symbolManager.GetVoice(currentIndex);
             audioSource.clip = currentVoice;
             audioSource.Play();
 
+            // Show the meaning text
             meaningText.text = $"This voice means: {symbolManager.GetVoiceMeaning(currentIndex)}";
 
             nextButton.SetActive(true); // Enable "Next" button
@@ -83,7 +76,6 @@ public class SymbolLearningManager : MonoBehaviour
         }
     }
 
-    // Handles the "Next" button press to show the next item
     public void NextButtonPressed()
     {
         nextButton.SetActive(false); // Hide the "Next" button
@@ -91,11 +83,11 @@ public class SymbolLearningManager : MonoBehaviour
         ShowNextItem();
     }
 
-    // Ends the learning phase and transitions to the practice phase
     private void EndLearningPhase()
     {
         // Display completion message
-        meaningText.text = "You’ve learned all the items!";
+        meaningText.text = "You�ve learned all the items!";
+
         nextButton.SetActive(false);
 
         // Transition to Practice Phase
@@ -103,17 +95,15 @@ public class SymbolLearningManager : MonoBehaviour
         FindAnyObjectByType<SymbolPracticeManager>().StartPractice();
     }
 
-    // Sets the alpha transparency for the symbol display image
     private void SetImageAlpha(Image image, float alpha)
     {
         Color color = image.color;
-        color.a = alpha; // Adjust alpha value
+        color.a = alpha;
         image.color = color;
     }
-
-    // Restarts the learning phase from the beginning
     public void RestartLearning()
     {
-        InitializeLearningPhase();
+        InitializeLearningPhase(); // Resets the learning phase
     }
+
 }

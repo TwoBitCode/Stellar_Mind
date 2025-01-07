@@ -1169,6 +1169,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startNode: {fileID: 1983962045}
   player: {fileID: 920458623}
+  moveDuration: 0.5
+  highlightDuration: 0.5
+  movementCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &1955180945
 Transform:
   m_ObjectHideFlags: 0

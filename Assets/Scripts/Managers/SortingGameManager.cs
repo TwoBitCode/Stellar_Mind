@@ -4,32 +4,30 @@ using UnityEngine;
 public class SortingGameManager : MonoBehaviour
 {
     [Header("Game Settings")]
-    [SerializeField] private float gameStartDelay = 4f; // Delay before the game starts
-    [SerializeField] private float spawnInterval = 2f; // Interval between spawning asteroids
-    [SerializeField] private float spawnInitialDelay = 1f; // Initial delay before spawning starts
+    [SerializeField] private float gameStartDelay = 4f;
+    [SerializeField] private float spawnInterval = 2f;
+    [SerializeField] private float spawnInitialDelay = 1f;
 
     [Header("Asteroid Settings")]
-    [SerializeField] private GameObject asteroidPrefab; // Prefab for the asteroid objects
-    [SerializeField] private Transform spawnArea; // Parent transform for spawned asteroids
-    [SerializeField] private float spawnHorizontalRange = 200f; // Horizontal range for asteroid spawning
-    [SerializeField] private float spawnVerticalRange = 0f; // Vertical range for asteroid spawning
-    [SerializeField] private float randomAssignThreshold = 0.5f; // Threshold for random type assignment
+    [SerializeField] private GameObject asteroidPrefab;
+    [SerializeField] private Transform spawnArea;
+    [SerializeField] private float spawnHorizontalRange = 200f;
+    [SerializeField] private float spawnVerticalRange = 0f;
+    [SerializeField] private float randomAssignThreshold = 0.5f;
 
     [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI instructionsText; // Instructions text on the UI
+    [SerializeField] private TextMeshProUGUI instructionsText;
 
     [Header("Game Components")]
-    [SerializeField] private GameFlowManager gameFlowManager; // Manages scene transitions and game flow
-    [SerializeField] private ScoreManager scoreManager; // Tracks and updates the game score
-    [SerializeField] private GameTimer gameTimer; // Manages the game timer
+    //[SerializeField] private GameFlowManager gameFlowManager; // Manages scene transitions and game flow
+    [SerializeField] private ScoreManager scoreManager; // Tracks and updates score
+    [SerializeField] private GameTimer gameTimer; // Manages the timer for the game
 
-    private const string BlueType = "blue"; // Represents the blue type
-    private const string YellowType = "yellow"; // Represents the yellow type
-    private const float DefaultZPosition = 0f; // Default Z-axis position for spawning
-
+    private const string BlueType = "blue";
+    private const string YellowType = "yellow";
     private bool isGameActive;
-    public string LeftType { get; private set; } // Type assigned to the left basket
-    public string RightType { get; private set; } // Type assigned to the right basket
+    public string LeftType { get; private set; }
+    public string RightType { get; private set; }
 
     private void Start()
     {
@@ -45,7 +43,6 @@ public class SortingGameManager : MonoBehaviour
 
     private void AssignRandomTypes()
     {
-        // Randomly assign LeftType and RightType based on the randomAssignThreshold
         if (Random.value > randomAssignThreshold)
         {
             LeftType = BlueType;
@@ -75,27 +72,21 @@ public class SortingGameManager : MonoBehaviour
     {
         if (!isGameActive) return;
 
-        // Generate a random spawn position within the defined horizontal and vertical ranges
         Vector3 spawnPosition = new Vector3(
             Random.Range(-spawnHorizontalRange, spawnHorizontalRange),
             Random.Range(-spawnVerticalRange, spawnVerticalRange),
-            DefaultZPosition // Use a constant for clarity
-        );
+            0);
 
-        // Instantiate the asteroid and set its local position
         GameObject asteroid = Instantiate(asteroidPrefab, spawnArea);
         asteroid.transform.localPosition = spawnPosition;
 
-        // Assign a type to the asteroid
         AssignAsteroidType(asteroid);
     }
 
     private void AssignAsteroidType(GameObject asteroid)
     {
-        // Check if the asteroid has a SortingDraggableItem component
         if (asteroid.TryGetComponent(out SortingDraggableItem draggable))
         {
-            // Randomly assign the type based on the threshold
             draggable.itemType = Random.value > randomAssignThreshold ? LeftType : RightType;
         }
     }
@@ -104,18 +95,6 @@ public class SortingGameManager : MonoBehaviour
     {
         isGameActive = false;
         CancelInvoke(nameof(SpawnAsteroid));
-        HandleSceneTransition();
-    }
-
-    private void HandleSceneTransition()
-    {
-        if (gameFlowManager != null)
-        {
-            gameFlowManager.HandleSceneTransition();
-        }
-        else
-        {
-            Debug.LogError("GameFlowManager is not assigned!");
-        }
+        //HandleSceneTransition();
     }
 }
