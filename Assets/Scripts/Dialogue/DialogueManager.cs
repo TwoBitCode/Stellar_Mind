@@ -3,48 +3,62 @@ using UnityEngine;
 
 public class DialogueManager : MonoBehaviour
 {
-    public event Action<string> OnDialogueUpdated; // Event to update UI
-    public event Action OnDialogueEnded; // Event triggered when dialogue ends
+    // Event to update the UI with the current dialogue line
+    public event Action<string> OnDialogueUpdated;
 
-    private string[] dialogueLines;
-    private int currentLineIndex;
+    // Event triggered when the dialogue ends
+    public event Action OnDialogueEnded;
 
+    private string[] dialogueLines; // Array to store dialogue lines
+    private int currentLineIndex;   // Index of the current dialogue line
+
+    // Initializes the dialogue with the provided lines
     public void InitializeDialogue(string[] lines)
     {
+        // If there are no lines, end the dialogue immediately
+        if (lines == null || lines.Length == 0)
+        {
+            Debug.LogWarning("Dialogue lines are empty or null. Ending dialogue.");
+            EndDialogue();
+            return;
+        }
+
+        // Store the dialogue lines and reset the index
         dialogueLines = lines;
         currentLineIndex = 0;
 
-        if (dialogueLines.Length > 0)
-        {
-            UpdateDialogue();
-        }
-        else
-        {
-            EndDialogue();
-        }
+        // Show the first line of dialogue
+        UpdateDialogue();
     }
 
+    // Displays the next line of dialogue
     public void DisplayNextLine()
     {
+        // Move to the next line
         currentLineIndex++;
 
+        // If there are more lines, update the dialogue
         if (currentLineIndex < dialogueLines.Length)
         {
             UpdateDialogue();
         }
         else
         {
+            // Otherwise, end the dialogue
             EndDialogue();
         }
     }
 
+    // Updates the UI with the current line of dialogue
     private void UpdateDialogue()
     {
-        OnDialogueUpdated?.Invoke(dialogueLines[currentLineIndex]); // Trigger UI update
+        // Trigger the event to update the UI with the current line
+        OnDialogueUpdated?.Invoke(dialogueLines[currentLineIndex]);
     }
 
+    // Ends the dialogue and triggers the end event
     private void EndDialogue()
     {
-        OnDialogueEnded?.Invoke(); // Trigger dialogue end
+        OnDialogueEnded?.Invoke();
     }
 }

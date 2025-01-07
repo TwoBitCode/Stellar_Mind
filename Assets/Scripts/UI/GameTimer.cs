@@ -3,35 +3,35 @@ using UnityEngine;
 
 public class GameTimer : MonoBehaviour
 {
-    // Constants for timer durations and formatting
-    [SerializeField] private string GAME_OVER_SCENE_NAME = "GameOverScene"; // Name of the Game Over scene
-    [SerializeField] private string TIMER_FORMAT = "{0:00}:{1:00}"; // Timer format string
-
     [Header("Game Settings")]
     [Tooltip("Total game time in seconds")]
     [SerializeField] private float gameDuration = 60f; // Total game time in seconds
     [SerializeField] private TextMeshProUGUI timerText; // Reference to a UI Text element to display the timer
 
-    private float timeRemaining;
-    private bool isGameOver = false;
-    private bool gameStarted = false; // Flag to track if the game has started
+    [Header("Timer Format Settings")]
+    [SerializeField] private string timerFormat = "{0:00}:{1:00}"; // Timer format string
 
     [Header("Scene Management")]
+    [SerializeField] private string gameOverSceneName = "GameOverScene"; // Name of the Game Over scene
     [SerializeField] private SceneTransitionManager sceneTransitionManager; // Reference to SceneTransitionManager
 
     [Header("Game Components")]
-    [SerializeField] private ScoreManager scoreManager;  // Reference to the UI Text element to display the score
-    [SerializeField] private SortingGameManager sortingGameManager;
+    [SerializeField] private ScoreManager scoreManager;  // Reference to the score manager
+    [SerializeField] private SortingGameManager sortingGameManager; // Reference to the sorting game manager
+
+    private float timeRemaining; // Time remaining in the game
+    private bool isGameOver = false; // Flag to track if the game is over
+    private bool gameStarted = false; // Flag to track if the game has started
 
     private void Start()
     {
-        timeRemaining = gameDuration;
-        UpdateTimerText();
+        timeRemaining = gameDuration; // Initialize the remaining time
+        UpdateTimerText(); // Update the timer display
     }
 
     private void Update()
     {
-        if (isGameOver || !gameStarted) return; // If the game is over or hasn't started, don't count down
+        if (isGameOver || !gameStarted) return; // Do nothing if the game is over or not started
 
         // Countdown logic
         timeRemaining -= Time.deltaTime;
@@ -47,18 +47,30 @@ public class GameTimer : MonoBehaviour
 
     private void UpdateTimerText()
     {
-        if (timerText != null)
+        // Check if the timerText UI element is assigned
+        if (timerText == null)
         {
-            // Format the time as MM:SS
-            int minutes = Mathf.FloorToInt(timeRemaining / 60);
-            int seconds = Mathf.FloorToInt(timeRemaining % 60);
-            timerText.text = string.Format(TIMER_FORMAT, minutes, seconds);
+            Debug.LogWarning("Timer text UI element is not assigned!");
+            return; // Exit if there's no text component to update
         }
+
+        // Calculate the number of full minutes remaining
+        int minutes = Mathf.FloorToInt(timeRemaining / 60);
+
+        // Calculate the remaining seconds after extracting minutes
+        int seconds = Mathf.FloorToInt(timeRemaining % 60);
+
+        // Format the time as MM:SS and update the UI text
+        timerText.text = string.Format(timerFormat, minutes, seconds);
     }
+
 
     private void EndGame()
     {
-        sortingGameManager.StopGame();
+        if (sortingGameManager != null)
+        {
+            sortingGameManager.StopGame(); // Stop the game
+        }
 
         isGameOver = true;
         Debug.Log("Game Over!");
@@ -66,26 +78,25 @@ public class GameTimer : MonoBehaviour
         if (sceneTransitionManager != null)
         {
             // Use the SceneTransitionManager to load the Game Over scene
-            sceneTransitionManager.LoadScene(GAME_OVER_SCENE_NAME);
+            sceneTransitionManager.LoadScene(gameOverSceneName);
         }
         else
         {
-            Debug.LogError("SceneTransitionManager not found on this GameObject!");
+            Debug.LogError("SceneTransitionManager is not assigned!");
         }
     }
 
     public void StartTimer()
     {
-        gameStarted = true; // Set the game as started
-        isGameOver = false; // Ensure the game is not over when starting
-        timeRemaining = gameDuration; // Reset the timer to full value
-
-        // The timer is already running in the Update() method, so no need to add extra code here.
+        gameStarted = true; // Mark the game as started
+        isGameOver = false; // Reset game over flag
+        timeRemaining = gameDuration; // Reset the timer
+        UpdateTimerText(); // Ensure the timer text is updated immediately
     }
 
     public void ResetTimer()
     {
-        // Optionally, if you want to reset the timer at any point during the game:
+        // Reset the timer during gameplay if needed
         timeRemaining = gameDuration;
         UpdateTimerText();
     }
