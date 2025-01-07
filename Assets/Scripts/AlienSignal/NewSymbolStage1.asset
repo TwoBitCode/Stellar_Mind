@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e3480ea032a2c4b9f82a0c56fdcc93, type: 3}
+  m_Name: NewSymbolStage1
+  m_EditorClassIdentifier: 
+  stageName: Stage1
+  symbols:
+  - {fileID: 2016585050871268627, guid: 105eddaff0c934b4a937aa7eac214151, type: 3}
+  - {fileID: 396118083496453706, guid: 01e4e8297e28b45459b74184ab0ae12f, type: 3}
+  - {fileID: 6759385873261957498, guid: 22ff9c17d07610f4f987e5b499958639, type: 3}
+  meanings:
+  - Hello
+  - From
+  - Zarquinia
+  tips:
+  - hi
+  - ju
+  - tu

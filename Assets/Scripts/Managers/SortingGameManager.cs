@@ -45,6 +45,7 @@ public class SortingGameManager : MonoBehaviour
 
     private void AssignRandomTypes()
     {
+        // Randomly assign LeftType and RightType based on the randomAssignThreshold
         if (Random.value > randomAssignThreshold)
         {
             LeftType = BlueType;
@@ -103,24 +104,18 @@ public class SortingGameManager : MonoBehaviour
     {
         isGameActive = false;
         CancelInvoke(nameof(SpawnAsteroid));
-        UpdateOverallScore();
         HandleSceneTransition();
-    }
-
-    private void UpdateOverallScore()
-    {
-        if (OverallScoreManager.Instance != null)
-        {
-            OverallScoreManager.Instance.AddScore(scoreManager.CurrentScore);
-        }
-        else
-        {
-            Debug.LogError("OverallScoreManager instance not found!");
-        }
     }
 
     private void HandleSceneTransition()
     {
-        gameFlowManager.HandleSceneTransition();
+        if (gameFlowManager != null)
+        {
+            gameFlowManager.HandleSceneTransition();
+        }
+        else
+        {
+            Debug.LogError("GameFlowManager is not assigned!");
+        }
     }
 }

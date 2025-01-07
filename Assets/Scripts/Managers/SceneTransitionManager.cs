@@ -12,7 +12,6 @@ public class SceneTransitionManager : MonoBehaviour
     // Loads the next scene specified in the inspector
     public void LoadNextScene()
     {
-        // Check if audioSource and clickSound are assigned
         if (audioSource != null && clickSound != null)
         {
             // Play the click sound and wait for it to finish before transitioning
@@ -29,7 +28,6 @@ public class SceneTransitionManager : MonoBehaviour
     // Loads a specified scene by name
     public void LoadScene(string sceneName)
     {
-        // Check if audioSource and clickSound are assigned
         if (audioSource != null && clickSound != null)
         {
             // Play the click sound and wait for it to finish before transitioning
@@ -46,26 +44,38 @@ public class SceneTransitionManager : MonoBehaviour
     // Coroutine to wait for the click sound to finish before loading the scene
     private IEnumerator WaitAndLoadScene(string sceneName, float delay)
     {
-        // Wait for the specified delay
+        // Optional: Add fade-out animation or other transitions here
         yield return new WaitForSeconds(delay);
 
-        // Load the scene
-        LoadSceneImmediately(sceneName);
+        ResetSceneState(); // Clean up current scene states before loading the new one
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
     // Loads the scene immediately without any delay
     private void LoadSceneImmediately(string sceneName)
     {
-        // Check if the scene name is valid
         if (!string.IsNullOrEmpty(sceneName))
         {
-            // Load the scene
-            SceneManager.LoadScene(sceneName);
+            ResetSceneState(); // Clean up current scene states before loading the new one
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single); // Ensure only the new scene is loaded
         }
         else
         {
-            // Log an error if the scene name is not provided
             Debug.LogError("Scene name is not provided for transition.");
+        }
+    }
+
+    // Resets any lingering states or objects in the current scene
+    private void ResetSceneState()
+    {
+        Debug.Log("Resetting scene state before transitioning.");
+
+        // Ensure EventSystem is active (avoids UI issues)
+        var eventSystem = FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>();
+        if (eventSystem != null)
+        {
+            eventSystem.gameObject.SetActive(false);
+            eventSystem.gameObject.SetActive(true);
         }
     }
 }

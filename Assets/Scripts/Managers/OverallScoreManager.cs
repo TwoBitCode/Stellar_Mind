@@ -4,24 +4,24 @@ public class OverallScoreManager : MonoBehaviour
 {
     public static OverallScoreManager Instance { get; private set; } // Singleton instance
 
+    [Header("Score Settings")]
     [SerializeField]
     private int defaultTargetScore = 100; // Default target score if PlayerDataManager is unavailable
 
     private int overallScore; // Encapsulated overall score
-    private int targetScore;  // Target score loaded from PlayerDataManager
+    private int targetScore; // Target score loaded from PlayerDataManager
 
-    private void Awake()
+    void Awake()
     {
-        // Ensure only one instance exists
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persist across scenes
-            InitializeTargetScore(); // Load or set the target score
+            InitializeScores(); // Initialize overall and target scores
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate instances
+            Destroy(gameObject); // Prevent duplicate instances
         }
     }
 
@@ -29,17 +29,21 @@ public class OverallScoreManager : MonoBehaviour
     public int OverallScore
     {
         get => overallScore;
-        private set => overallScore = value;
+        private set
+        {
+            overallScore = value;
+            PlayerPrefs.SetInt("OverallScore", overallScore); // Save score persistently
+        }
     }
 
     // Property to access the target score
     public int TargetScore => targetScore;
 
-    // Method to add score
+    // Adds points to the overall score
     public void AddScore(int score)
     {
         OverallScore += score;
-        Debug.Log($"Added {score} to OverallScore. New OverallScore: {OverallScore}");
+        Debug.Log($"Added {score} points to OverallScore. New OverallScore: {OverallScore}");
 
         // Check if the target score is reached
         if (OverallScore >= TargetScore)
@@ -49,16 +53,31 @@ public class OverallScoreManager : MonoBehaviour
         }
     }
 
-    // Method to reset the overall score
+    // Adds score from a specific stage
+    public void AddScoreFromStage(string stageName, int score)
+    {
+        AddScore(score); // Use the existing AddScore method
+        Debug.Log($"Stage '{stageName}' added {score} points. New OverallScore: {OverallScore}");
+    }
+
+    // Resets the overall score
     public void ResetScore()
     {
-        OverallScore = 0;
+        OverallScore = 0; // Reset score
         Debug.Log("OverallScore has been reset.");
     }
 
-    // Initialize the target score, either from PlayerDataManager or default value
-    private void InitializeTargetScore()
+    // Initializes the overall and target scores
+    private void InitializeScores()
     {
+        // Initialize overall score from PlayerPrefs
+        if (!PlayerPrefs.HasKey("OverallScore"))
+        {
+            PlayerPrefs.SetInt("OverallScore", 0); // Default to 0
+        }
+        overallScore = PlayerPrefs.GetInt("OverallScore");
+
+        // Initialize target score from PlayerDataManager or use default
         if (PlayerDataManager.Instance != null)
         {
             targetScore = PlayerDataManager.Instance.LoadTargetScore();
@@ -67,11 +86,11 @@ public class OverallScoreManager : MonoBehaviour
         else
         {
             Debug.LogWarning("PlayerDataManager not found! Using default TargetScore.");
-            targetScore = defaultTargetScore; // Use the default target score
+            targetScore = defaultTargetScore;
         }
     }
 
-    // Handle logic for when the target score is reached
+    // Handles logic when the target score is reached
     private void HandleTargetScoreReached()
     {
         Debug.Log("Game Over! You have reached the target score.");
