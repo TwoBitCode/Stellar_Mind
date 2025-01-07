@@ -9,7 +9,10 @@ public class SymbolLearningManager : MonoBehaviour
     public Image symbolDisplay; // UI Image to display the symbol
     public GameObject nextButton; // Next button to proceed
 
-    private int currentIndex = 0;
+    [SerializeField]
+    private int startingIndex = 0; // Starting index for the learning phase
+
+    private int currentIndex;
 
     void Start()
     {
@@ -18,13 +21,15 @@ public class SymbolLearningManager : MonoBehaviour
 
     public void InitializeLearningPhase()
     {
-        currentIndex = 0; // Reset to the first symbol
+        currentIndex = startingIndex; // Reset to the starting index
         ShowNextSymbol();
     }
 
     public void ShowNextSymbol()
     {
-        if (currentIndex < symbolManager.GetSymbolCount())
+        int totalSymbols = symbolManager.GetSymbolCount(); // Total symbols available
+
+        if (currentIndex < totalSymbols)
         {
             // Display the current symbol and meaning
             Sprite currentSymbol = symbolManager.GetSymbol(currentIndex);
@@ -71,7 +76,7 @@ public class SymbolLearningManager : MonoBehaviour
     {
         // Adjust the alpha value of the image color
         Color color = image.color;
-        color.a = alpha; // Set alpha to full opacity (1f)
+        color.a = alpha; // Set alpha value
         image.color = color;
     }
 }

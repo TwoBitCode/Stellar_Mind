@@ -13,6 +13,15 @@ public class SymbolPracticeManager : MonoBehaviour
 
     [TextArea] public string[] learningStrategies; // Array for learning strategies
 
+    [SerializeField]
+    private float feedbackDelay = 2f; // Delay before moving to the next round
+
+    [SerializeField]
+    private int maxIncorrectAttempts = 2; // Maximum incorrect attempts before showing a strategy
+
+    [SerializeField]
+    private float strategyDisplayDuration = 3f; // Time to display the learning strategy
+
     private List<int> availableSymbolIndices; // Tracks which symbols haven't been practiced yet
     private int currentSymbolIndex;
     private int incorrectAttempts;
@@ -93,14 +102,14 @@ public class SymbolPracticeManager : MonoBehaviour
         if (isCorrect)
         {
             SymbolGameUIManager.Instance.DisplayFeedback(true);
-            Invoke(nameof(NextRound), 2f);
+            Invoke(nameof(NextRound), feedbackDelay); // Use the serialized delay
         }
         else
         {
             incorrectAttempts++;
-            if (incorrectAttempts >= 2)
+            if (incorrectAttempts >= maxIncorrectAttempts)
             {
-                ShowLearningStrategy();
+                ShowLearningStrategy(); // Use the serialized max attempts
             }
             else
             {
@@ -123,7 +132,7 @@ public class SymbolPracticeManager : MonoBehaviour
         }
 
         // Wait before transitioning to learning
-        Invoke(nameof(ReturnToLearningPhase), 3f);
+        Invoke(nameof(ReturnToLearningPhase), strategyDisplayDuration); // Use the serialized duration
     }
 
     private void ReturnToLearningPhase()

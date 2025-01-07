@@ -2,18 +2,24 @@ using UnityEngine;
 
 public class RadialStructureWithLines : MonoBehaviour
 {
-    public GameObject circlePrefab; // Prefab for circles
+    [Header("Circle and Line Settings")]
+    public GameObject circlePrefab; // Prefab for the circles
     public Material lineMaterial;   // Material for the lines
-    public float firstLayerRadius = 3f;   // Radius for the first layer
-    public float secondLayerRadius = 1.5f; // Radius for the second layer
-    public int firstLayerBranches = 4;    // Number of branches in the first layer
-    public int secondLayerBranches = 2;   // Number of sub-branches per branch in the second layer
+    [SerializeField] private float lineWidth = 0.05f; // Line thickness
 
+    [Header("Layer Settings")]
+    [SerializeField] private float firstLayerRadius = 3f;   // Radius for the first layer
+    [SerializeField] private float secondLayerRadius = 1.5f; // Radius for the second layer
+    [SerializeField] private int firstLayerBranches = 4;    // Number of branches in the first layer
+    [SerializeField] private int secondLayerBranches = 2;   // Number of sub-branches per branch in the second layer
+    [SerializeField] private float secondLayerSpreadAngle = Mathf.PI / 4; // Spread angle for second-layer branches
+    [SerializeField] private float branchCenteringFactor = 2f; // Factor for centering sub-branches around the parent branch
     void Start()
     {
         GenerateStructure();
     }
 
+    // Generates the entire radial structure
     void GenerateStructure()
     {
         // Create the central circle
@@ -28,6 +34,7 @@ public class RadialStructureWithLines : MonoBehaviour
         CreateFirstLayer(center.transform.position, firstLayerParent.transform);
     }
 
+    // Generates the first layer of circles around the center
     void CreateFirstLayer(Vector3 centerPosition, Transform parent)
     {
         for (int i = 0; i < firstLayerBranches; i++)
@@ -51,12 +58,15 @@ public class RadialStructureWithLines : MonoBehaviour
         }
     }
 
+    // Generates the second layer of circles for each branch
     void CreateSecondLayer(Vector3 branchPosition, float branchAngle, Transform parent)
     {
         for (int i = 0; i < secondLayerBranches; i++)
         {
-            float spreadAngle = Mathf.PI / 4; // Adjust spacing
-            float offsetAngle = branchAngle + (i - 0.5f) * spreadAngle; // Spread out the sub-circles
+            // Calculate the offset angle for each sub-branch
+            float offsetAngle = branchAngle + (i - (secondLayerBranches - 1) / branchCenteringFactor) * secondLayerSpreadAngle;
+
+            // Determine the position of the sub-circle
             Vector3 position = branchPosition + new Vector3(Mathf.Cos(offsetAngle), Mathf.Sin(offsetAngle), 0) * secondLayerRadius;
 
             // Create the second-layer circle
@@ -68,6 +78,7 @@ public class RadialStructureWithLines : MonoBehaviour
         }
     }
 
+    // Draws a line between two points
     void DrawLine(Vector3 start, Vector3 end, Transform parent)
     {
         // Create a new GameObject for the line
@@ -78,8 +89,8 @@ public class RadialStructureWithLines : MonoBehaviour
 
         // Set the line properties
         lineRenderer.material = lineMaterial; // Assign the line material
-        lineRenderer.startWidth = 0.05f;      // Thickness at the start
-        lineRenderer.endWidth = 0.05f;        // Thickness at the end
+        lineRenderer.startWidth = lineWidth;  // Set the start width
+        lineRenderer.endWidth = lineWidth;    // Set the end width
         lineRenderer.positionCount = 2;       // Two points: start and end
         lineRenderer.SetPosition(0, start);   // Start of the line
         lineRenderer.SetPosition(1, end);     // End of the line
