@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class NavigateSpaceManager : MonoBehaviour
@@ -22,24 +23,29 @@ public class NavigateSpaceManager : MonoBehaviour
         // Reset trajectory to the original path for safety
         mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
 
-        // Update UI
-        NavigateSpaceUIManager.Instance.SetMissionDetails(
+        // Show mission instructions using the instruction panel
+        NavigateSpaceUIManager.Instance.ShowMissionDetails(
             mission.missionName,
             mission.missionType == SpaceMission.MissionType.ReconstructTrajectory
                 ? "Follow the highlighted trajectory."
-                : "Reach the target node without stepping on restricted nodes."
+                : "Reach the target node without stepping on restricted nodes.",
+            mission.trajectoryPath // Pass the trajectory path
         );
 
-        // Highlight trajectory if applicable
-        if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
-        {
-            NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
-        }
-
-        // Set player position
+        // Set the player's starting position
         currentNode = mission.startNode ?? startNode;
         PlayerController.Instance.SetPosition(currentNode.transform.position);
+
+        // Do not start highlighting here! Wait for the Start button click.
     }
+
+
+    private IEnumerator HideInstructionsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        NavigateSpaceUIManager.Instance.HideMissionDetails();
+    }
+
 
 
     public void OnNodeClicked(Node clickedNode)
