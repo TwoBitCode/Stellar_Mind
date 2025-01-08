@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class RadialStructureWithLines : MonoBehaviour
+public class RadialStructureWithLayerConnections : MonoBehaviour
 {
     [Header("Circle and Line Settings")]
     public GameObject circlePrefab; // Prefab for the circles
@@ -14,6 +15,10 @@ public class RadialStructureWithLines : MonoBehaviour
     [SerializeField] private int secondLayerBranches = 2;   // Number of sub-branches per branch in the second layer
     [SerializeField] private float secondLayerSpreadAngle = Mathf.PI / 4; // Spread angle for second-layer branches
     [SerializeField] private float branchCenteringFactor = 2f; // Factor for centering sub-branches around the parent branch
+
+    private List<GameObject> firstLayerCircles = new List<GameObject>();
+    private List<List<GameObject>> secondLayerCircles = new List<List<GameObject>>();
+
     void Start()
     {
         GenerateStructure();
@@ -26,16 +31,15 @@ public class RadialStructureWithLines : MonoBehaviour
         GameObject center = Instantiate(circlePrefab, transform.position, Quaternion.identity, transform);
         center.name = "Center Circle";
 
-        // Create a parent container for the first layer
-        GameObject firstLayerParent = new GameObject("First Layer");
-        firstLayerParent.transform.SetParent(transform);
-
         // Generate the first layer
-        CreateFirstLayer(center.transform.position, firstLayerParent.transform);
+        CreateFirstLayer(center.transform.position);
+
+        // Connect second-layer circles between branches
+        ConnectSecondLayerInCycle();
     }
 
     // Generates the first layer of circles around the center
-    void CreateFirstLayer(Vector3 centerPosition, Transform parent)
+    void CreateFirstLayer(Vector3 centerPosition)
     {
         for (int i = 0; i < firstLayerBranches; i++)
         {
@@ -43,24 +47,26 @@ public class RadialStructureWithLines : MonoBehaviour
             Vector3 position = centerPosition + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * firstLayerRadius;
 
             // Create the first-layer circle
-            GameObject firstLayerCircle = Instantiate(circlePrefab, position, Quaternion.identity, parent);
+            GameObject firstLayerCircle = Instantiate(circlePrefab, position, Quaternion.identity, transform);
             firstLayerCircle.name = $"Layer 1 - Circle {i + 1}";
+            firstLayerCircles.Add(firstLayerCircle);
 
             // Draw a line between the center and this circle
-            DrawLine(centerPosition, position, parent);
-
-            // Create a parent container for the second layer
-            GameObject secondLayerParent = new GameObject($"Layer 1 - Circle {i + 1} Sub-Circles");
-            secondLayerParent.transform.SetParent(firstLayerCircle.transform);
+            DrawLine(centerPosition, position, transform);
 
             // Generate the second layer for this branch
-            CreateSecondLayer(position, angle, secondLayerParent.transform);
+            CreateSecondLayer(position, angle, i);
         }
+
+        // Connect all circles in the first layer
+        ConnectLayerCircles(firstLayerCircles);
     }
 
     // Generates the second layer of circles for each branch
-    void CreateSecondLayer(Vector3 branchPosition, float branchAngle, Transform parent)
+    void CreateSecondLayer(Vector3 branchPosition, float branchAngle, int branchIndex)
     {
+        List<GameObject> branchCircles = new List<GameObject>();
+
         for (int i = 0; i < secondLayerBranches; i++)
         {
             // Calculate the offset angle for each sub-branch
@@ -70,11 +76,44 @@ public class RadialStructureWithLines : MonoBehaviour
             Vector3 position = branchPosition + new Vector3(Mathf.Cos(offsetAngle), Mathf.Sin(offsetAngle), 0) * secondLayerRadius;
 
             // Create the second-layer circle
-            GameObject secondLayerCircle = Instantiate(circlePrefab, position, Quaternion.identity, parent);
-            secondLayerCircle.name = $"Layer 2 - Circle {i + 1}";
+            GameObject secondLayerCircle = Instantiate(circlePrefab, position, Quaternion.identity, transform);
+            secondLayerCircle.name = $"Layer 2 - Branch {branchIndex + 1} - Circle {i + 1}";
+            branchCircles.Add(secondLayerCircle);
 
             // Draw a line between the branch and this sub-circle
-            DrawLine(branchPosition, position, parent);
+            DrawLine(branchPosition, position, transform);
+        }
+
+        secondLayerCircles.Add(branchCircles);
+
+        // Connect all circles within the same branch
+        ConnectLayerCircles(branchCircles);
+    }
+
+    // Connects all circles in a single layer
+    void ConnectLayerCircles(List<GameObject> circles)
+    {
+        for (int i = 0; i < circles.Count; i++)
+        {
+            Vector3 start = circles[i].transform.position;
+            Vector3 end = circles[(i + 1) % circles.Count].transform.position; // Connect to the next circle, looping back to the first
+            DrawLine(start, end, transform);
+        }
+    }
+
+    // Connects second-layer circles in a proper cycle
+    void ConnectSecondLayerInCycle()
+    {
+        for (int i = 0; i < firstLayerBranches; i++)
+        {
+            List<GameObject> currentBranch = secondLayerCircles[i];
+            List<GameObject> nextBranch = secondLayerCircles[(i + 1) % firstLayerBranches]; // Wrap to the first branch
+
+            // Connect the last circle of the current branch to the first circle of the next branch
+            GameObject lastCircle = currentBranch[currentBranch.Count - 1];
+            GameObject firstCircle = nextBranch[0];
+
+            DrawLine(lastCircle.transform.position, firstCircle.transform.position, transform);
         }
     }
 
