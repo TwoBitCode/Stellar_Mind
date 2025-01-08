@@ -9,7 +9,6 @@ public class NavigateSpaceUIManager : MonoBehaviour
     [Header("UI Elements")]
     public TextMeshProUGUI missionNameText;
     public TextMeshProUGUI missionInstructionText;
-    public TextMeshProUGUI feedbackText;
 
     [Header("Highlight Settings")]
     public float highlightSpeed = 1.0f;
@@ -39,20 +38,6 @@ public class NavigateSpaceUIManager : MonoBehaviour
         if (missionInstructionText != null)
         {
             missionInstructionText.text = instruction;
-        }
-
-        if (feedbackText != null)
-        {
-            feedbackText.text = ""; // Clear feedback
-        }
-    }
-
-    public void SetFeedback(string feedback, Color color)
-    {
-        if (feedbackText != null)
-        {
-            feedbackText.text = feedback;
-            feedbackText.color = color;
         }
     }
 

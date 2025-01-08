@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SpaceMissionManager : MonoBehaviour
 {
-    public static SpaceMissionManager Instance; // Singleton instance
+    public static SpaceMissionManager Instance;
 
     [Header("Mission Settings")]
     public List<SpaceMission> missions = new List<SpaceMission>();
@@ -13,13 +13,23 @@ public class SpaceMissionManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null)
+        {
             Instance = this;
+        }
         else
-            Destroy(gameObject);
+        {
+            Destroy(gameObject); // Ensure only one instance exists
+        }
     }
 
     private void Start()
     {
+        if (missions == null || missions.Count == 0)
+        {
+            Debug.LogError("No missions found! Please assign missions in the inspector.");
+            return;
+        }
+
         StartMission();
     }
 
@@ -28,90 +38,61 @@ public class SpaceMissionManager : MonoBehaviour
         if (currentMissionIndex >= missions.Count)
         {
             Debug.Log("All missions completed!");
+            AlienGuideManager.Instance?.DisplayMissionIntro("Congratulations! All missions are complete.");
             return;
         }
 
         var mission = missions[currentMissionIndex];
+
+        if (mission == null)
+        {
+            Debug.LogError($"Mission at index {currentMissionIndex} is null! Skipping to the next mission.");
+            currentMissionIndex++;
+            StartMission(); // Start the next mission
+            return;
+        }
+
+        // Initialize the mission
+        mission.Initialize();
+
         Debug.Log($"Starting Mission: {mission.missionName}");
 
-        // Reset all node states
-        NodeManager.Instance.ResetAllNodeStates();
+        // Reset mission state
+        NodeManager.Instance?.ResetAllNodeStates();
+        AlienGuideManager.Instance?.DisplayMissionIntro(mission.missionName);
 
-        // Set restricted nodes if applicable
-        if (mission.missionType == SpaceMission.MissionType.NavigateToTarget)
-        {
-            NodeManager.Instance.SetRestrictedNodes(mission.restrictedNodes);
-        }
+        // Ensure trajectory path is reset to the original
+        mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
 
-        // Set player position to the starting node
-        PlayerController.Instance.SetPosition(mission.startNode.transform.position);
-
-        // Notify AlienGuideManager about the mission type
-        AlienGuideManager.Instance.SetMissionType(mission.missionType);
-
-        // Start highlighting for ReconstructTrajectory missions
-        if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
-        {
-            NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
-        }
+        // Initialize navigation
+        NavigateSpaceManager.Instance?.InitializeMission(mission);
     }
 
-
-    public void HandleMistake()
-    {
-        // Reset the current mission
-        StartMission();
-
-        // Provide a strategy to the player
-        AlienGuideManager.Instance.ProvideStrategy();
-    }
 
     public void CompleteMission()
     {
-        AlienGuideManager.Instance.ProvidePositiveFeedback();
-        currentMissionIndex++;
-        StartMission();
-    }
-
-    private void ResetNodeStates()
-    {
-        // Notify NodeManager or directly iterate nodes if necessary
-        NodeManager.Instance.ResetAllNodeStates();
-    }
-
-    private void SetRestrictedNodes(Node[] restrictedNodes)
-    {
-        foreach (var node in restrictedNodes)
+        if (currentMissionIndex >= missions.Count)
         {
-            node.isRestricted = true;
+            Debug.LogWarning("Attempted to complete a mission, but all missions are already completed.");
+            return;
         }
+
+        AlienGuideManager.Instance?.ProvidePositiveFeedback();
+        currentMissionIndex++;
+        StartMission(); // Start the next mission
     }
+
     public void RestartMission()
     {
+        if (currentMissionIndex >= missions.Count)
+        {
+            Debug.LogWarning("Attempted to restart a mission, but no mission is active.");
+            return;
+        }
+
         var mission = missions[currentMissionIndex];
         Debug.Log($"Restarting Mission: {mission.missionName}");
-
-        // Reset all node states
-        NodeManager.Instance.ResetAllNodeStates();
-
-        // Reset restricted nodes if applicable
-        if (mission.missionType == SpaceMission.MissionType.NavigateToTarget)
-        {
-            NodeManager.Instance.SetRestrictedNodes(mission.restrictedNodes);
-        }
-
-        // Reset player position to the starting node
-        PlayerController.Instance.SetPosition(mission.startNode.transform.position);
-
-        // Set mission type for AlienGuideManager
-        AlienGuideManager.Instance.SetMissionType(mission.missionType);
-
-        // Restart highlights for ReconstructTrajectory missions
-        if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
-        {
-            NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
-        }
+        AlienGuideManager.Instance?.ProvideRestartMessage();
+        StartMission(); // Restart the current mission
     }
-
-
 }

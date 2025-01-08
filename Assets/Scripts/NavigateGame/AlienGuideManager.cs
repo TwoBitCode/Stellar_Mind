@@ -1,21 +1,21 @@
 using UnityEngine;
-using TMPro;
 
 public class AlienGuideManager : MonoBehaviour
 {
     public static AlienGuideManager Instance;
 
-    [Header("Alien UI Elements")]
-    public TextMeshProUGUI alienText; // Alien's dialogue text
-
     [Header("Feedback Settings")]
     public string correctFeedback = "Well done!";
     public string incorrectFeedback = "Oops! Try again.";
+    public string restartMessage = "Restarting the mission... Get ready!";
     [TextArea] public string[] reconstructTrajectoryStrategies;
     [TextArea] public string[] navigateToTargetStrategies;
 
     private string[] currentStrategies;
     private int strategyIndex;
+
+    public delegate void FeedbackUpdate(string message);
+    //public static event FeedbackUpdate OnFeedbackUpdated;
 
     private void Awake()
     {
@@ -46,42 +46,39 @@ public class AlienGuideManager : MonoBehaviour
 
         strategyIndex = 0; // Reset strategy index
     }
-
     public void ProvidePositiveFeedback()
     {
-        if (alienText != null)
-        {
-            alienText.text = correctFeedback;
-        }
+        NotifyUI(correctFeedback); // Alien says "Well done!"
     }
+
+    public void ProvideRestartMessage()
+    {
+        NotifyUI(restartMessage); // Alien says "Restarting the stage..."
+    }
+
 
     public void ProvideNegativeFeedback()
     {
-        if (alienText != null)
-        {
-            alienText.text = incorrectFeedback;
-            ProvideStrategy();
-        }
+        NotifyUI(incorrectFeedback);
+        ProvideStrategy();
     }
 
     public void ProvideStrategy()
     {
-        if (currentStrategies != null && strategyIndex < currentStrategies.Length)
-        {
-            alienText.text += "\n" + currentStrategies[strategyIndex];
-            strategyIndex++;
-        }
-        else
-        {
-            alienText.text += "\nTry to focus and plan your steps!";
-        }
+        string strategy = strategyIndex < currentStrategies?.Length
+            ? currentStrategies[strategyIndex++]
+            : "Try to focus on the sequence!";
 
-        // Restart the current stage
-        RestartStage();
+        NotifyUI($"{incorrectFeedback}\n{strategy}\nWe will restart the stage. Pay close attention!");
     }
 
-    private void RestartStage()
+    private void NotifyUI(string message)
     {
-        SpaceMissionManager.Instance.RestartMission();
+        AlienUIManager.Instance?.UpdateAlienText(message);
     }
+    public void DisplayMissionIntro(string missionName)
+    {
+        AlienUIManager.Instance?.UpdateAlienText($"Welcome to the mission: {missionName}. Let's get started!");
+    }
+
 }
