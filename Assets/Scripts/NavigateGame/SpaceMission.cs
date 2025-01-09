@@ -1,11 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class SpaceMission
 {
     public string missionName;
     public Node startNode;
-    public Node[] restrictedNodes;
+    public List<Node> restrictedNodes; // Changed to List<Node>
     public Node targetNode; // For NavigateToTarget missions
     public Node[] trajectoryPath; // Current trajectory path during gameplay
     public Node[] originalTrajectoryPath; // Original, unmodified path
@@ -13,13 +14,12 @@ public class SpaceMission
     public enum MissionType { ReconstructTrajectory, NavigateToTarget }
     public MissionType missionType;
 
-    // Constructor remains simple and does not clone paths
     public SpaceMission()
     {
         currentProgressIndex = 0;
+        restrictedNodes = new List<Node>(); // Initialize empty list to avoid null issues
     }
 
-    // Call this explicitly after setting trajectoryPath
     public void Initialize()
     {
         if (trajectoryPath != null)

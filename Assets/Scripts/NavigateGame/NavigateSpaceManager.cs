@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class NavigateSpaceManager : MonoBehaviour
@@ -29,15 +30,20 @@ public class NavigateSpaceManager : MonoBehaviour
             mission.missionType == SpaceMission.MissionType.ReconstructTrajectory
                 ? "Follow the highlighted trajectory."
                 : "Reach the target node without stepping on restricted nodes.",
-            mission.trajectoryPath // Pass the trajectory path
+            mission.trajectoryPath
         );
+
+        // Highlight the target node for NavigateToTarget missions
+        if (mission.missionType == SpaceMission.MissionType.NavigateToTarget && mission.targetNode != null)
+        {
+            NavigateSpaceUIManager.Instance.HighlightTargetNode(mission.targetNode);
+        }
 
         // Set the player's starting position
         currentNode = mission.startNode ?? startNode;
         PlayerController.Instance.SetPosition(currentNode.transform.position);
-
-        // Do not start highlighting here! Wait for the Start button click.
     }
+
 
 
     private IEnumerator HideInstructionsAfterDelay(float delay)
@@ -50,6 +56,12 @@ public class NavigateSpaceManager : MonoBehaviour
 
     public void OnNodeClicked(Node clickedNode)
     {
+        if (NavigateSpaceUIManager.Instance.IsPathShowing())
+        {
+            Debug.Log("Path is still being highlighted. Wait until it's complete.");
+            return;
+        }
+
         var mission = SpaceMissionManager.Instance.missions[SpaceMissionManager.Instance.CurrentMissionIndex];
         if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
         {
@@ -65,30 +77,32 @@ public class NavigateSpaceManager : MonoBehaviour
     {
         if (mission.trajectoryPath.Length > 0 && mission.trajectoryPath[0] == clickedNode)
         {
-            // Correct node
-            mission.trajectoryPath = mission.trajectoryPath[1..]; // Remove completed node
+            mission.trajectoryPath = mission.trajectoryPath[1..];
             MoveToNode(clickedNode);
-            AlienGuideManager.Instance.ProvidePositiveFeedback();
+            AlienGuideManager.Instance.ProvidePositiveFeedback(); // Alien feedback for correct move
 
             if (mission.trajectoryPath.Length == 0)
             {
                 Debug.Log("Trajectory completed!");
-                SpaceMissionManager.Instance.CompleteMission();
+                NavigateSpaceUIManager.Instance.DelayNextMissionUI(() =>
+                {
+                    SpaceMissionManager.Instance.CompleteMission();
+                });
             }
         }
         else
         {
-            // Incorrect node
-            AlienGuideManager.Instance.ProvideNegativeFeedback();
+            AlienGuideManager.Instance.ProvideNegativeFeedback(); // Alien feedback for incorrect move
             RestartStage(mission);
         }
     }
 
 
+
     // Restart stage logic
     private void RestartStage(SpaceMission mission)
     {
-        Debug.Log("Restarting stage due to mistake...");
+        Debug.Log("Restarting stage due to a mistake...");
 
         // Reset the trajectory path to the original state
         mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
@@ -98,9 +112,13 @@ public class NavigateSpaceManager : MonoBehaviour
         currentNode = initialNode;
         PlayerController.Instance.SetPosition(initialNode.transform.position);
 
-        // Re-highlight the full path
+        // Notify the alien to provide restart feedback
+        AlienGuideManager.Instance.ProvideRestartMessage();
+
+        // Re-highlight the trajectory path for Reconstruct Trajectory missions
         if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
         {
+            Debug.Log("Re-highlighting trajectory for Reconstruct Trajectory mission.");
             NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
         }
     }
@@ -114,16 +132,21 @@ public class NavigateSpaceManager : MonoBehaviour
             AlienGuideManager.Instance.ProvidePositiveFeedback();
             SpaceMissionManager.Instance.CompleteMission();
         }
-        else if (!clickedNode.isRestricted)
+        else if (mission.restrictedNodes != null && mission.restrictedNodes.Contains(clickedNode))
         {
-            MoveToNode(clickedNode);
-            AlienGuideManager.Instance.ProvidePositiveFeedback(); // Optional: Positive for valid moves
+            Debug.Log($"Player clicked a restricted node: {clickedNode.name}");
+            AlienGuideManager.Instance.ProvideNegativeFeedback();
+            RestartStage(mission);
         }
         else
         {
-            AlienGuideManager.Instance.ProvideNegativeFeedback();
+            Debug.Log($"Player clicked a valid node: {clickedNode.name}");
+            MoveToNode(clickedNode);
+            AlienGuideManager.Instance.ProvidePositiveFeedback();
         }
     }
+
+
 
     private void MoveToNode(Node newNode)
     {

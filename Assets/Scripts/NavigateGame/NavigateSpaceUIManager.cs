@@ -7,18 +7,25 @@ public class NavigateSpaceUIManager : MonoBehaviour
     public static NavigateSpaceUIManager Instance;
 
     [Header("UI Elements")]
-    //public TextMeshProUGUI missionNameText; // Text field for displaying the mission name
-    public TextMeshProUGUI missionInstructionText; // Text field for displaying the mission instructions
-    public GameObject instructionPanel; // Panel containing mission details
-    public GameObject startButton; // Reference to the Start button
+    public GameObject instructionPanel;
+    public GameObject startButton;
+    public TextMeshProUGUI missionInstructionText;
 
     [Header("Highlight Settings")]
-    [SerializeField] private float startDelay = 2.0f; // Delay before highlighting starts
-    [SerializeField] private float highlightSpeed = 1.0f; // Speed of path highlighting (in seconds)
-    [SerializeField] private Color highlightColor = Color.yellow; // Color used to highlight trajectory nodes
+    [SerializeField] private float startDelay = 2.0f;
+    [SerializeField] private float highlightSpeed = 1.0f;
+    [SerializeField] private Color highlightColor = Color.yellow;
+    [SerializeField] private Material glowMaterial;
+    [SerializeField] private AudioClip highlightSound;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private float highlightScaleFactor = 1.5f;
+    [SerializeField] private float delayToNextStage = 2.0f; // Time before advancing to the next stage
+    [SerializeField] private float delayBeforeNextMission = 2.0f;
+    [SerializeField] private float targetHighlightDuration = 3.0f; // Duration to keep the target highlighted
 
     private Coroutine highlightCoroutine;
-    private Node[] currentTrajectoryPath; // Store the current mission's trajectory path
+    private Node[] currentTrajectoryPath;
+    private bool isPathShowing = false;
 
     private void Awake()
     {
@@ -31,7 +38,6 @@ public class NavigateSpaceUIManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Ensure the panel and button are hidden at the start
         if (instructionPanel != null)
         {
             instructionPanel.SetActive(false);
@@ -43,7 +49,6 @@ public class NavigateSpaceUIManager : MonoBehaviour
         }
     }
 
-    // Displays the instruction panel with mission details
     public void ShowMissionDetails(string missionName, string instruction, Node[] trajectoryPath)
     {
         currentTrajectoryPath = trajectoryPath;
@@ -52,11 +57,6 @@ public class NavigateSpaceUIManager : MonoBehaviour
         {
             instructionPanel.SetActive(true);
         }
-
-        //if (missionNameText != null)
-        //{
-        //    missionNameText.text = missionName;
-        //}
 
         if (missionInstructionText != null)
         {
@@ -69,7 +69,6 @@ public class NavigateSpaceUIManager : MonoBehaviour
         }
     }
 
-    // Called by the Start button
     public void OnStartButtonClicked()
     {
         if (instructionPanel != null)
@@ -82,23 +81,29 @@ public class NavigateSpaceUIManager : MonoBehaviour
             startButton.SetActive(false);
         }
 
-        // Delay the start of highlighting using the serialized startDelay value
         if (currentTrajectoryPath != null)
         {
+            AlienGuideManager.Instance.NotifyHighlightStart(); // Alien feedback
+            isPathShowing = true;
             StartCoroutine(DelayedHighlightStart(currentTrajectoryPath, startDelay));
         }
     }
 
-    // Starts highlighting the trajectory path after a delay
     private IEnumerator DelayedHighlightStart(Node[] trajectoryPath, float delay)
     {
         yield return new WaitForSeconds(delay);
         StartHighlightingPath(trajectoryPath);
     }
 
-    // Starts highlighting the trajectory path
     public void StartHighlightingPath(Node[] trajectoryPath)
     {
+        if (trajectoryPath == null || trajectoryPath.Length == 0)
+        {
+            Debug.LogWarning("No trajectory path to highlight.");
+            return;
+        }
+
+        Debug.Log("Starting to highlight the trajectory path...");
         if (highlightCoroutine != null)
         {
             StopCoroutine(highlightCoroutine);
@@ -107,27 +112,115 @@ public class NavigateSpaceUIManager : MonoBehaviour
         highlightCoroutine = StartCoroutine(HighlightTrajectory(trajectoryPath));
     }
 
-    // Coroutine for sequentially highlighting trajectory nodes
+
+    public void HighlightTargetNode(Node targetNode)
+    {
+        if (targetNode != null)
+        {
+            Debug.Log("Highlighting target node: " + targetNode.name);
+            StartCoroutine(HighlightSingleNode(targetNode));
+        }
+        else
+        {
+            Debug.LogWarning("Target node is null, cannot highlight.");
+        }
+    }
+
+
+    private IEnumerator HighlightSingleNode(Node node)
+    {
+        SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            Debug.Log("Applying highlight to node: " + node.name);
+            Material originalMaterial = spriteRenderer.material;
+            Vector3 originalScale = node.transform.localScale;
+            Vector3 highlightedScale = originalScale * highlightScaleFactor;
+
+            spriteRenderer.material = glowMaterial;
+            spriteRenderer.material.SetColor("_EmissionColor", highlightColor);
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < targetHighlightDuration)
+            {
+                node.transform.localScale = Vector3.Lerp(originalScale, highlightedScale, Mathf.PingPong(elapsedTime * 2f, 1f));
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            spriteRenderer.material = originalMaterial;
+            node.transform.localScale = originalScale;
+            Debug.Log("Finished highlighting node: " + node.name);
+        }
+        else
+        {
+            Debug.LogError("SpriteRenderer not found on node: " + node.name);
+        }
+    }
+
     private IEnumerator HighlightTrajectory(Node[] trajectoryPath)
     {
+        Debug.Log("Highlighting trajectory...");
+
         foreach (var node in trajectoryPath)
         {
             if (node != null)
             {
-                node.SetColor(highlightColor); // Highlight the node
-                yield return new WaitForSeconds(highlightSpeed);
+                Debug.Log($"Highlighting node: {node.name}");
+                SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    Material originalMaterial = spriteRenderer.material;
+                    Vector3 originalScale = node.transform.localScale;
+                    Vector3 highlightedScale = originalScale * highlightScaleFactor;
+
+                    spriteRenderer.material = glowMaterial;
+                    spriteRenderer.material.SetColor("_EmissionColor", highlightColor);
+
+                    node.transform.localScale = highlightedScale;
+
+                    if (audioSource != null && highlightSound != null)
+                    {
+                        audioSource.PlayOneShot(highlightSound);
+                    }
+
+                    yield return new WaitForSeconds(highlightSpeed);
+
+                    // Reset to original appearance
+                    spriteRenderer.material = originalMaterial;
+                    node.transform.localScale = originalScale;
+                }
             }
         }
 
-        NodeManager.Instance.ResetHighlight(); // Reset after highlighting
+        Debug.Log("Finished highlighting trajectory.");
+        isPathShowing = false; // Allow interaction after highlighting
+        AlienGuideManager.Instance.NotifyHighlightEnd();
+        NodeManager.Instance.ResetHighlight(); // Reset highlights
     }
 
-    // Hides the instruction panel
+
+    public bool IsPathShowing()
+    {
+        return isPathShowing;
+    }
+
     public void HideMissionDetails()
     {
         if (instructionPanel != null)
         {
             instructionPanel.SetActive(false);
         }
+    }
+    public void DelayNextMissionUI(System.Action onComplete)
+    {
+        StartCoroutine(DelayBeforeNextMissionCoroutine(onComplete));
+    }
+
+    private IEnumerator DelayBeforeNextMissionCoroutine(System.Action onComplete)
+    {
+        yield return new WaitForSeconds(delayBeforeNextMission);
+        onComplete?.Invoke();
     }
 }

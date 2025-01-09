@@ -80,5 +80,15 @@ public class AlienGuideManager : MonoBehaviour
     {
         AlienUIManager.Instance?.UpdateAlienText($"Welcome to the mission: {missionName}. Let's get started!");
     }
+    public void NotifyHighlightStart()
+    {
+        NotifyUI("Keep an eye on the highlight!");
+    }
+
+    public void NotifyHighlightEnd()
+    {
+        NotifyUI("You can start now.");
+    }
+
 
 }

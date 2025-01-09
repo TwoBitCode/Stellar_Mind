@@ -48,23 +48,31 @@ public class SpaceMissionManager : MonoBehaviour
         {
             Debug.LogError($"Mission at index {currentMissionIndex} is null! Skipping to the next mission.");
             currentMissionIndex++;
-            StartMission(); // Start the next mission
+            StartMission();
             return;
         }
 
-        // Initialize the mission
+        Debug.Log($"Starting Mission: {mission.missionName}");
+        Debug.Log($"Restricted Nodes for Mission {mission.missionName}:");
+        if (mission.restrictedNodes != null)
+        {
+            foreach (var node in mission.restrictedNodes)
+            {
+                Debug.Log($"Restricted Node: {node.name}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Restricted nodes list is null!");
+        }
+
+
         mission.Initialize();
 
-        Debug.Log($"Starting Mission: {mission.missionName}");
-
-        // Reset mission state
         NodeManager.Instance?.ResetAllNodeStates();
         AlienGuideManager.Instance?.DisplayMissionIntro(mission.missionName);
 
-        // Ensure trajectory path is reset to the original
         mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
-
-        // Initialize navigation
         NavigateSpaceManager.Instance?.InitializeMission(mission);
     }
 
@@ -79,8 +87,13 @@ public class SpaceMissionManager : MonoBehaviour
 
         AlienGuideManager.Instance?.ProvidePositiveFeedback();
         currentMissionIndex++;
-        StartMission(); // Start the next mission
+
+        // Reset node visuals (target highlight) before starting the next mission
+        NodeManager.Instance?.ResetAllNodeStates();
+
+        StartMission();
     }
+
 
     public void RestartMission()
     {
