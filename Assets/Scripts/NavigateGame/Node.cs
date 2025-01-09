@@ -2,19 +2,45 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    public Node[] neighbors;      // Connected nodes
-    public bool isRestricted = false; // If the node is restricted in the current level
+    public Node[] neighbors; // Connected neighbors
+    public bool isRestricted; // Whether this node is restricted
 
-    public void OnMouseDown()
+    private SpriteRenderer spriteRenderer;
+
+    private void Awake()
     {
-        Debug.Log($"{gameObject.name} clicked!");
-        NavigateSpaceManager.Instance.OnNodeClicked(this);
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            Debug.LogError($"Node {name} is missing a SpriteRenderer!");
+        }
     }
 
-
-    public void Highlight(bool highlight)
+    // Change the color of the node
+    public void SetColor(Color color)
     {
-        // Change color or scale to indicate clickable nodes
-        GetComponent<SpriteRenderer>().color = highlight ? Color.green : Color.white;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = color;
+        }
+    }
+
+    // Handle click events
+    private void OnMouseDown()
+    {
+        if (isRestricted)
+        {
+            Debug.Log($"Node {name} is restricted and cannot be clicked.");
+            return;
+        }
+
+        if (NavigateSpaceManager.Instance != null)
+        {
+            NavigateSpaceManager.Instance.OnNodeClicked(this);
+        }
+        else
+        {
+            Debug.LogError("NavigateSpaceManager instance is missing!");
+        }
     }
 }

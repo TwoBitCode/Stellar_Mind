@@ -1,178 +1,187 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NavigateSpaceManager : MonoBehaviour
 {
-    public static NavigateSpaceManager Instance; // Singleton instance
+    public static NavigateSpaceManager Instance;
 
     [Header("Navigation Settings")]
-    public Node startNode; // The starting node in the navigation graph
-    public GameObject player; // The player object that moves between nodes
+    public Node startNode; // Default starting node
 
-    [Header("Animation Settings")]
-    [SerializeField] private float moveDuration = 0.5f; // Duration to move between nodes
-    [SerializeField] private float highlightDuration = 0.5f; // Duration each node stays highlighted
-    [SerializeField] private AnimationCurve movementCurve; //for non-linear movement
-    private Node currentNode; // The node the player is currently on
-    private Stack<Node> pathStack = new Stack<Node>(); // Stack for reverse path validation
+    private Node currentNode;
 
     private void Awake()
     {
-        // Set up the singleton instance
         if (Instance == null)
-        {
             Instance = this;
-        }
         else
-        {
-            Debug.LogWarning("Multiple instances of NavigateSpaceManager detected! Destroying duplicate.");
             Destroy(gameObject);
-        }
     }
 
-    private void Start()
+    public void InitializeMission(SpaceMission mission)
     {
-        StartNavigation();
-    }
+        // Set the correct strategy bank in AlienGuideManager
+        AlienGuideManager.Instance.SetMissionType(mission.missionType);
 
-    // Starts the navigation process by placing the player at the starting node
-    public void StartNavigation()
-    {
-        if (startNode == null)
+        // Reset trajectory to the original path
+        mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
+
+        // Reset path showing state
+        NavigateSpaceUIManager.Instance.ResetPathState();
+
+        // Use mission-specific instructions
+        string instruction = string.IsNullOrEmpty(mission.missionInstruction)
+            ? "Complete the mission by following the instructions!" // Default fallback instruction
+            : mission.missionInstruction;
+
+        // Show mission instructions
+        NavigateSpaceUIManager.Instance.ShowMissionDetails(
+            mission.missionName,
+            instruction, // Display the specific instruction for the mission
+            mission.trajectoryPath
+        );
+
+        // Highlight the target node for NavigateToTarget missions
+        if (mission.missionType == SpaceMission.MissionType.NavigateToTarget && mission.targetNode != null)
         {
-            Debug.LogError("Start Node is not assigned in NavigateSpaceManager!");
+            NavigateSpaceUIManager.Instance.HighlightTargetNode(mission.targetNode);
+        }
+
+        // Set the player's starting position
+        currentNode = mission.startNode ?? startNode;
+        PlayerController.Instance.SetPosition(currentNode.transform.position);
+    }
+
+
+
+
+    private IEnumerator HideInstructionsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        NavigateSpaceUIManager.Instance.HideMissionDetails();
+    }
+
+
+
+    public void OnNodeClicked(Node clickedNode)
+    {
+        if (NavigateSpaceUIManager.Instance.IsPathShowing())
+        {
+            Debug.Log("Path is still being highlighted. Wait until it's complete.");
             return;
         }
 
-        // Set the player's initial position
-        currentNode = startNode;
-        player.transform.position = startNode.transform.position;
-        Debug.Log($"Player moved to start node: {startNode.name} at position {startNode.transform.position}");
-
-        // Highlight valid neighbors for the starting node
-        UpdateClickableNodes();
+        var mission = SpaceMissionManager.Instance.missions[SpaceMissionManager.Instance.CurrentMissionIndex];
+        if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
+        {
+            HandleTrajectoryReconstruction(mission, clickedNode);
+        }
+        else if (mission.missionType == SpaceMission.MissionType.NavigateToTarget)
+        {
+            HandleTargetNavigation(mission, clickedNode);
+        }
     }
 
-    // Handles logic when a node is clicked by the player
-    public void OnNodeClicked(Node clickedNode)
+
+    private void HandleTrajectoryReconstruction(SpaceMission mission, Node clickedNode)
     {
-        Debug.Log($"Clicked Node: {clickedNode.name}");
-        if (IsValidMove(clickedNode))
+        if (mission.trajectoryPath.Length > 0 && mission.trajectoryPath[0] == clickedNode)
         {
+            mission.trajectoryPath = mission.trajectoryPath[1..];
             MoveToNode(clickedNode);
+            AlienGuideManager.Instance.ProvidePositiveFeedback(); // Alien feedback for correct move
+
+            if (mission.trajectoryPath.Length == 0)
+            {
+                Debug.Log("Trajectory completed!");
+                NavigateSpaceUIManager.Instance.DelayNextMissionUI(() =>
+                {
+                    SpaceMissionManager.Instance.CompleteMission();
+                });
+            }
         }
         else
         {
-            Debug.Log($"Invalid move to {clickedNode.name}");
+            AlienGuideManager.Instance.ProvideNegativeFeedback(); // Alien feedback for incorrect move
+            RestartStage(mission);
         }
     }
 
-    // Checks if moving to the specified node is valid
-    private bool IsValidMove(Node newNode)
+
+    // Restart stage logic
+    private void RestartStage(SpaceMission mission)
     {
-        if (currentNode == null)
-        {
-            Debug.LogError("Current node is null!");
-            return false;
-        }
+        Debug.Log("Player made a mistake. Showing strategy panel...");
 
-        if (currentNode.neighbors == null || currentNode.neighbors.Length == 0)
-        {
-            Debug.LogWarning($"Node '{currentNode.name}' has no neighbors.");
-            return false;
-        }
+        // Show strategy feedback from the alien
+        AlienGuideManager.Instance.ProvideNegativeFeedback();
 
-        // Check if the new node is a valid neighbor and not restricted
-        return System.Array.Exists(currentNode.neighbors, node => node == newNode) && !newNode.isRestricted;
+        // Show the strategy panel with a tip
+        NavigateSpaceUIManager.Instance.ShowStrategyPanel(() =>
+        {
+            // When "Continue" is clicked, reset the mission
+            Debug.Log("Restarting the mission...");
+            ResetMissionState(mission);
+        });
     }
 
-    // Moves the player to the specified node
+    private void ResetMissionState(SpaceMission mission)
+    {
+        // Reset the trajectory path to the original state
+        mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
+
+        // Reset player to the starting position
+        var initialNode = mission.startNode ?? startNode;
+        currentNode = initialNode;
+        PlayerController.Instance.SetPosition(initialNode.transform.position);
+
+        // Update the alien text to reflect the restart
+        AlienGuideManager.Instance.UpdateAlienText("Follow the highlighted trajectory to complete the mission!");
+
+        // Re-highlight the trajectory path for Reconstruct Trajectory missions
+        if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
+        {
+            Debug.Log("Re-highlighting trajectory for Reconstruct Trajectory mission.");
+            NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
+        }
+    }
+
+
+
+
+    private void HandleTargetNavigation(SpaceMission mission, Node clickedNode)
+    {
+        if (clickedNode == mission.targetNode)
+        {
+            Debug.Log($"Player clicked the target node: {clickedNode.name}");
+            MoveToNode(clickedNode); // Move to the target node
+            AlienGuideManager.Instance.ProvidePositiveFeedback();
+            SpaceMissionManager.Instance.CompleteMission();
+        }
+        else if (mission.restrictedNodes != null && mission.restrictedNodes.Contains(clickedNode))
+        {
+            Debug.Log($"Player clicked a restricted node: {clickedNode.name}");
+            AlienGuideManager.Instance.ProvideNegativeFeedback();
+            RestartStage(mission);
+        }
+        else
+        {
+            Debug.Log($"Player clicked a valid node: {clickedNode.name}");
+            MoveToNode(clickedNode); // Move to the clicked node
+            AlienGuideManager.Instance.ProvidePositiveFeedback();
+        }
+    }
+
+
+
+
     private void MoveToNode(Node newNode)
     {
-        // Move the player to the new node over time
-        StartCoroutine(MovePlayerToNode(newNode));
-
-        // Update the current node to the new node
-        currentNode = newNode;
-
-        // Update the clickable nodes for the new position
-        UpdateClickableNodes();
-    }
-
-    // Coroutine to smoothly move the player to the specified node
-    private IEnumerator MovePlayerToNode(Node newNode)
-    {
-        Vector3 startPosition = player.transform.position; // Starting position of the player
-        Vector3 endPosition = newNode.transform.position;  // Target position for the player
-
-        float elapsedTime = 0f; // Time elapsed since movement began
-
-        while (elapsedTime < moveDuration)
+        PlayerController.Instance.MoveTo(newNode.transform.position, () =>
         {
-            float t = elapsedTime / moveDuration; // Normalized time (0 to 1)
-            float smoothT = movementCurve != null ? movementCurve.Evaluate(t) : t; // Use curve or linear
-
-            // Interpolate the player's position
-            player.transform.position = Vector3.Lerp(startPosition, endPosition, smoothT);
-
-            elapsedTime += Time.deltaTime; // Increment elapsed time
-            yield return null; // Wait for the next frame
-        }
-
-        player.transform.position = endPosition; // Ensure the player ends at the exact position
+            currentNode = newNode;
+        });
     }
 
-    // Highlights the neighbors of the current node and disables others
-    private void UpdateClickableNodes()
-    {
-        // Disable all nodes
-        foreach (Node node in Object.FindObjectsByType<Node>(FindObjectsSortMode.None))
-        {
-            node.Highlight(false);
-        }
-
-        // Highlight neighbors of the current node
-        foreach (Node neighbor in currentNode.neighbors)
-        {
-            if (!neighbor.isRestricted)
-            {
-                neighbor.Highlight(true);
-            }
-        }
-    }
-
-    // Shows a path by highlighting nodes in order
-    public void ShowPath(Node[] path)
-    {
-        StartCoroutine(AnimatePath(path));
-    }
-
-    // Coroutine to animate highlighting nodes along a path
-    private IEnumerator AnimatePath(Node[] path)
-    {
-        foreach (Node node in path)
-        {
-            node.Highlight(true); // Highlight the node
-            yield return new WaitForSeconds(highlightDuration); // Use serialized highlight duration
-            node.Highlight(false); // Remove the highlight
-        }
-    }
-
-    // Stores a path in reverse order for validation
-    public void ReversePath(Node[] path)
-    {
-        pathStack = new Stack<Node>(path);
-    }
-
-    // Validates if the clicked node is the correct one in the reverse path
-    public bool ValidateReversePath(Node clickedNode)
-    {
-        if (pathStack.Count > 0 && pathStack.Peek() == clickedNode)
-        {
-            pathStack.Pop(); // Remove the validated node
-            return true;
-        }
-        return false;
-    }
 }
