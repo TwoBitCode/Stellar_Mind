@@ -154,6 +154,8 @@ public class NavigateSpaceManager : MonoBehaviour
     {
         if (clickedNode == mission.targetNode)
         {
+            Debug.Log($"Player clicked the target node: {clickedNode.name}");
+            MoveToNode(clickedNode); // Move to the target node
             AlienGuideManager.Instance.ProvidePositiveFeedback();
             SpaceMissionManager.Instance.CompleteMission();
         }
@@ -166,10 +168,11 @@ public class NavigateSpaceManager : MonoBehaviour
         else
         {
             Debug.Log($"Player clicked a valid node: {clickedNode.name}");
-            MoveToNode(clickedNode);
+            MoveToNode(clickedNode); // Move to the clicked node
             AlienGuideManager.Instance.ProvidePositiveFeedback();
         }
     }
+
 
 
 
