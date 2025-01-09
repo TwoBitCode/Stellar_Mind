@@ -11,6 +11,7 @@ public class SpaceMission
     public Node[] trajectoryPath; // Current trajectory path during gameplay
     public Node[] originalTrajectoryPath; // Original, unmodified path
     [HideInInspector] public int currentProgressIndex; // Tracks player's progress
+    public string missionInstruction; // Add this field for stage-specific instructions
     public enum MissionType { ReconstructTrajectory, NavigateToTarget }
     public MissionType missionType;
 

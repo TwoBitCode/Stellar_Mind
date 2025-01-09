@@ -65,7 +65,7 @@ public class NavigateSpaceUIManager : MonoBehaviour
 
         if (missionInstructionText != null)
         {
-            missionInstructionText.text = instruction;
+            missionInstructionText.text = instruction; // Set the mission-specific instruction
         }
 
         if (startButton != null)
@@ -73,6 +73,7 @@ public class NavigateSpaceUIManager : MonoBehaviour
             startButton.SetActive(true);
         }
     }
+
 
     public void OnStartButtonClicked()
     {
@@ -123,7 +124,16 @@ public class NavigateSpaceUIManager : MonoBehaviour
         if (targetNode != null)
         {
             Debug.Log("Highlighting target node: " + targetNode.name);
-            StartCoroutine(HighlightSingleNode(targetNode));
+
+            // Block interaction during highlighting
+            isPathShowing = true;
+
+            StartCoroutine(HighlightSingleNode(targetNode, () =>
+            {
+                // Enable interaction after highlighting
+                isPathShowing = false;
+                Debug.Log("Target highlighting complete. Player can now interact.");
+            }));
         }
         else
         {
@@ -132,7 +142,8 @@ public class NavigateSpaceUIManager : MonoBehaviour
     }
 
 
-    private IEnumerator HighlightSingleNode(Node node)
+
+    private IEnumerator HighlightSingleNode(Node node, System.Action onComplete)
     {
         SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
@@ -157,10 +168,13 @@ public class NavigateSpaceUIManager : MonoBehaviour
             spriteRenderer.material = originalMaterial;
             node.transform.localScale = originalScale;
             Debug.Log("Finished highlighting node: " + node.name);
+
+            onComplete?.Invoke();
         }
         else
         {
             Debug.LogError("SpriteRenderer not found on node: " + node.name);
+            onComplete?.Invoke(); // Ensure callback is called even on error
         }
     }
 
@@ -205,11 +219,19 @@ public class NavigateSpaceUIManager : MonoBehaviour
         NodeManager.Instance.ResetHighlight(); // Reset highlights
     }
 
-
     public bool IsPathShowing()
     {
+        var currentMission = SpaceMissionManager.Instance.missions[SpaceMissionManager.Instance.CurrentMissionIndex];
+
+        // Prevent interaction during highlighting for all mission types
+        if (currentMission.missionType == SpaceMission.MissionType.NavigateToTarget)
+        {
+            return isPathShowing; // This should be set during target highlighting
+        }
+
         return isPathShowing;
     }
+
 
     public void HideMissionDetails()
     {
@@ -237,6 +259,7 @@ public class NavigateSpaceUIManager : MonoBehaviour
 
             // Get and display the next strategy from AlienGuideManager
             string strategy = AlienGuideManager.Instance.GetNextStrategy();
+            Debug.Log($"Showing strategy in panel: {strategy}");
             strategyText.text = strategy;
 
             // Update the alien text to match the strategy panel
@@ -255,4 +278,10 @@ public class NavigateSpaceUIManager : MonoBehaviour
             Debug.LogWarning("Strategy panel is not assigned in the UI Manager!");
         }
     }
+    public void ResetPathState()
+    {
+        isPathShowing = false;
+    }
+
+
 }

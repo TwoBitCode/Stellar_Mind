@@ -35,17 +35,22 @@ public class AlienGuideManager : MonoBehaviour
         {
             case SpaceMission.MissionType.ReconstructTrajectory:
                 currentStrategies = reconstructTrajectoryStrategies;
+                Debug.Log("Loaded reconstruct trajectory strategies.");
                 break;
             case SpaceMission.MissionType.NavigateToTarget:
                 currentStrategies = navigateToTargetStrategies;
+                Debug.Log("Loaded navigate to target strategies.");
                 break;
             default:
                 currentStrategies = null;
+                Debug.LogWarning("Mission type not recognized. No strategies loaded.");
                 break;
         }
 
         strategyIndex = 0; // Reset strategy index
+        Debug.Log($"Current strategies set: {string.Join(", ", currentStrategies ?? new string[0])}");
     }
+
     public void ProvidePositiveFeedback()
     {
         NotifyUI(correctFeedback); // Alien says "Well done!"
@@ -65,12 +70,27 @@ public class AlienGuideManager : MonoBehaviour
 
     public void ProvideStrategy()
     {
-        string strategy = strategyIndex < currentStrategies?.Length
-            ? currentStrategies[strategyIndex++]
-            : "Try to focus on the sequence!";
+        if (currentStrategies == null || currentStrategies.Length == 0)
+        {
+            Debug.LogWarning("No strategies available. Using default strategy.");
+            NotifyUI("Try to focus on the sequence!"); // Default fallback strategy
+            return;
+        }
 
-        NotifyUI($"{incorrectFeedback}\n{strategy}\nWe will restart the stage. Pay close attention!");
+        if (strategyIndex < currentStrategies.Length)
+        {
+            string strategy = currentStrategies[strategyIndex++];
+            Debug.Log($"Providing strategy: {strategy} (Index: {strategyIndex - 1})");
+            NotifyUI($"{incorrectFeedback}\n{strategy}\nWe will restart the stage. Pay close attention!");
+        }
+        else
+        {
+            Debug.LogWarning("Out of strategies. Using fallback strategy.");
+            NotifyUI("Try to remember the steps carefully.");
+        }
     }
+
+
 
     private void NotifyUI(string message)
     {
@@ -93,16 +113,26 @@ public class AlienGuideManager : MonoBehaviour
     {
         if (currentStrategies == null || currentStrategies.Length == 0)
         {
+            Debug.LogWarning("No strategies available. Using default strategy.");
             return "Pay attention and focus! Let’s try again.";
         }
 
         // Fetch the next strategy in the sequence
-        string strategy = strategyIndex < currentStrategies.Length
-            ? currentStrategies[strategyIndex++]
-            : "Try to remember the steps carefully.";
+        if (strategyIndex < currentStrategies.Length)
+        {
+            string strategy = currentStrategies[strategyIndex];
+            strategyIndex++; // Increment the index for the next call
+            Debug.Log($"Returning strategy: {strategy} (Index: {strategyIndex - 1})");
+            return strategy;
+        }
 
-        return strategy;
+        // Fallback if all strategies are used
+        Debug.LogWarning("Out of strategies. Using fallback strategy.");
+        return "Try to remember the steps carefully.";
     }
+
+
+
     public void UpdateAlienText(string message)
     {
         AlienUIManager.Instance?.UpdateAlienText(message);

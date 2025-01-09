@@ -33,48 +33,40 @@ public class SpaceMissionManager : MonoBehaviour
         StartMission();
     }
 
-    public void StartMission()
+public void StartMission()
+{
+    if (currentMissionIndex >= missions.Count)
     {
-        if (currentMissionIndex >= missions.Count)
-        {
-            Debug.Log("All missions completed!");
-            AlienGuideManager.Instance?.DisplayMissionIntro("Congratulations! All missions are complete.");
-            return;
-        }
-
-        var mission = missions[currentMissionIndex];
-
-        if (mission == null)
-        {
-            Debug.LogError($"Mission at index {currentMissionIndex} is null! Skipping to the next mission.");
-            currentMissionIndex++;
-            StartMission();
-            return;
-        }
-
-        Debug.Log($"Starting Mission: {mission.missionName}");
-        Debug.Log($"Restricted Nodes for Mission {mission.missionName}:");
-        if (mission.restrictedNodes != null)
-        {
-            foreach (var node in mission.restrictedNodes)
-            {
-                Debug.Log($"Restricted Node: {node.name}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Restricted nodes list is null!");
-        }
-
-
-        mission.Initialize();
-
-        NodeManager.Instance?.ResetAllNodeStates();
-        AlienGuideManager.Instance?.DisplayMissionIntro(mission.missionName);
-
-        mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
-        NavigateSpaceManager.Instance?.InitializeMission(mission);
+        Debug.Log("All missions completed!");
+        AlienGuideManager.Instance?.UpdateAlienText("Congratulations! All missions are complete.");
+        return;
     }
+
+    var mission = missions[currentMissionIndex];
+
+    if (mission == null)
+    {
+        Debug.LogError($"Mission at index {currentMissionIndex} is null! Skipping to the next mission.");
+        currentMissionIndex++;
+        StartMission();
+        return;
+    }
+
+    Debug.Log($"Starting Mission: {mission.missionName}");
+    Debug.Log("Restricted Nodes:");
+    foreach (var node in mission.restrictedNodes)
+    {
+        Debug.Log(node.name);
+    }
+
+    mission.Initialize();
+
+    NodeManager.Instance?.ResetAllNodeStates();
+    AlienGuideManager.Instance?.DisplayMissionIntro(mission.missionName);
+
+    mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
+    NavigateSpaceManager.Instance?.InitializeMission(mission);
+}
 
 
     public void CompleteMission()
@@ -86,6 +78,10 @@ public class SpaceMissionManager : MonoBehaviour
         }
 
         AlienGuideManager.Instance?.ProvidePositiveFeedback();
+
+        // Add 10 points to the overall score
+        OverallScoreManager.Instance?.AddScoreFromStage(missions[currentMissionIndex].missionName, 10);
+
         currentMissionIndex++;
 
         // Reset node visuals (target highlight) before starting the next mission
@@ -93,6 +89,7 @@ public class SpaceMissionManager : MonoBehaviour
 
         StartMission();
     }
+
 
 
     public void RestartMission()

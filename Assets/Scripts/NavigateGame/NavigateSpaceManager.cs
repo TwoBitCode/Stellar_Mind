@@ -27,12 +27,18 @@ public class NavigateSpaceManager : MonoBehaviour
         // Reset trajectory to the original path
         mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
 
-        // Show mission instructions using the instruction panel
+        // Reset path showing state
+        NavigateSpaceUIManager.Instance.ResetPathState();
+
+        // Use mission-specific instructions
+        string instruction = string.IsNullOrEmpty(mission.missionInstruction)
+            ? "Complete the mission by following the instructions!" // Default fallback instruction
+            : mission.missionInstruction;
+
+        // Show mission instructions
         NavigateSpaceUIManager.Instance.ShowMissionDetails(
             mission.missionName,
-            mission.missionType == SpaceMission.MissionType.ReconstructTrajectory
-                ? "Follow the highlighted trajectory."
-                : "Reach the target node without stepping on restricted nodes.",
+            instruction, // Display the specific instruction for the mission
             mission.trajectoryPath
         );
 
@@ -46,6 +52,7 @@ public class NavigateSpaceManager : MonoBehaviour
         currentNode = mission.startNode ?? startNode;
         PlayerController.Instance.SetPosition(currentNode.transform.position);
     }
+
 
 
 
@@ -75,6 +82,7 @@ public class NavigateSpaceManager : MonoBehaviour
             HandleTargetNavigation(mission, clickedNode);
         }
     }
+
 
     private void HandleTrajectoryReconstruction(SpaceMission mission, Node clickedNode)
     {
@@ -172,4 +180,5 @@ public class NavigateSpaceManager : MonoBehaviour
             currentNode = newNode;
         });
     }
+
 }
