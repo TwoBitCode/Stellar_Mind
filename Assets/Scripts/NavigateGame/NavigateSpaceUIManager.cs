@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class NavigateSpaceUIManager : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class NavigateSpaceUIManager : MonoBehaviour
     private Coroutine highlightCoroutine;
     private Node[] currentTrajectoryPath;
     private bool isPathShowing = false;
+    [Header("Strategy Panel")]
+    public GameObject strategyPanel; // The panel to show strategy tips
+    public TextMeshProUGUI strategyText; // Text for the strategy message
+    public Button continueButton; // Button to restart the mission
 
     private void Awake()
     {
@@ -222,5 +227,32 @@ public class NavigateSpaceUIManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayBeforeNextMission);
         onComplete?.Invoke();
+    }
+    public void ShowStrategyPanel(System.Action onContinue)
+    {
+        if (strategyPanel != null)
+        {
+            // Show the panel
+            strategyPanel.SetActive(true);
+
+            // Get and display the next strategy from AlienGuideManager
+            string strategy = AlienGuideManager.Instance.GetNextStrategy();
+            strategyText.text = strategy;
+
+            // Update the alien text to match the strategy panel
+            AlienGuideManager.Instance.UpdateAlienText("Think carefully! Review the strategy and press 'Continue' to restart.");
+
+            // Assign the "Continue" button action dynamically
+            continueButton.onClick.RemoveAllListeners();
+            continueButton.onClick.AddListener(() =>
+            {
+                strategyPanel.SetActive(false); // Hide the panel
+                onContinue?.Invoke(); // Trigger the restart logic
+            });
+        }
+        else
+        {
+            Debug.LogWarning("Strategy panel is not assigned in the UI Manager!");
+        }
     }
 }

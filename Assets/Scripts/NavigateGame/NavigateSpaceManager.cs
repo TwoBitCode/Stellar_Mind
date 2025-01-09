@@ -21,7 +21,10 @@ public class NavigateSpaceManager : MonoBehaviour
 
     public void InitializeMission(SpaceMission mission)
     {
-        // Reset trajectory to the original path for safety
+        // Set the correct strategy bank in AlienGuideManager
+        AlienGuideManager.Instance.SetMissionType(mission.missionType);
+
+        // Reset trajectory to the original path
         mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
 
         // Show mission instructions using the instruction panel
@@ -98,12 +101,25 @@ public class NavigateSpaceManager : MonoBehaviour
     }
 
 
-
     // Restart stage logic
     private void RestartStage(SpaceMission mission)
     {
-        Debug.Log("Restarting stage due to a mistake...");
+        Debug.Log("Player made a mistake. Showing strategy panel...");
 
+        // Show strategy feedback from the alien
+        AlienGuideManager.Instance.ProvideNegativeFeedback();
+
+        // Show the strategy panel with a tip
+        NavigateSpaceUIManager.Instance.ShowStrategyPanel(() =>
+        {
+            // When "Continue" is clicked, reset the mission
+            Debug.Log("Restarting the mission...");
+            ResetMissionState(mission);
+        });
+    }
+
+    private void ResetMissionState(SpaceMission mission)
+    {
         // Reset the trajectory path to the original state
         mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
 
@@ -112,8 +128,8 @@ public class NavigateSpaceManager : MonoBehaviour
         currentNode = initialNode;
         PlayerController.Instance.SetPosition(initialNode.transform.position);
 
-        // Notify the alien to provide restart feedback
-        AlienGuideManager.Instance.ProvideRestartMessage();
+        // Update the alien text to reflect the restart
+        AlienGuideManager.Instance.UpdateAlienText("Follow the highlighted trajectory to complete the mission!");
 
         // Re-highlight the trajectory path for Reconstruct Trajectory missions
         if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
@@ -122,6 +138,7 @@ public class NavigateSpaceManager : MonoBehaviour
             NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
         }
     }
+
 
 
 

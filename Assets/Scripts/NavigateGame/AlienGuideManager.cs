@@ -89,6 +89,25 @@ public class AlienGuideManager : MonoBehaviour
     {
         NotifyUI("You can start now.");
     }
+    public string GetNextStrategy()
+    {
+        if (currentStrategies == null || currentStrategies.Length == 0)
+        {
+            return "Pay attention and focus! Let’s try again.";
+        }
+
+        // Fetch the next strategy in the sequence
+        string strategy = strategyIndex < currentStrategies.Length
+            ? currentStrategies[strategyIndex++]
+            : "Try to remember the steps carefully.";
+
+        return strategy;
+    }
+    public void UpdateAlienText(string message)
+    {
+        AlienUIManager.Instance?.UpdateAlienText(message);
+    }
+
 
 
 }
