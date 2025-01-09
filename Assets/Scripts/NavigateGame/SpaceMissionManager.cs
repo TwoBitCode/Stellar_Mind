@@ -33,40 +33,40 @@ public class SpaceMissionManager : MonoBehaviour
         StartMission();
     }
 
-public void StartMission()
-{
-    if (currentMissionIndex >= missions.Count)
+    public void StartMission()
     {
-        Debug.Log("All missions completed!");
-        AlienGuideManager.Instance?.UpdateAlienText("Congratulations! All missions are complete.");
-        return;
+        if (currentMissionIndex >= missions.Count)
+        {
+            Debug.Log("All missions completed!");
+            AlienGuideManager.Instance?.UpdateAlienText("Congratulations! All missions are complete.");
+            return;
+        }
+
+        var mission = missions[currentMissionIndex];
+
+        if (mission == null)
+        {
+            Debug.LogError($"Mission at index {currentMissionIndex} is null! Skipping to the next mission.");
+            currentMissionIndex++;
+            StartMission();
+            return;
+        }
+
+        Debug.Log($"Starting Mission: {mission.missionName}");
+        Debug.Log("Restricted Nodes:");
+        foreach (var node in mission.restrictedNodes)
+        {
+            Debug.Log(node.name);
+        }
+
+        mission.Initialize();
+
+        NodeManager.Instance?.ResetAllNodeStates();
+        AlienGuideManager.Instance?.DisplayMissionIntro(mission.missionName);
+
+        mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
+        NavigateSpaceManager.Instance?.InitializeMission(mission);
     }
-
-    var mission = missions[currentMissionIndex];
-
-    if (mission == null)
-    {
-        Debug.LogError($"Mission at index {currentMissionIndex} is null! Skipping to the next mission.");
-        currentMissionIndex++;
-        StartMission();
-        return;
-    }
-
-    Debug.Log($"Starting Mission: {mission.missionName}");
-    Debug.Log("Restricted Nodes:");
-    foreach (var node in mission.restrictedNodes)
-    {
-        Debug.Log(node.name);
-    }
-
-    mission.Initialize();
-
-    NodeManager.Instance?.ResetAllNodeStates();
-    AlienGuideManager.Instance?.DisplayMissionIntro(mission.missionName);
-
-    mission.trajectoryPath = mission.originalTrajectoryPath.Clone() as Node[];
-    NavigateSpaceManager.Instance?.InitializeMission(mission);
-}
 
 
     public void CompleteMission()
