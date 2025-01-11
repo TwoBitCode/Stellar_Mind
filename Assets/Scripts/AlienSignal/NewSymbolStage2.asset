@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e3480ea032a2c4b9f82a0c56fdcc93, type: 3}
+  m_Name: NewSymbolStage2
+  m_EditorClassIdentifier: 
+  stageName: Stage3
+  symbols:
+  - {fileID: 1104660686, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: 961812646, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: 641452470, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1141254216, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  meanings:
+  - Your
+  - Our
+  - Hero
+  - Thank you
+  tips:
+  - Visualize in your mind the shapes and their order like a story
+  distractorSymbols:
+  - {fileID: 1252446727, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1444979025, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1423060363, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1357008994, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: 1210038002, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}

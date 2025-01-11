@@ -17,11 +17,21 @@ public class SymbolManager : MonoBehaviour
     public void LoadVoiceStage(VoiceStage stage)
     {
         currentVoiceStage = stage;
+        if (currentVoiceStage != null)
+        {
+            Debug.Log($"Loaded VoiceStage: {currentVoiceStage.stageName} with {currentVoiceStage.distractorVoices.Count} distractor voices.");
+        }
+        else
+        {
+            Debug.LogError("VoiceStage is null!");
+        }
+
         if (currentVoiceStage.voices.Count != currentVoiceStage.meanings.Count)
         {
             Debug.LogError("Voices and meanings count mismatch! Check the stage setup.");
         }
     }
+
 
 
 
@@ -81,4 +91,26 @@ public class SymbolManager : MonoBehaviour
     {
         return currentVoiceStage.voices.Count;
     }
+    public Sprite GetRandomSymbol()
+    {
+        if (currentStage != null && currentStage.symbols.Count > 0)
+        {
+            int randomIndex = Random.Range(0, currentStage.symbols.Count);
+            return currentStage.symbols[randomIndex];
+        }
+        Debug.LogError("No symbols available in the current stage!");
+        return null;
+    }
+
+    public AudioClip GetRandomVoice()
+    {
+        if (currentVoiceStage != null && currentVoiceStage.voices.Count > 0)
+        {
+            int randomIndex = Random.Range(0, currentVoiceStage.voices.Count);
+            return currentVoiceStage.voices[randomIndex];
+        }
+        Debug.LogError("No voices available in the current voice stage!");
+        return null;
+    }
+
 }

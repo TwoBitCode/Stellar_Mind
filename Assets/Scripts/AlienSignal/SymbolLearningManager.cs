@@ -71,6 +71,10 @@ public class SymbolLearningManager : MonoBehaviour
             audioSource.clip = currentVoice;
             audioSource.Play();
 
+            // Use a single sound icon for voice learning
+            symbolDisplay.sprite = SymbolGameUIManager.Instance.soundIcon; // Set sound icon
+            SetImageAlpha(symbolDisplay, 1f); // Ensure visibility
+
             // Show the meaning text
             meaningText.text = $"This voice means: {symbolManager.GetVoiceMeaning(currentIndex)}";
 
@@ -81,6 +85,7 @@ public class SymbolLearningManager : MonoBehaviour
             EndLearningPhase();
         }
     }
+
 
     public void NextButtonPressed()
     {

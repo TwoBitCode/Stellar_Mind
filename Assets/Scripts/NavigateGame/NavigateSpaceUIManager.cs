@@ -12,6 +12,7 @@ public class NavigateSpaceUIManager : MonoBehaviour
     public GameObject startButton;
     public TextMeshProUGUI missionInstructionText;
 
+
     [Header("Highlight Settings")]
     [SerializeField] private float startDelay = 2.0f;
     [SerializeField] private float highlightSpeed = 1.0f;
@@ -20,7 +21,7 @@ public class NavigateSpaceUIManager : MonoBehaviour
     [SerializeField] private AudioClip highlightSound;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private float highlightScaleFactor = 1.5f;
-    [SerializeField] private float delayToNextStage = 2.0f; // Time before advancing to the next stage
+    //[SerializeField] private float delayToNextStage = 2.0f; // Time before advancing to the next stage
     [SerializeField] private float delayBeforeNextMission = 2.0f;
     [SerializeField] private float targetHighlightDuration = 3.0f; // Duration to keep the target highlighted
 
