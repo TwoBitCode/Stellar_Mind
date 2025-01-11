@@ -8,4 +8,5 @@ public class SymbolStage : ScriptableObject
     public List<Sprite> symbols; // List of symbols for this stage
     public List<string> meanings; // Corresponding meanings for symbols
     [TextArea] public List<string> tips; // Learning tips for the stage
+    public List<Sprite> distractorSymbols; // Additional symbols used as distractors
 }

@@ -88,67 +88,120 @@ public class SymbolPracticeManager : MonoBehaviour
     }
 
 
-
     private void SetupAnswerButtons()
     {
+        List<int> availableIndices = new List<int>();
+
+        if (isVoiceMode)
+        {
+            // Use distractor voices if in voice mode
+            if (symbolManager.currentVoiceStage != null && symbolManager.currentVoiceStage.distractorVoices.Count > 0)
+            {
+                for (int i = 0; i < symbolManager.currentVoiceStage.distractorVoices.Count; i++)
+                {
+                    availableIndices.Add(i);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No distractor voices available in currentVoiceStage!");
+            }
+        }
+        else
+        {
+            // Use distractor symbols for symbol mode
+            int itemCount = symbolManager.GetSymbolCount();
+            for (int i = 0; i < itemCount; i++)
+            {
+                if (i != currentSymbolIndex)
+                {
+                    availableIndices.Add(i); // Exclude the correct symbol
+                }
+            }
+        }
+
         int correctButtonIndex = Random.Range(0, SymbolGameUIManager.Instance.answerButtons.Length);
 
         for (int i = 0; i < SymbolGameUIManager.Instance.answerButtons.Length; i++)
         {
             Button button = SymbolGameUIManager.Instance.answerButtons[i];
             button.onClick.RemoveAllListeners(); // Clear previous listeners
-
             AudioSource buttonAudioSource = button.GetComponent<AudioSource>();
 
             if (i == correctButtonIndex)
             {
+                // Set the correct answer
                 if (isVoiceMode)
                 {
-                    // Set the correct sound for the button in voice mode
                     buttonAudioSource.clip = symbolManager.GetVoice(currentSymbolIndex);
-
-                    // Add listener for correct answer
+                    button.GetComponent<Image>().sprite = SymbolGameUIManager.Instance.soundIcon; // Use sound icon
                     button.onClick.AddListener(() => CheckAnswer(true));
                 }
                 else
                 {
-                    // Set the correct symbol for the button in symbol mode
                     button.GetComponent<Image>().sprite = symbolManager.GetSymbol(currentSymbolIndex);
-
-                    // Add listener for correct answer
                     button.onClick.AddListener(() => CheckAnswer(true));
                 }
             }
             else
             {
-                int randomIndex;
-                do
+                // Assign distractors
+                if (availableIndices.Count > 0)
                 {
-                    randomIndex = Random.Range(0, isVoiceMode ? symbolManager.GetVoiceCount() : symbolManager.GetSymbolCount());
-                } while (randomIndex == currentSymbolIndex);
+                    int randomIndex = Random.Range(0, availableIndices.Count);
+                    int distractorIndex = availableIndices[randomIndex];
+                    availableIndices.RemoveAt(randomIndex);
 
-                if (isVoiceMode)
-                {
-                    // Set a random sound for the button in voice mode
-                    buttonAudioSource.clip = symbolManager.GetVoice(randomIndex);
-
-                    // Add listener for incorrect answer
-                    button.onClick.AddListener(() => CheckAnswer(false));
+                    if (isVoiceMode)
+                    {
+                        buttonAudioSource.clip = symbolManager.currentVoiceStage.distractorVoices[distractorIndex];
+                        button.GetComponent<Image>().sprite = SymbolGameUIManager.Instance.soundIcon; // Use sound icon
+                        button.onClick.AddListener(() => CheckAnswer(false));
+                    }
+                    else
+                    {
+                        button.GetComponent<Image>().sprite = symbolManager.GetSymbol(distractorIndex);
+                        button.onClick.AddListener(() => CheckAnswer(false));
+                    }
                 }
                 else
                 {
-                    // Set a random symbol for the button in symbol mode
-                    button.GetComponent<Image>().sprite = symbolManager.GetSymbol(randomIndex);
-
-                    // Add listener for incorrect answer
-                    button.onClick.AddListener(() => CheckAnswer(false));
+                    Debug.LogWarning("No more distractors available!");
                 }
             }
 
-            // Add hover sound functionality
-            AddHoverSound(button, buttonAudioSource);
+            AddHoverSound(button, buttonAudioSource); // Add hover functionality
         }
     }
+
+
+
+
+    private Sprite GetRandomDistractorSymbol()
+    {
+        if (symbolManager.currentStage.distractorSymbols.Count > 0)
+        {
+            return symbolManager.currentStage.distractorSymbols[Random.Range(0, symbolManager.currentStage.distractorSymbols.Count)];
+        }
+        return symbolManager.GetRandomSymbol(); // Fallback to any random symbol
+    }
+
+    private AudioClip GetRandomDistractorVoice()
+    {
+        if (symbolManager.currentVoiceStage != null && symbolManager.currentVoiceStage.distractorVoices.Count > 0)
+        {
+            Debug.Log($"Distractor voices available: {symbolManager.currentVoiceStage.distractorVoices.Count}");
+            int randomIndex = Random.Range(0, symbolManager.currentVoiceStage.distractorVoices.Count);
+            Debug.Log($"Selected distractor voice index: {randomIndex}");
+            return symbolManager.currentVoiceStage.distractorVoices[randomIndex];
+        }
+
+        Debug.LogWarning("No distractor voices defined in currentVoiceStage!");
+        return symbolManager.GetRandomVoice(); // Fallback
+    }
+
+
+
 
 
 
@@ -163,13 +216,33 @@ public class SymbolPracticeManager : MonoBehaviour
         // Clear previous triggers
         trigger.triggers.Clear();
 
-        // Add hover event
-        EventTrigger.Entry entry = new EventTrigger.Entry
+        // Add hover event (PointerEnter)
+        EventTrigger.Entry enterEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerEnter
         };
-        entry.callback.AddListener((eventData) => PlayHoverSound(audioSource));
-        trigger.triggers.Add(entry);
+        enterEntry.callback.AddListener((eventData) =>
+        {
+            if (audioSource != null && audioSource.clip != null)
+            {
+                audioSource.Play();
+            }
+        });
+        trigger.triggers.Add(enterEntry);
+
+        // Add leave event (PointerExit)
+        EventTrigger.Entry exitEntry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerExit
+        };
+        exitEntry.callback.AddListener((eventData) =>
+        {
+            if (audioSource != null && audioSource.isPlaying)
+            {
+                audioSource.Stop(); // Stop the sound when the pointer leaves
+            }
+        });
+        trigger.triggers.Add(exitEntry);
     }
 
     private void PlayHoverSound(AudioSource audioSource)
@@ -234,10 +307,6 @@ public class SymbolPracticeManager : MonoBehaviour
             Debug.LogError("StageManager not found!");
         }
     }
-
-
-
-
 
     private void LoadNextStage()
     {

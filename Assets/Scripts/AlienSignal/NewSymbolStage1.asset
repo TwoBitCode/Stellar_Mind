@@ -14,14 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageName: Stage1
   symbols:
-  - {fileID: 2016585050871268627, guid: 105eddaff0c934b4a937aa7eac214151, type: 3}
-  - {fileID: 396118083496453706, guid: 01e4e8297e28b45459b74184ab0ae12f, type: 3}
-  - {fileID: 6759385873261957498, guid: 22ff9c17d07610f4f987e5b499958639, type: 3}
+  - {fileID: -1212905187, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: 1905214751, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: 2057917434, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1790375044, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
   meanings:
   - Hello
   - From
-  - Zarquinia
+  - Our
+  - Galaxy
   tips:
-  - hi
-  - ju
-  - tu
+  - Visualize in your mind the shapes and their order like a story
+  distractorSymbols:
+  - {fileID: 1252446727, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1444979025, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1423060363, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: -1357008994, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
+  - {fileID: 1210038002, guid: a5129965d9f7c604cb1842f6662f7e07, type: 3}
