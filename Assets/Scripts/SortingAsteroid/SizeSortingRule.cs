@@ -3,18 +3,45 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Asteroid Challenges/Size Sorting Rule")]
 public class SizeSortingRule : ScriptableObject, ISortingRule
 {
-    [Tooltip("Size threshold to determine 'Small' or 'Large' categories")]
-    public float largeSizeThreshold = 1.5f;
+    [Tooltip("Scale for small asteroids")]
+    public Vector3 smallSize = new Vector3(1f, 1f, 1f);
+
+    [Tooltip("Scale for large asteroids")]
+    public Vector3 largeSize = new Vector3(1.2f, 1.2f, 1.2f);
 
     public string GetCategory(GameObject item)
     {
-        float size = Random.Range(0.5f, 2.5f);
-        return size >= largeSizeThreshold ? "Large" : "Small";
+        if (item.TryGetComponent<SortingDraggableItem>(out var draggable))
+        {
+            // Assign type based on predefined logic
+            string type = Random.value > 0.5f ? "Large" : "Small";
+            draggable.AssignedType = type; // Store the type
+            return type;
+        }
+
+        Debug.LogError("SortingDraggableItem component missing on the asteroid!");
+        return null;
     }
 
     public void ApplyVisuals(GameObject item)
     {
-        float size = Random.Range(0.5f, 2.5f);
-        item.transform.localScale = Vector3.one * size;
+        if (item.TryGetComponent<SortingDraggableItem>(out var draggable))
+        {
+            // Apply the predefined size based on the type
+            if (draggable.AssignedType == "Small")
+            {
+                item.transform.localScale = smallSize;
+                Debug.Log($"Asteroid scaled to small size: {smallSize}");
+            }
+            else if (draggable.AssignedType == "Large")
+            {
+                item.transform.localScale = largeSize;
+                Debug.Log($"Asteroid scaled to large size: {largeSize}");
+            }
+        }
+        else
+        {
+            Debug.LogError("SortingDraggableItem component missing on the asteroid!");
+        }
     }
 }

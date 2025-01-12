@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 public class SortingDraggableItem : DraggableItem
 {
     public string AssignedType { get; set; } // Dynamically assigned type
+    public float AssignedSize { get; set; } // Dynamically assigned size
+
 
     [SerializeField] private int pointsForCorrectDrop = 10;
     [SerializeField] private float destroyDelay = 0.2f;
@@ -77,6 +79,8 @@ public class SortingDraggableItem : DraggableItem
             HandleIncorrectPlacement();
         }
     }
+
+
 
     private bool IsOverArea(string areaName)
     {
