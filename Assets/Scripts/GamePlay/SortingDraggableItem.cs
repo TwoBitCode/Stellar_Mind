@@ -1,127 +1,127 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class SortingDraggableItem : DraggableItem
 {
-    [Tooltip("Points awarded for a correct drop")]
+    public string AssignedType { get; set; } // Dynamically assigned type
+
     [SerializeField] private int pointsForCorrectDrop = 10;
-
-    [Tooltip("Delay before destroying the indicator")]
     [SerializeField] private float destroyDelay = 0.2f;
-
-    [Tooltip("Name of the left area for dropping items")]
-    [SerializeField] private string leftAreaName = "LeftArea";
-
-    [Tooltip("Name of the right area for dropping items")]
-    [SerializeField] private string rightAreaName = "RightArea";
-
-    [Tooltip("Name of the score manager")]
-    [SerializeField] private string scoreManagerName = "ScoreManager";
-
-    [Tooltip("Name of the game manager")]
-    [SerializeField] private string gameManagerName = "GameManager";
-
-    private RectTransform leftArea;
-    private RectTransform rightArea;
-
-    [SerializeField] public string itemType; // Type of this asteroid ("blue" or "yellow")
-    private Image asteroidImage;
-    private ScoreManager scoreManager;
-    private SortingGameManager gameManager;
 
     [SerializeField] private GameObject correctIndicatorPrefab;
     [SerializeField] private GameObject incorrectIndicatorPrefab;
 
-    private Color originalColor;
+
+    private AsteroidGameManager gameManager;
+    private ScoreManager scoreManager;
 
     private void Start()
     {
-        // Initialize components and managers
-        asteroidImage = GetComponent<Image>();
-        originalColor = asteroidImage.color;
-
-        leftArea = GameObject.Find(leftAreaName).GetComponent<RectTransform>();
-        rightArea = GameObject.Find(rightAreaName).GetComponent<RectTransform>();
-
-        scoreManager = GameObject.Find(scoreManagerName).GetComponent<ScoreManager>();
-        gameManager = GameObject.Find(gameManagerName).GetComponent<SortingGameManager>();
+        // Find the AsteroidGameManager in the scene
+        gameManager = Object.FindFirstObjectByType<AsteroidGameManager>();
 
         if (gameManager == null)
         {
-            Debug.LogError("SortingGameManager not found in the scene!");
+            Debug.LogError("AsteroidGameManager not found in the scene!");
+            return;
         }
 
-        SetAsteroidColor();
-        SetInFrontOfTargetAreas();
-    }
+        // Find the ScoreManager in the scene
+        scoreManager = Object.FindFirstObjectByType<ScoreManager>();
 
-    private void SetInFrontOfTargetAreas()
-    {
-        transform.SetAsLastSibling(); // Ensure the item appears above other elements
-    }
+        if (scoreManager == null)
+        {
+            Debug.LogError("ScoreManager not found in the scene!");
+        }
 
+        // Apply visuals based on the assigned type and rule
+        var currentChallenge = gameManager?.ChallengeManager?.CurrentChallenge;
+        var rule = currentChallenge?.sortingRule as ISortingRule;
+
+        if (rule != null)
+        {
+            rule.ApplyVisuals(gameObject);
+            Debug.Log($"Asteroid visuals applied for type: {AssignedType}");
+        }
+        else
+        {
+            Debug.LogError("Sorting rule not found or invalid!");
+        }
+    }
     public override void OnEndDrag(PointerEventData eventData)
     {
-        base.OnEndDrag(eventData); // Retain base drag behavior
+        base.OnEndDrag(eventData);
 
-        // Validate drop
-        if (gameManager.LeftType == itemType && IsOverArea(leftArea))
+        if (gameManager == null)
         {
-            Debug.Log($"Correct! Dropped {itemType} in the left area.");
+            Debug.LogError("GameManager is not assigned!");
+            return;
+        }
+
+        // Validate placement based on the assigned type
+        if (gameManager.LeftType == AssignedType && IsOverArea("LeftArea"))
+        {
+            Debug.Log($"Correct placement in LeftArea for type: {AssignedType}");
             HandleCorrectPlacement();
         }
-        else if (gameManager.RightType == itemType && IsOverArea(rightArea))
+        else if (gameManager.RightType == AssignedType && IsOverArea("RightArea"))
         {
-            Debug.Log($"Correct! Dropped {itemType} in the right area.");
+            Debug.Log($"Correct placement in RightArea for type: {AssignedType}");
             HandleCorrectPlacement();
         }
         else
         {
-            Debug.Log($"Incorrect placement of {itemType}. Returning to original position.");
+            Debug.Log($"Incorrect placement for type: {AssignedType}");
             HandleIncorrectPlacement();
         }
     }
-    private bool IsOverArea(RectTransform area)
+
+    private bool IsOverArea(string areaName)
     {
+        RectTransform area = GameObject.Find(areaName)?.GetComponent<RectTransform>();
+        if (area == null)
+        {
+            Debug.LogError($"Drop area '{areaName}' not found!");
+            return false;
+        }
+
         bool isOver = RectTransformUtility.RectangleContainsScreenPoint(area, Input.mousePosition, Camera.main);
-        Debug.Log($"Checking area: {area.name}, Mouse Position: {Input.mousePosition}, Is Over: {isOver}");
+        Debug.Log($"Checking placement over {areaName}: {isOver}");
         return isOver;
     }
 
-
     private void HandleCorrectPlacement()
     {
-        scoreManager.AddScore(pointsForCorrectDrop);
+        // Add points using the existing ScoreManager
+        if (scoreManager != null)
+        {
+            scoreManager.AddScore(pointsForCorrectDrop);
+        }
+        else
+        {
+            Debug.LogError("ScoreManager instance is not available!");
+        }
 
         if (correctIndicatorPrefab != null)
         {
             GameObject correctIndicator = Instantiate(correctIndicatorPrefab, transform.parent);
-            correctIndicator.transform.localPosition = correctIndicatorPrefab.transform.localPosition;
             Destroy(correctIndicator, destroyDelay);
         }
 
-        Destroy(gameObject); // Remove asteroid after correct placement
+        Destroy(gameObject); // Remove the asteroid after correct placement
     }
+
 
     private void HandleIncorrectPlacement()
     {
         if (incorrectIndicatorPrefab != null)
         {
             GameObject incorrectIndicator = Instantiate(incorrectIndicatorPrefab, transform.parent);
-            incorrectIndicator.transform.localPosition = incorrectIndicatorPrefab.transform.localPosition;
             Destroy(incorrectIndicator, destroyDelay);
         }
 
-        asteroidImage.color = Color.red; // Indicate incorrect placement
-        Destroy(gameObject, destroyDelay); // Destroy asteroid after delay
-    }
-
-    private void SetAsteroidColor()
-    {
-        if (asteroidImage != null)
-        {
-            asteroidImage.color = itemType == "blue" ? Color.blue : itemType == "yellow" ? Color.yellow : originalColor;
-        }
+        Destroy(gameObject, destroyDelay); // Remove the asteroid after incorrect placement
     }
 }

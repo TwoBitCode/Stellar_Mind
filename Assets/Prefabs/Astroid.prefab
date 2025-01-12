@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -362, y: -181.75}
+  m_AnchoredPosition: {x: -199, y: -124.5}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3954325943319728823
@@ -89,8 +89,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 5964881218803232530}
-  parentAfterDrag: {fileID: 0}
-  itemType: blue
-  pointsPerCorrectDrop: 10
+  pointsForCorrectDrop: 10
+  destroyDelay: 0.2
+  leftAreaName: LeftArea
+  rightAreaName: RightArea
+  scoreManagerName: ScoreManager
+  gameManagerName: AsteroidGameManager
   correctIndicatorPrefab: {fileID: 778939839938214868, guid: 529332df6767bd642abb153a3aebb071, type: 3}
   incorrectIndicatorPrefab: {fileID: 5444259150496245289, guid: b9b20537aff5d034082d27bbe70dd4c0, type: 3}
