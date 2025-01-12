@@ -40,7 +40,6 @@ public class AsteroidGameUIManager : MonoBehaviour
 
 
 
-
     public void UpdateTimerDisplay(float timeRemaining)
     {
         if (timerText != null)

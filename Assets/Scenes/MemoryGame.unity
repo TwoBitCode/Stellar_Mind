@@ -1833,7 +1833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a0b26f9963aaf4c97a266195cecaab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shuffleDelay: 5
+  shuffleDelay: 10
   numObjects: 4
   pointsToAdd: 10
   gridManager: {fileID: 1016497775}

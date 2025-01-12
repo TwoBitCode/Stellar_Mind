@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -91,9 +91,5 @@ MonoBehaviour:
   image: {fileID: 5964881218803232530}
   pointsForCorrectDrop: 10
   destroyDelay: 0.2
-  leftAreaName: LeftArea
-  rightAreaName: RightArea
-  scoreManagerName: ScoreManager
-  gameManagerName: AsteroidGameManager
   correctIndicatorPrefab: {fileID: 778939839938214868, guid: 529332df6767bd642abb153a3aebb071, type: 3}
   incorrectIndicatorPrefab: {fileID: 5444259150496245289, guid: b9b20537aff5d034082d27bbe70dd4c0, type: 3}

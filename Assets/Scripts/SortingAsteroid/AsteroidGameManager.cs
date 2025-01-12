@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AsteroidGameManager : MonoBehaviour
@@ -23,6 +24,8 @@ public class AsteroidGameManager : MonoBehaviour
     private int currentAsteroidCount;
     private bool isGameActive;
     private float spawnTimer;
+    private List<GameObject> activeAsteroids = new List<GameObject>(); // Track spawned asteroids
+
 
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
@@ -49,7 +52,9 @@ public class AsteroidGameManager : MonoBehaviour
 
     private void InitializeChallenge()
     {
+        ClearAsteroids();
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
+
         if (currentChallenge == null)
         {
             Debug.LogError("No current challenge available!");
@@ -66,6 +71,7 @@ public class AsteroidGameManager : MonoBehaviour
         string instructions = GenerateInstructions();
         uiManager.ShowInstructions(instructions, StartGame);
     }
+
 
     private string GenerateInstructions()
     {
@@ -134,6 +140,7 @@ public class AsteroidGameManager : MonoBehaviour
         asteroid.transform.localPosition = spawnPosition;
 
         ApplySortingRules(asteroid);
+        activeAsteroids.Add(asteroid);
         currentAsteroidCount++;
     }
 
@@ -157,5 +164,22 @@ public class AsteroidGameManager : MonoBehaviour
     {
         isGameActive = false;
         Debug.Log("Challenge ended! Time is up.");
+        asteroidChallengeManager.AdvanceToNextChallenge();
+        InitializeChallenge(); // Start the next challenge
     }
+
+    private void ClearAsteroids()
+    {
+        foreach (var asteroid in activeAsteroids)
+        {
+            if (asteroid != null)
+            {
+                Destroy(asteroid);
+            }
+        }
+
+        activeAsteroids.Clear(); // Clear the list
+        Debug.Log("Cleared all asteroids from the previous challenge.");
+    }
+
 }
