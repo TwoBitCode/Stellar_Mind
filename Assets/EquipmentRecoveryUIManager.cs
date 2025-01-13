@@ -64,6 +64,8 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     // Starts the workspace instructions dialogue
     public void StartWorkspaceInstructions()
     {
+        Debug.Log("Starting workspace instructions...");
+
         currentInstructionIndex = 0; // Reset the instruction index
         dialoguePanel.SetActive(true); // Show the dialogue panel
         workspaceStartButton.SetActive(false); // Hide the start button initially
@@ -71,11 +73,11 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
         ShowNextInstruction();
     }
 
-    // Displays the next instruction in the workspace
     private void ShowNextInstruction()
     {
         if (currentInstructionIndex < workspaceInstructions.Length)
         {
+            Debug.Log($"Showing instruction {currentInstructionIndex + 1}: {workspaceInstructions[currentInstructionIndex]}");
             dialogueText.text = workspaceInstructions[currentInstructionIndex]; // Update text
             currentInstructionIndex++;
 
@@ -91,6 +93,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             }
         }
     }
+
 
     // Enables the workspace start button
     private void EnableWorkspaceStartButton()

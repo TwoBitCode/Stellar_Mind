@@ -3,14 +3,17 @@ using TMPro;
 
 public class EquipmentRecoveryIntro : MonoBehaviour
 {
+    [Header("UI Panels")]
+    public GameObject introPanel; // Entire panel for the intro (dialogue, robot shaking, etc.)
+    public GameObject workspacePanel; // Panel for the workspace mini-game
+
     [Header("UI Elements")]
-    public GameObject dialoguePanel; // Intro panel with astronaut dialogue
-    public TextMeshProUGUI dialogueText; // Text component for the dialogue
+    public GameObject dialoguePanel; // Panel containing astronaut dialogue
+    public TextMeshProUGUI dialogueText; // Text component for astronaut instructions
     public GameObject fullRobot; // Full robot before it breaks
     public GameObject robotPartsParent; // Parent object containing all parts
-    public GameObject workspacePanel; // Workspace panel for the mini-game
     public Animator robotAnimator; // Animator for robot animations
-    public UnityEngine.UI.Button startButton; // Reference to the button
+    public UnityEngine.UI.Button startButton; // Button to start the intro sequence
 
     [Header("Dialogue Settings")]
     [TextArea(2, 5)]
@@ -30,13 +33,17 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
     private void Start()
     {
-        // Ensure the Start button is wired to its click event
+        // Ensure the start button is wired to its click event
         startButton.onClick.AddListener(OnStartButtonClicked);
 
-        // Hide the robot parts at the start
+        // Ensure only the intro panel is active at the start
+        introPanel.SetActive(true);
+        workspacePanel.SetActive(false);
+
+        // Hide robot parts at the start
         robotPartsParent.SetActive(false);
 
-        // Show the first line of dialogue immediately
+        // Initialize the dialogue
         InitializeDialogue();
     }
 
@@ -68,7 +75,7 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         Invoke(nameof(HideFullRobotAndShowParts), partsScatterDelay);
         Invoke(nameof(SlidePartsOut), partsScatterDelay);
         Invoke(nameof(DisplayTransitionDialogue), partsScatterDelay + scatterDuration);
-        Invoke(nameof(StartWorkspace), partsScatterDelay + scatterDuration + transitionDelay);
+        Invoke(nameof(TransitionToWorkspace), partsScatterDelay + scatterDuration + transitionDelay);
     }
 
     private void ShowNextDialogueLine()
@@ -127,9 +134,13 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         part.localPosition = targetPosition; // Ensure the part reaches the final position
     }
 
-    private void StartWorkspace()
+    private void TransitionToWorkspace()
     {
-        dialoguePanel.SetActive(false); // Hide the dialogue
-        workspacePanel.SetActive(true); // Show the workspace
+        introPanel.SetActive(false); // Hide the intro panel
+        workspacePanel.SetActive(true); // Show the workspace panel
+
+        // Start the workspace instructions
+        EquipmentRecoveryUIManager.Instance?.StartWorkspaceInstructions();
     }
+
 }
