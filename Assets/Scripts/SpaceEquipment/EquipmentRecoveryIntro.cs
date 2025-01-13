@@ -29,7 +29,14 @@ public class EquipmentRecoveryIntro : MonoBehaviour
     public float scatterDistance = 100f; // Max distance the parts should slide out
     public float scatterDuration = 0.5f; // Duration of the slide-out effect
 
+    [Header("Audio")]
+    public AudioSource audioSource; // Audio source for playing sounds
+    public AudioClip shakeSound; // Sound for the robot shaking
+    public AudioClip explodeSound; // Sound for the robot exploding
+
     private int currentLineIndex = 0;
+    [Header("Transitions")]
+    public PanelTransitionManager panelTransitionManager; // Reference to the transition manager
 
     private void Start()
     {
@@ -43,7 +50,8 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         // Hide robot parts at the start
         robotPartsParent.SetActive(false);
 
-        // Initialize the dialogue
+        // Play the shake sound as ambient sound at the start
+        PlayShakeSoundLoop();
         InitializeDialogue();
     }
 
@@ -67,16 +75,22 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         // Disable the button to prevent multiple clicks
         startButton.interactable = false;
 
+        // Hide the button entirely
+        startButton.gameObject.SetActive(false);
+
         // Start displaying dialogue and play the robot shaking animation
         ShowNextDialogueLine();
+        PlayShakeSoundLoop(); // Play the shake sound
         robotAnimator.SetTrigger("Shake");
 
         // Schedule actions: Show parts, slide them out, display transition dialogue, and transition
         Invoke(nameof(HideFullRobotAndShowParts), partsScatterDelay);
         Invoke(nameof(SlidePartsOut), partsScatterDelay);
+        Invoke(nameof(PlayExplodeSound), partsScatterDelay); // Play the explode sound
         Invoke(nameof(DisplayTransitionDialogue), partsScatterDelay + scatterDuration);
         Invoke(nameof(TransitionToWorkspace), partsScatterDelay + scatterDuration + transitionDelay);
     }
+
 
     private void ShowNextDialogueLine()
     {
@@ -89,6 +103,33 @@ public class EquipmentRecoveryIntro : MonoBehaviour
             {
                 Invoke(nameof(ShowNextDialogueLine), textDisplayDuration); // Schedule the next line
             }
+        }
+    }
+
+    private void PlayShakeSoundLoop()
+    {
+        if (audioSource != null && shakeSound != null)
+        {
+            audioSource.clip = shakeSound;
+            audioSource.loop = true; // Loop the shake sound
+            audioSource.Play();
+        }
+    }
+
+    private void PlayExplodeSound()
+    {
+        if (audioSource != null && explodeSound != null)
+        {
+            audioSource.loop = false; // Ensure the explode sound doesn't loop
+            audioSource.PlayOneShot(explodeSound);
+        }
+    }
+
+    private void StopAllSounds()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Stop(); // Stop all sounds immediately
         }
     }
 
@@ -136,11 +177,12 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
     private void TransitionToWorkspace()
     {
-        introPanel.SetActive(false); // Hide the intro panel
-        workspacePanel.SetActive(true); // Show the workspace panel
+        // Stop all sounds immediately before transitioning
+        StopAllSounds();
+
+        panelTransitionManager.TransitionPanels(introPanel, workspacePanel);
 
         // Start the workspace instructions
         EquipmentRecoveryUIManager.Instance?.StartWorkspaceInstructions();
     }
-
 }
