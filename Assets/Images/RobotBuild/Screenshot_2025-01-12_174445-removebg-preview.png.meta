@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 43cbad641b80d8348b919451c702d03b
+guid: 3d677949aaaf2894fa515c7ea00ee9e1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8370772497264355155
-    second: Screenshot 2025-01-11 190559_0
+      213: 8693343726297787401
+    second: Screenshot_2025-01-12_174445-removebg-preview_0
+  - first:
+      213: 8145710100901999114
+    second: Screenshot_2025-01-12_174445-removebg-preview_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +129,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Screenshot 2025-01-11 190559_0
+      name: Screenshot_2025-01-12_174445-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 103
-        height: 142
+        x: 18
+        y: 116
+        width: 29
+        height: 5
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +144,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: da8d2f493ca05db80800000000000000
-      internalID: -8370772497264355155
+      spriteID: 90ca95c4f06f4a870800000000000000
+      internalID: 8693343726297787401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Screenshot_2025-01-12_174445-removebg-preview_1
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 0
+        width: 38
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a02339fcd206b0170800000000000000
+      internalID: 8145710100901999114
       vertices: []
       indices: 
       edges: []
@@ -160,8 +185,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Screenshot 2025-01-11 190559_0: -8370772497264355155
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
