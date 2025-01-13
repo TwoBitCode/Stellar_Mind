@@ -60,4 +60,5 @@ public class StrategyManager : MonoBehaviour
             strategyPanel.SetActive(false);
         }
     }
+
 }

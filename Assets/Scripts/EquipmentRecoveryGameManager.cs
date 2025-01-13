@@ -6,6 +6,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
     [Header("Game Settings")]
     public int totalParts; // Total number of parts that need to be placed correctly
+    public int pointsForCompletion = 10; // Points awarded for completing the level, modifiable in the Inspector
     private int correctPartsPlaced = 0; // Counter for correctly placed parts
 
     [Header("UI Elements")]
@@ -40,12 +41,22 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     {
         Debug.Log("Level complete!");
 
+        // Add points to the overall score
+        if (OverallScoreManager.Instance != null)
+        {
+            OverallScoreManager.Instance.AddScoreFromStage("Equipment Recovery", pointsForCompletion);
+        }
+        else
+        {
+            Debug.LogError("OverallScoreManager instance not found!");
+        }
+
         // Show the level complete panel
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
         }
 
-        // You can add additional logic here, like stopping player interactions or triggering animations
+        // Additional logic (e.g., stopping interactions) can go here
     }
 }
