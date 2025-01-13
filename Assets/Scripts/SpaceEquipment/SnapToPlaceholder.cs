@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class SnapToPlaceholder : MonoBehaviour, IDropHandler
 {
-    public string correctPartTag; // Tag for the correct part (e.g., "Arm", "Leg", etc.)
+    public string correctPartTag; // Tag for the correct part (e.g., "Arm", "Leg")
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -20,10 +20,22 @@ public class SnapToPlaceholder : MonoBehaviour, IDropHandler
                 droppedObject.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
 
                 Debug.Log("Correct part dropped and snapped!");
+
+                // Show "Correct!" feedback
+                EquipmentRecoveryUIManager.Instance?.ShowFeedback("Correct!", Color.green);
+
+                // Play correct sound via the manager
+                AudioFeedbackManager.Instance?.PlayCorrectSound();
             }
             else
             {
                 Debug.Log("Incorrect part dropped!");
+
+                // Show "Try Again!" feedback
+                EquipmentRecoveryUIManager.Instance?.ShowFeedback("Try Again!", Color.red);
+
+                // Play incorrect sound via the manager
+                AudioFeedbackManager.Instance?.PlayIncorrectSound();
             }
         }
     }

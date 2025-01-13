@@ -14,8 +14,16 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        canvasGroup.blocksRaycasts = false; // Disable raycasts while dragging
+        canvasGroup.blocksRaycasts = false;
+
+        // Play drag start sound
+        if (AudioFeedbackManager.Instance != null)
+        {
+            AudioFeedbackManager.Instance.PlayDragStartSound();
+            Debug.Log("Playing drag start sound.");
+        }
     }
+
 
     public void OnDrag(PointerEventData eventData)
     {
