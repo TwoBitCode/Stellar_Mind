@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class CableConnectionManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class CableConnectionManager : MonoBehaviour
         public GameObject disconnectedPanel; // Panel for the disconnected state
         public DragCable[] cables; // Cables to be used in the stage
         public RectTransform[] targets; // Shapes (targets) for the stage
+        public DialoguePanel dialoguePanel; // Dialogue panel for the stage
     }
 
     public CableConnectionStage[] stages; // All stages in the mini-game
@@ -24,6 +26,11 @@ public class CableConnectionManager : MonoBehaviour
     public int currentStage = 0;
     [SerializeField]
     private PanelTransitionHandler panelTransitionHandler;
+    public TextMeshProUGUI timerText; // Text for the timer
+    public float countdownTime = 5f; // Time for the countdown
+    [SerializeField]
+    private SparkEffectHandler sparkEffectHandler; // Ensure this is assigned in the Inspector
+
 
     void Start()
     {
@@ -36,13 +43,55 @@ public class CableConnectionManager : MonoBehaviour
         if (stageIndex >= stages.Length)
         {
             Debug.Log("All stages completed!");
-            ShowFeedback("Game Completed!", stageCompletedFeedbackColor);
             return;
         }
 
         CableConnectionStage stage = stages[stageIndex];
 
-        // Handle panel transition with explosion
+        if (stage.dialoguePanel != null)
+        {
+            stage.dialoguePanel.StartDialogue(() =>
+            {
+                // After the dialogue ends, start the panel transition
+                panelTransitionHandler.ShowConnectedPanel(
+                    stage.connectedPanel,
+                    stage.disconnectedPanel,
+                    FindAnyObjectByType<SparkEffectHandler>(),
+                    () =>
+                    {
+                        foreach (RectTransform target in stage.targets)
+                        {
+                            target.gameObject.SetActive(true);
+                        }
+                    }
+                );
+            });
+        }
+    }
+
+    private IEnumerator StartCountdown(CableConnectionStage stage)
+    {
+        float timeRemaining = countdownTime;
+
+        // Display the timer
+        if (timerText != null)
+        {
+            timerText.gameObject.SetActive(true);
+        }
+
+        while (timeRemaining > 0)
+        {
+            timerText.text = Mathf.Ceil(timeRemaining).ToString();
+            timeRemaining -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (timerText != null)
+        {
+            timerText.gameObject.SetActive(false);
+        }
+
+        // Trigger explosion and transition
         if (panelTransitionHandler != null)
         {
             panelTransitionHandler.ShowConnectedPanel(
@@ -51,19 +100,20 @@ public class CableConnectionManager : MonoBehaviour
                 FindAnyObjectByType<SparkEffectHandler>(),
                 () =>
                 {
-                    // After the panel transition, activate targets
-                    Debug.Log($"Stage {stageIndex} loaded.");
+                    // Enable targets for the stage after the transition
                     foreach (RectTransform target in stage.targets)
                     {
                         target.gameObject.SetActive(true);
                     }
-                });
+                }
+            );
         }
         else
         {
             Debug.LogError("PanelTransitionHandler is missing!");
         }
     }
+
 
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
@@ -144,4 +194,24 @@ public class CableConnectionManager : MonoBehaviour
         }
         return null;
     }
+    public void OnStartButtonClick()
+    {
+        CableConnectionStage stage = stages[currentStage];
+
+        if (stage.dialoguePanel != null)
+        {
+            // Hide the dialogue panel
+            stage.dialoguePanel.gameObject.SetActive(false);
+
+            // Start the countdown
+            StartCoroutine(StartCountdown(stage));
+        }
+        else
+        {
+            Debug.LogError("No DialoguePanel assigned for this stage.");
+        }
+    }
+
+
+
 }
