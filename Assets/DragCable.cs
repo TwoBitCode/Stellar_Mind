@@ -58,9 +58,22 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         }
         else
         {
-            Debug.Log("No target connected");
+            Debug.Log("No target connected. Resetting to start position.");
+            ResetToStartPosition();
         }
     }
+
+    private void ResetToStartPosition()
+    {
+        // Move the cable back to its starting position
+        rectTransform.anchoredPosition = startPoint.anchoredPosition;
+
+        // Update the LineRenderer to reflect the reset position
+        UpdateLineEndPosition();
+
+        Debug.Log("Cable reset to start position.");
+    }
+
 
     private RectTransform GetClosestTarget()
     {
