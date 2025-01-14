@@ -12,6 +12,7 @@ public class CableConnectionManager : MonoBehaviour
         public DragCable[] cables; // Cables to be used in the stage
         public RectTransform[] targets; // Shapes (targets) for the stage
         public DialoguePanel dialoguePanel; // Dialogue panel for the stage
+        public int scoreToAdd; // Score to add upon stage completion
     }
 
     public CableConnectionStage[] stages; // All stages in the mini-game
@@ -58,7 +59,7 @@ public class CableConnectionManager : MonoBehaviour
         }
     }
 
-   
+
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
         CableConnectionStage stage = stages[currentStage];
@@ -74,6 +75,12 @@ public class CableConnectionManager : MonoBehaviour
             {
                 Debug.Log("Stage completed!");
                 ShowFeedback("Stage Completed!", stageCompletedFeedbackColor);
+
+                // Add the stage's score to the overall score
+                if (OverallScoreManager.Instance != null)
+                {
+                    OverallScoreManager.Instance.AddScoreFromStage($"Stage {currentStage + 1}", stage.scoreToAdd);
+                }
 
                 currentStage++;
                 LoadStage(currentStage);
