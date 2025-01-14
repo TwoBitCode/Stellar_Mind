@@ -8,6 +8,9 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     public LineRenderer lineRenderer; // The line representing the cable
     public RectTransform startPoint; // The fixed start point of the cable
     public CableConnectionManager connectionManager; // Reference to the manager script
+
+    public float snapDistance = 5f; // Distance threshold for snapping to a target
+
     void Start()
     {
         // Initialize required components
@@ -23,10 +26,8 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         }
     }
 
-
     public void OnPointerDown(PointerEventData eventData)
     {
-        // Triggered when the user clicks on the wire
         Debug.Log("Dragging Started");
     }
 
@@ -44,11 +45,14 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     {
         Debug.Log("Dragging Ended");
 
-        // Check for overlap with a target
-        RectTransform connectedTarget = GetConnectedTarget();
+        // Check for the closest target
+        RectTransform connectedTarget = GetClosestTarget();
 
         if (connectedTarget != null && connectionManager != null)
         {
+            // Snap to the closest target
+            SnapToTarget(connectedTarget);
+
             // Notify the connection manager about the connection
             connectionManager.OnCableConnected(this, connectedTarget);
         }
@@ -57,33 +61,98 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             Debug.Log("No target connected");
         }
     }
-    private RectTransform GetConnectedTarget()
+
+    private RectTransform GetClosestTarget()
     {
-        // Iterate through all targets in the current stage
+        RectTransform closestTarget = null;
+        float closestDistance = float.MaxValue;
+
         foreach (RectTransform target in connectionManager.stages[connectionManager.currentStage].targets)
         {
-            // Check if the pointer is within the target's rectangle
-            if (RectTransformUtility.RectangleContainsScreenPoint(target, Input.mousePosition, canvas.worldCamera))
+            // Convert target and cable positions to world space for distance calculation
+            Vector3 cableWorldPos = rectTransform.position;
+            Vector3 targetWorldPos = target.position;
+
+            float distance = Vector3.Distance(cableWorldPos, targetWorldPos);
+
+            // Debug log to verify distances
+            Debug.Log($"Distance to {target.name}: {distance}");
+
+            // Check if the target is within the snapping range
+            CableTarget targetScript = target.GetComponent<CableTarget>();
+            if (distance < snapDistance && distance < closestDistance && targetScript != null && targetScript.targetID == this.name)
             {
-                return target; // Return the connected target
+                closestDistance = distance;
+                closestTarget = target;
             }
         }
 
-        return null; // No target found
+        return closestTarget;
     }
 
 
+
+    private void SnapToTarget(RectTransform target)
+    {
+        if (target != null)
+        {
+            // Snap the draggable cable to the target's world position
+            rectTransform.position = target.position;
+
+            // Update the LineRenderer to reflect the snapped position
+            UpdateLineEndPosition();
+
+            Debug.Log($"Snapped to target: {target.name}");
+        }
+        else
+        {
+            Debug.Log("No valid target to snap to.");
+        }
+    }
+
+
+    private void UpdateLineStartPosition()
+    {
+        if (lineRenderer != null && startPoint != null)
+        {
+            Vector3 worldStartPoint = GetWorldPosition(startPoint);
+            lineRenderer.SetPosition(0, worldStartPoint);
+        }
+    }
     private void UpdateLineEndPosition()
     {
-        // Update the end position of the line based on the draggable wire's position
-        Vector3 worldEndPoint = GetWorldPosition(rectTransform);
-        lineRenderer.SetPosition(1, worldEndPoint);
+        if (lineRenderer != null)
+        {
+            Vector3 worldEndPoint = GetWorldPosition(rectTransform);
+            lineRenderer.SetPosition(1, worldEndPoint);
+
+            // Update the rotation of the wire tips
+            UpdateWireTipsRotation();
+        }
     }
+
 
     private Vector3 GetWorldPosition(RectTransform rect)
     {
-        // Convert the RectTransform's position to world space
         Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, rect.position);
         return canvas.worldCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, canvas.worldCamera.nearClipPlane));
     }
+    private void UpdateWireTipsRotation()
+    {
+        if (lineRenderer != null)
+        {
+            // Get the start and end positions of the LineRenderer
+            Vector3 startPoint = lineRenderer.GetPosition(0);
+            Vector3 endPoint = lineRenderer.GetPosition(1);
+
+            // Calculate the direction vector and the angle
+            Vector2 direction = (endPoint - startPoint).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Rotate the RectTransform of this wire to match the angle
+            rectTransform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+    }
+
+
 }

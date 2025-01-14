@@ -66,22 +66,26 @@ public class CableConnectionManager : MonoBehaviour
     {
         foreach (DragCable cable in stage.cables)
         {
-            // Check if the cable is connected to the correct target
             RectTransform connectedTarget = GetConnectedTarget(cable);
             if (connectedTarget == null)
             {
-                return false; // Cable is not connected to a target
+                Debug.Log($"Cable {cable.name} is not connected to any target.");
+                return false;
             }
 
+            // Validate if the connected target is the correct one
             CableTarget targetScript = connectedTarget.GetComponent<CableTarget>();
             if (targetScript == null || targetScript.targetID != cable.name)
             {
-                return false; // Cable is connected to the wrong target
+                Debug.Log($"Cable {cable.name} is connected to the wrong target: {connectedTarget.name}");
+                return false;
             }
         }
 
-        return true; // All cables are correctly connected
+        Debug.Log("All cables are correctly connected!");
+        return true;
     }
+
 
 
     private RectTransform GetConnectedTarget(DragCable cable)

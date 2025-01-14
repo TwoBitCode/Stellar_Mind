@@ -560,6 +560,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 2075698312}
   startPoint: {fileID: 1950605087}
   connectionManager: {fileID: 505911367}
+  snapDistance: 1
 --- !u!114 &169075425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,6 +767,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 168140483}
   startPoint: {fileID: 1938752175}
   connectionManager: {fileID: 505911367}
+  snapDistance: 1
 --- !u!1 &236770747
 GameObject:
   m_ObjectHideFlags: 0
