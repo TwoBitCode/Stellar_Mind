@@ -5,23 +5,32 @@ using System.Collections;
 
 public class DialoguePanel : MonoBehaviour
 {
-    public GameObject dialoguePanel; // Reference to the dialogue panel
     public TextMeshProUGUI dialogueText; // Text to display dialogues
     public string[] dialogues; // Array of dialogue lines
     public float typingSpeed = 0.05f; // Speed for typing effect
+    public GameObject startButton; // Reference to the start button (hide initially)
 
     private int currentDialogueIndex = 0;
     private Action onDialogueComplete;
+    private bool isTyping = false;
+
+    void Start()
+    {
+        if (startButton != null)
+        {
+            startButton.SetActive(false); // Hide start button initially
+        }
+    }
 
     public void StartDialogue(Action onComplete)
     {
         onDialogueComplete = onComplete;
         currentDialogueIndex = 0;
-        dialoguePanel.SetActive(true); // Ensure the panel is active
+        gameObject.SetActive(true);
         DisplayNextDialogue();
     }
 
-    public void DisplayNextDialogue()
+    private void DisplayNextDialogue()
     {
         if (currentDialogueIndex < dialogues.Length)
         {
@@ -30,35 +39,45 @@ public class DialoguePanel : MonoBehaviour
         }
         else
         {
-            EndDialogue();
+            ShowStartButton();
         }
     }
 
     private IEnumerator TypeDialogue(string dialogue)
     {
+        isTyping = true;
         dialogueText.text = "";
         foreach (char letter in dialogue.ToCharArray())
         {
             dialogueText.text += letter;
             yield return new WaitForSeconds(typingSpeed);
         }
+        isTyping = false;
+
+        // Automatically move to the next dialogue after 1 second
+        yield return new WaitForSeconds(1f);
+        DisplayNextDialogue();
     }
 
     public void OnClick()
     {
-        if (currentDialogueIndex < dialogues.Length)
+        if (isTyping)
         {
-            DisplayNextDialogue();
+            StopAllCoroutines();
+            dialogueText.text = dialogues[currentDialogueIndex - 1];
+            isTyping = false;
         }
         else
         {
-            EndDialogue();
+            DisplayNextDialogue();
         }
     }
 
-    private void EndDialogue()
+    private void ShowStartButton()
     {
-        dialoguePanel.SetActive(false); // Deactivate the panel
-        onDialogueComplete?.Invoke();
+        if (startButton != null)
+        {
+            startButton.SetActive(true); // Show the start button
+        }
     }
 }

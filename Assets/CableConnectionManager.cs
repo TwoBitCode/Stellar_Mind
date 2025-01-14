@@ -38,6 +38,7 @@ public class CableConnectionManager : MonoBehaviour
         LoadStage(currentStage);
     }
 
+
     public void LoadStage(int stageIndex)
     {
         if (stageIndex >= stages.Length)
@@ -52,69 +53,12 @@ public class CableConnectionManager : MonoBehaviour
         {
             stage.dialoguePanel.StartDialogue(() =>
             {
-                // After the dialogue ends, start the panel transition
-                panelTransitionHandler.ShowConnectedPanel(
-                    stage.connectedPanel,
-                    stage.disconnectedPanel,
-                    FindAnyObjectByType<SparkEffectHandler>(),
-                    () =>
-                    {
-                        foreach (RectTransform target in stage.targets)
-                        {
-                            target.gameObject.SetActive(true);
-                        }
-                    }
-                );
+                Debug.Log("Dialogue completed. Waiting for player to start.");
             });
         }
     }
 
-    private IEnumerator StartCountdown(CableConnectionStage stage)
-    {
-        float timeRemaining = countdownTime;
-
-        // Display the timer
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(true);
-        }
-
-        while (timeRemaining > 0)
-        {
-            timerText.text = Mathf.Ceil(timeRemaining).ToString();
-            timeRemaining -= Time.deltaTime;
-            yield return null;
-        }
-
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(false);
-        }
-
-        // Trigger explosion and transition
-        if (panelTransitionHandler != null)
-        {
-            panelTransitionHandler.ShowConnectedPanel(
-                stage.connectedPanel,
-                stage.disconnectedPanel,
-                FindAnyObjectByType<SparkEffectHandler>(),
-                () =>
-                {
-                    // Enable targets for the stage after the transition
-                    foreach (RectTransform target in stage.targets)
-                    {
-                        target.gameObject.SetActive(true);
-                    }
-                }
-            );
-        }
-        else
-        {
-            Debug.LogError("PanelTransitionHandler is missing!");
-        }
-    }
-
-
+   
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
         CableConnectionStage stage = stages[currentStage];
@@ -198,20 +142,53 @@ public class CableConnectionManager : MonoBehaviour
     {
         CableConnectionStage stage = stages[currentStage];
 
+        // Hide the dialogue panel when the start button is clicked
         if (stage.dialoguePanel != null)
         {
-            // Hide the dialogue panel
             stage.dialoguePanel.gameObject.SetActive(false);
-
-            // Start the countdown
-            StartCoroutine(StartCountdown(stage));
         }
-        else
+
+        // Start the countdown timer
+        StartCoroutine(StartCountdown(stage));
+    }
+    private IEnumerator StartCountdown(CableConnectionStage stage)
+    {
+        float timeRemaining = countdownTime;
+
+        if (timerText != null)
         {
-            Debug.LogError("No DialoguePanel assigned for this stage.");
+            timerText.gameObject.SetActive(true);
+        }
+
+        while (timeRemaining > 0)
+        {
+            timerText.text = Mathf.Ceil(timeRemaining).ToString();
+            timeRemaining -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (timerText != null)
+        {
+            timerText.gameObject.SetActive(false);
+        }
+
+        // Trigger the panel transition
+        if (panelTransitionHandler != null)
+        {
+            panelTransitionHandler.ShowConnectedPanel(
+                stage.connectedPanel,
+                stage.disconnectedPanel,
+                sparkEffectHandler,
+                () =>
+                {
+                    foreach (RectTransform target in stage.targets)
+                    {
+                        target.gameObject.SetActive(true);
+                    }
+                }
+            );
         }
     }
-
 
 
 }
