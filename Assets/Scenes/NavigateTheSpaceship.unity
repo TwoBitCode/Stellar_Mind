@@ -496,7 +496,7 @@ AudioSource:
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
@@ -2832,6 +2832,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   missions:
+  - missionName: 2
+    startNode: {fileID: 2124030342}
+    restrictedNodes:
+    - {fileID: 373136849}
+    targetNode: {fileID: 1272606023}
+    trajectoryPath: []
+    originalTrajectoryPath: []
+    currentProgressIndex: 0
+    missionInstruction: Avoid RED PLANETS and reach the target planet!
+    missionType: 1
   - missionName: 1
     startNode: {fileID: 2124030342}
     restrictedNodes: []
@@ -2845,16 +2855,6 @@ MonoBehaviour:
     currentProgressIndex: 0
     missionInstruction: Follow the exact order to complete the path!
     missionType: 0
-  - missionName: 2
-    startNode: {fileID: 2124030342}
-    restrictedNodes:
-    - {fileID: 373136849}
-    targetNode: {fileID: 1272606023}
-    trajectoryPath: []
-    originalTrajectoryPath: []
-    currentProgressIndex: 0
-    missionInstruction: Avoid RED PLANETS and reach the target planet!
-    missionType: 1
 --- !u!4 &1008620011
 Transform:
   m_ObjectHideFlags: 0
@@ -3479,7 +3479,6 @@ MonoBehaviour:
   highlightSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
   audioSource: {fileID: 1951035313}
   highlightScaleFactor: 1.5
-  delayToNextStage: 2
   delayBeforeNextMission: 1.5
   targetHighlightDuration: 8
   strategyPanel: {fileID: 2131049139}
