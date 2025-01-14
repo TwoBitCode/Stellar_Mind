@@ -22,6 +22,8 @@ public class CableConnectionManager : MonoBehaviour
 
     [Header("Stage Management")]
     public int currentStage = 0;
+    [SerializeField]
+    private PanelTransitionHandler panelTransitionHandler;
 
     void Start()
     {
@@ -40,10 +42,26 @@ public class CableConnectionManager : MonoBehaviour
 
         CableConnectionStage stage = stages[stageIndex];
 
-        // Enable targets for the stage
-        foreach (RectTransform target in stage.targets)
+        // Handle panel transition with explosion
+        if (panelTransitionHandler != null)
         {
-            target.gameObject.SetActive(true);
+            panelTransitionHandler.ShowConnectedPanel(
+                stage.connectedPanel,
+                stage.disconnectedPanel,
+                FindAnyObjectByType<SparkEffectHandler>(),
+                () =>
+                {
+                    // After the panel transition, activate targets
+                    Debug.Log($"Stage {stageIndex} loaded.");
+                    foreach (RectTransform target in stage.targets)
+                    {
+                        target.gameObject.SetActive(true);
+                    }
+                });
+        }
+        else
+        {
+            Debug.LogError("PanelTransitionHandler is missing!");
         }
     }
 
