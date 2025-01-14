@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      copper_wire_generated-removebg-preview_0: -23035524112853581
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
