@@ -25,10 +25,15 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             UpdateLineEndPosition();
         }
     }
-
     public void OnPointerDown(PointerEventData eventData)
     {
         Debug.Log("Dragging Started");
+
+        // Play the drag sound only once when dragging starts
+        if (CableAudioManager.Instance != null && CableAudioManager.Instance.dragSound != null)
+        {
+            CableAudioManager.Instance.PlayOneShot(CableAudioManager.Instance.dragSound);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -45,6 +50,12 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     {
         Debug.Log("Dragging Ended");
 
+        // Stop any looping sound or reset if necessary
+        if (CableAudioManager.Instance != null)
+        {
+            CableAudioManager.Instance.StopSound();
+        }
+
         // Check for the closest target
         RectTransform connectedTarget = GetClosestTarget();
 
@@ -53,16 +64,26 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             // Snap to the closest target
             SnapToTarget(connectedTarget);
 
+            // Play snap sound
+            if (CableAudioManager.Instance != null && CableAudioManager.Instance.snapSound != null)
+            {
+                CableAudioManager.Instance.PlayOneShot(CableAudioManager.Instance.snapSound);
+            }
+
             // Notify the connection manager about the connection
             connectionManager.OnCableConnected(this, connectedTarget);
         }
         else
         {
-            Debug.Log("No target connected. Resetting to start position.");
+            // Play reset sound
+            if (CableAudioManager.Instance != null && CableAudioManager.Instance.resetSound != null)
+            {
+                CableAudioManager.Instance.PlayOneShot(CableAudioManager.Instance.resetSound);
+            }
+
             ResetToStartPosition();
         }
     }
-
     private void ResetToStartPosition()
     {
         // Move the cable back to its starting position
