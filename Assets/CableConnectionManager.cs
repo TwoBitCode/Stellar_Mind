@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro; // Import TextMesh Pro namespace
+using TMPro;
 
 public class CableConnectionManager : MonoBehaviour
 {
@@ -15,6 +15,10 @@ public class CableConnectionManager : MonoBehaviour
 
     public CableConnectionStage[] stages; // All stages in the mini-game
     public TextMeshProUGUI instructionText; // TextMesh Pro element to display the instructions
+    public PanelTransitionHandler panelTransitionHandler; // Handles panel transitions
+    public SparkEffectHandler sparkEffectHandler; // Handles spark effects
+
+    [Header("Stage Management")]
     public int currentStage = 0;
 
     void Start()
@@ -25,107 +29,36 @@ public class CableConnectionManager : MonoBehaviour
 
     public void LoadStage(int stageIndex)
     {
-        // Check if the stage index is valid
         if (stageIndex >= stages.Length)
         {
             Debug.Log("All stages completed!");
-            instructionText.text = "Game Completed!"; // Display completion message
+            instructionText.text = "Game Completed!";
             return;
         }
 
-        // Get the current stage
         CableConnectionStage stage = stages[stageIndex];
-
-        // Show the connected panel
-        ShowConnectedPanel(stage);
-
-        // Set up the cables and targets for this stage
-        foreach (DragCable cable in stage.cables)
-        {
-            cable.gameObject.SetActive(false); // Hide cables initially
-        }
-
-        foreach (RectTransform target in stage.targets)
-        {
-            target.gameObject.SetActive(true); // Ensure targets are active
-        }
-
-        // Update the instruction text
         instructionText.text = stage.instruction;
-    }
 
-    private void ShowConnectedPanel(CableConnectionStage stage)
-    {
-        // Enable the connected panel
-        stage.connectedPanel.SetActive(true);
-        stage.disconnectedPanel.SetActive(false);
-
-        // After a delay, switch to the disconnected panel
-        Invoke(nameof(SwitchToDisconnectedPanel), 10f); // Show for 2 seconds
-    }
-
-    private void SwitchToDisconnectedPanel()
-    {
-        // Get the current stage
-        CableConnectionStage stage = stages[currentStage];
-
-        // Trigger disconnect animation for each cable
-        foreach (DragCable cable in stage.cables)
+        // Transition to the connected panel state
+        panelTransitionHandler.ShowConnectedPanel(stage.connectedPanel, stage.disconnectedPanel, sparkEffectHandler, () =>
         {
-            LineRendererAnimator animator = cable.GetComponent<LineRendererAnimator>();
-            if (animator != null)
-            {
-                // Retract the cable back to its start point
-                animator.StartDisconnectAnimation(animator.startPoint.position);
-            }
-        }
-
-        // Delay switching to the disconnected panel until the animation completes
-        Invoke(nameof(ActivateDisconnectedPanel), 1f); // Match animation duration
+            // After transition, enable the cables and targets
+            //foreach (DragCable cable in stage.cables) cable.gameObject.SetActive(false);
+            foreach (RectTransform target in stage.targets) target.gameObject.SetActive(true);
+        });
     }
 
-    private void ActivateDisconnectedPanel()
-    {
-        // Enable the disconnected panel after the disconnect animation
-        CableConnectionStage stage = stages[currentStage];
-        stage.connectedPanel.SetActive(false);
-        stage.disconnectedPanel.SetActive(true);
-
-        // Activate cables for the disconnected state
-        foreach (DragCable cable in stage.cables)
-        {
-            cable.gameObject.SetActive(true);
-        }
-    }
 
 
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
-        // Get the current stage
         CableConnectionStage stage = stages[currentStage];
 
-        // Check if the cable and target belong to this stage
-        if (System.Array.Exists(stage.cables, c => c == cable) &&
-            System.Array.Exists(stage.targets, t => t == target))
+        if (AllCablesConnected(stage))
         {
-            // Check if the cable is connected to the correct target
-            CableTarget targetScript = target.GetComponent<CableTarget>();
-            if (targetScript != null && targetScript.targetID == cable.name)
-            {
-                Debug.Log($"Correct connection: {cable.name} -> {targetScript.targetID}");
-
-                // Check if all connections are complete
-                if (AllCablesConnected(stage))
-                {
-                    Debug.Log("Stage completed!");
-                    currentStage++;
-                    LoadStage(currentStage); // Load the next stage
-                }
-            }
-            else
-            {
-                Debug.Log("Wrong connection!");
-            }
+            Debug.Log("Stage completed!");
+            currentStage++;
+            LoadStage(currentStage);
         }
     }
 
@@ -133,31 +66,40 @@ public class CableConnectionManager : MonoBehaviour
     {
         foreach (DragCable cable in stage.cables)
         {
-            // Get the target the cable is connected to
+            // Check if the cable is connected to the correct target
             RectTransform connectedTarget = GetConnectedTarget(cable);
-
-            // Check if the target is valid and matches the cable's name
-            if (connectedTarget == null ||
-                connectedTarget.GetComponent<CableTarget>().targetID != cable.name)
+            if (connectedTarget == null)
             {
-                return false; // Not all cables are connected correctly
+                return false; // Cable is not connected to a target
+            }
+
+            CableTarget targetScript = connectedTarget.GetComponent<CableTarget>();
+            if (targetScript == null || targetScript.targetID != cable.name)
+            {
+                return false; // Cable is connected to the wrong target
             }
         }
 
         return true; // All cables are correctly connected
     }
 
+
     private RectTransform GetConnectedTarget(DragCable cable)
     {
-        // Check if the cable overlaps any target
         foreach (RectTransform target in stages[currentStage].targets)
         {
+            // Check if the cable overlaps the target
             if (RectTransformUtility.RectangleContainsScreenPoint(target, cable.transform.position, null))
             {
-                return target; // The cable is connected to this target
+                CableTarget targetScript = target.GetComponent<CableTarget>();
+                if (targetScript != null && targetScript.targetID == cable.name)
+                {
+                    return target; // Return the correct target
+                }
             }
         }
 
-        return null; // No target is connected
+        return null; // No valid target connected
     }
+
 }
