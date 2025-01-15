@@ -1,69 +1,118 @@
+// GameManager.cs
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class Stage
+{
+    public int numTubes;
+    public bool isReverseOrder;
+    public int timeLimit;
+    public int scoreReward;
+    public string instructionText;
+}
 
 public class GameManager : MonoBehaviour
 {
     [Header("Game Settings")]
     [SerializeField] private float shuffleDelay = 2f;
-    [SerializeField] private int numObjects = 4;
-    [SerializeField] private int pointsToAdd = 50;
+    [SerializeField] private List<Stage> stages;
 
     [Header("Managers")]
     [SerializeField] private GridManager gridManager;
     [SerializeField] private StackManager stackManager;
-    [SerializeField] private ScoreManager scoreManager;
-    [SerializeField] private UIManager uiManager;
-    [SerializeField] private SceneTransitionManager sceneTransitionManager;
+    [SerializeField] private TubesUIManager uiManager;
 
-    //[Header("Scene Configuration")]
-    //[Tooltip("Name of the map scene to load")]
-    //[SerializeField] private string mapSceneName = "MapScene";
-    //[Tooltip("Name of the game over scene to load")]
-    //[SerializeField] private string gameOverSceneName = "GameOverScene";
+    private int currentStageIndex = 0;
 
+    [SerializeField] private TubesGameIntroductionManager introductionManager; // Reference to the new introduction manager
     private void Start()
     {
         ValidateSetup();
-        InitializeGame();
+
+        // Play the introduction
+        introductionManager.PlayIntroduction(() =>
+        {
+            Debug.Log("Introduction complete. Showing first stage instructions...");
+            ShowStageIntroduction(currentStageIndex); // Show instructions for the first stage
+        });
     }
 
     private void ValidateSetup()
     {
-        if (gridManager == null || stackManager == null || scoreManager == null || uiManager == null || sceneTransitionManager == null)
+        if (gridManager == null || stackManager == null || uiManager == null || stages == null || stages.Count == 0)
         {
-            Debug.LogError("One or more managers are not assigned in GameManager!");
+            Debug.LogError("GameManager setup is incomplete! Make sure all references and stages are assigned.");
         }
     }
 
-    private void InitializeGame()
-    {
-        gridManager.GenerateGridElements(numObjects);
-        stackManager.GenerateStackElements(numObjects);
-        StartCoroutine(ShuffleAfterDelay(shuffleDelay));
-        DisplayOriginalOrder();
-        uiManager.ResetUI();
-    }
 
-    private void DisplayOriginalOrder()
+    private void ShowStageIntroduction(int stageIndex)
     {
-        string originalOrder = "Original Order: ";
-        foreach (GameObject element in gridManager.GridElements)
+        if (stageIndex >= stages.Count)
         {
-            DraggableItem draggableItem = element.GetComponentInChildren<DraggableItem>();
-            if (draggableItem != null)
-            {
-                originalOrder += $"{draggableItem.TubeID} ";
-            }
+            Debug.Log("All stages completed!");
+            uiManager.ShowRestartButton();
+            return;
         }
-        Debug.Log(originalOrder);
+
+        Stage currentStage = stages[stageIndex];
+        Debug.Log($"Stage {stageIndex + 1}: {currentStage.instructionText}");
+        uiManager.ShowInstructionPanel(currentStage.instructionText);
     }
 
-    private IEnumerator ShuffleAfterDelay(float delay)
+
+    private void StartStage()
     {
-        yield return StartCountdown(delay);
+        Stage currentStage = stages[currentStageIndex];
+        Debug.Log($"Starting Stage {currentStageIndex + 1}");
+
+        // Clear previous elements
+        gridManager.ClearElements();
+        stackManager.ClearElements();
+
+        // Generate grid elements based on the current stage
+        gridManager.GenerateGridElements(currentStage.numTubes);
+        stackManager.GenerateStackElements(currentStage.numTubes);
+
+        // Show "Check Answer" button
+        uiManager.ShowCheckButton();
+
+        // Start the timer and then shuffle the elements
+        StartCoroutine(CountdownAndSetupStage(currentStage));
+    }
+
+    private IEnumerator CountdownAndSetupStage(Stage stage)
+    {
+        int remainingTime = stage.timeLimit;
+
+        // Timer starts here
+        while (remainingTime > 0)
+        {
+            uiManager.UpdateCountdownText($"Time Left: {remainingTime}s");
+            yield return new WaitForSeconds(1f);
+            remainingTime--;
+        }
+
+        // Clear the timer display after countdown finishes
+        uiManager.UpdateCountdownText("");
+
+        // Shuffle the grid and finalize setup
         gridManager.ShuffleGridElements();
         stackManager.MoveElementsToStack(gridManager.GridElements);
-        Debug.Log("Shuffle and move to stack completed.");
+        Debug.Log("Stage setup completed. Player can now start.");
+    }
+
+    private IEnumerator ShuffleAndDisplayStage(Stage stage)
+    {
+        yield return StartCountdown(shuffleDelay);
+
+        gridManager.ShuffleGridElements();
+        stackManager.MoveElementsToStack(gridManager.GridElements);
+        Debug.Log("Stage setup completed.");
+
+        uiManager.ShowCheckButton();
     }
 
     private IEnumerator StartCountdown(float delay)
@@ -80,91 +129,138 @@ public class GameManager : MonoBehaviour
         uiManager.UpdateCountdownText("");
     }
 
-    public void CheckAnswer()
+    // Called when the player clicks "Check Answer"
+    public void OnCheckAnswerButtonClicked()
+    {
+        CheckAnswer();
+    }
+
+    // Check the player's answer
+    private void CheckAnswer()
     {
         Debug.Log("Checking if the grid is in the correct order...");
 
-        bool isCorrect = true;
+        Stage currentStage = stages[currentStageIndex];
+        bool isCorrect = currentStage.isReverseOrder ? CheckReverseOrder() : CheckOriginalOrder();
 
+        if (isCorrect)
+        {
+            Debug.Log($"Stage {currentStageIndex + 1} completed successfully.");
+            uiManager.UpdateResultText("Correct Order!", true); // Success message
+            uiManager.HideCheckButton(); // Hide button after success
+            ProgressToNextStage(); // Proceed to the next stage
+        }
+        else
+        {
+            Debug.Log("Incorrect order. Player can retry.");
+            uiManager.UpdateResultText("Incorrect Order! Try Again.", false); // Retry message
+                                                                              // Do not hide the button; allow retry
+        }
+    }
+
+
+
+
+    // Retry logic if the player gets it wrong
+    private void RetryStage()
+    {
+        Debug.Log("Retrying the current stage...");
+        RegenerateColors(); // Regenerate new colors
+        uiManager.ResetUI(); // Reset the UI for the stage
+        uiManager.ShowCheckButton(); // Ensure the "Check Answer" button is visible
+    }
+
+    // Progress to the next stage
+    private void ProgressToNextStage()
+    {
+        currentStageIndex++;
+        if (currentStageIndex < stages.Count)
+        {
+            ShowStageIntroduction(currentStageIndex);
+        }
+        else
+        {
+            Debug.Log("All stages completed!");
+            uiManager.ShowRestartButton();
+        }
+    }
+
+
+
+    private bool CheckOriginalOrder()
+    {
         for (int i = 0; i < gridManager.GridElements.Length; i++)
         {
             DraggableItem draggableItem = gridManager.GridElements[i].GetComponentInChildren<DraggableItem>();
 
-            if (draggableItem == null)
+            if (draggableItem == null || draggableItem.TubeID != gridManager.OriginalTubeIDs[i])
             {
-                Debug.Log($"Grid index {i}: No DraggableItem found!");
-                isCorrect = false;
-                continue;
-            }
-
-            int expectedTubeID = gridManager.OriginalTubeIDs[i];
-            int actualTubeID = draggableItem.TubeID;
-
-            Debug.Log($"Grid index {i}: Expected TubeID {expectedTubeID}, Found TubeID {actualTubeID}");
-
-            if (expectedTubeID != actualTubeID)
-            {
-                Debug.Log($"Grid index {i}: Mismatch! Expected TubeID {expectedTubeID}, Found TubeID {actualTubeID}");
-                isCorrect = false;
+                Debug.LogError($"Mismatch at index {i}");
+                return false;
             }
         }
+        return true;
+    }
 
-        DisplayResult(isCorrect);
+    private bool CheckReverseOrder()
+    {
+        for (int i = 0; i < gridManager.GridElements.Length; i++)
+        {
+            DraggableItem draggableItem = gridManager.GridElements[i].GetComponentInChildren<DraggableItem>();
+
+            if (draggableItem == null || draggableItem.TubeID != gridManager.OriginalTubeIDs[gridManager.OriginalTubeIDs.Length - 1 - i])
+            {
+                Debug.LogError($"Mismatch at index {i}");
+                return false;
+            }
+        }
+        return true;
     }
 
     private void DisplayResult(bool isCorrect)
     {
         if (isCorrect)
         {
+            Stage currentStage = stages[currentStageIndex];
             uiManager.UpdateResultText("Correct Order!", true);
-            scoreManager.AddScore(pointsToAdd);
-            //UpdateOverallScore(pointsToAdd);
+
+            Debug.Log($"Stage {currentStageIndex + 1} completed. Awarding {currentStage.scoreReward} points.");
+            currentStageIndex++;
+
+            ShowStageIntroduction(currentStageIndex);
         }
         else
         {
             uiManager.UpdateResultText("Incorrect Order! Try Again.", false);
+            StartStage();
         }
-
-        uiManager.ShowRestartButton();
     }
-
-    //private void UpdateOverallScore(int points)
-    //{
-    //    if (OverallScoreManager.Instance != null)
-    //    {
-    //        OverallScoreManager.Instance.AddScore(points);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("OverallScoreManager instance not found!");
-    //    }
-    //}
 
     public void RestartGame()
     {
         Debug.Log("Restarting the game...");
+        currentStageIndex = 0;
+        ShowStageIntroduction(currentStageIndex);
+    }
+    public void OnStartStageButtonClicked()
+    {
+        uiManager.HideInstructionPanel(); // Hide the instruction panel
+        StartStage(); // Begin the first stage
+    }
+    private void RegenerateColors()
+    {
+        Debug.Log("Regenerating colors for the current stage...");
+
+        // Shuffle and regenerate grid elements
         gridManager.ClearElements();
+        gridManager.GenerateGridElements(stages[currentStageIndex].numTubes);
+
+        // Update the stack with the new grid setup
         stackManager.ClearElements();
-        gridManager.GenerateGridElements(numObjects);
-        stackManager.GenerateStackElements(numObjects);
-        uiManager.ResetUI();
-        StartCoroutine(ShuffleAfterDelay(shuffleDelay));
-        Debug.Log("Game restarted successfully with new colors!");
+        stackManager.GenerateStackElements(stages[currentStageIndex].numTubes);
+
+        Debug.Log("Colors regenerated successfully.");
     }
 
-    //public void HandleSceneTransition()
-    //{
-    //    if (OverallScoreManager.Instance != null)
-    //    {
-    //        string targetScene = OverallScoreManager.Instance.OverallScore >= OverallScoreManager.Instance.TargetScore
-    //            ? gameOverSceneName
-    //            : mapSceneName;
 
-    //        sceneTransitionManager.LoadScene(targetScene);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("OverallScoreManager instance not found!");
-    //    }
-    //}
 }
