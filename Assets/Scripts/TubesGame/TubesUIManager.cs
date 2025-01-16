@@ -9,16 +9,26 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI countdownText;
     [SerializeField] private TextMeshProUGUI instructionText;
     [SerializeField] private GameObject instructionPanel;
-    [SerializeField] private Button restartButton;
     [SerializeField] private Button checkAnswerButton;
+    [Header("Completion Panel")]
+    [SerializeField] private GameObject completionPanel; // Add reference for the completion panel
+
+    public void ShowCompletionPanel()
+    {
+        completionPanel.SetActive(true);
+    }
+
+    public void HideCompletionPanel()
+    {
+        completionPanel.SetActive(false);
+    }
 
     public void ResetUI()
     {
-        resultText.text = "";
+        resultText.text = ""; // Clear any feedback
         countdownText.text = "";
         checkAnswerButton.GetComponentInChildren<TextMeshProUGUI>().text = "Check Result";
         checkAnswerButton.gameObject.SetActive(true);
-        restartButton.gameObject.SetActive(false);
     }
 
     public void UpdateCountdownText(string text)
@@ -37,11 +47,6 @@ public class TubesUIManager : MonoBehaviour
         {
             checkAnswerButton.GetComponentInChildren<TextMeshProUGUI>().text = "Try Again";
         }
-    }
-
-    public void ShowRestartButton()
-    {
-        restartButton.gameObject.SetActive(true);
     }
 
     public void ShowInstructionPanel(string text)

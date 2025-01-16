@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
         if (stageIndex >= stages.Count)
         {
             Debug.Log("All stages completed!");
-            uiManager.ShowRestartButton();
+            //uiManager.ShowRestartButton();
             return;
         }
 
@@ -146,29 +146,34 @@ public class GameManager : MonoBehaviour
         if (isCorrect)
         {
             Debug.Log($"Stage {currentStageIndex + 1} completed successfully.");
-            uiManager.UpdateResultText("Correct Order!", true); // Success message
-            uiManager.HideCheckButton(); // Hide button after success
+
+            // Award score for the stage
+            OverallScoreManager.Instance.AddScore(currentStage.scoreReward);
+
+            uiManager.UpdateResultText("Correct Order!", true); // Success feedback
+            uiManager.HideCheckButton(); // Hide the button after success
             ProgressToNextStage(); // Proceed to the next stage
         }
         else
         {
-            Debug.Log("Incorrect order. Player can retry.");
-            uiManager.UpdateResultText("Incorrect Order! Try Again.", false); // Retry message
-                                                                              // Do not hide the button; allow retry
+            Debug.Log("Incorrect order. Reshuffling and restarting the stage...");
+            uiManager.UpdateResultText("Incorrect, reshuffling and starting again.", false); // Feedback
+            StartCoroutine(RestartStageWithNewColors()); // Restart with reshuffling
         }
     }
 
 
 
 
-    // Retry logic if the player gets it wrong
+
     private void RetryStage()
     {
-        Debug.Log("Retrying the current stage...");
+        Debug.Log("Retrying the current stage with new colors...");
         RegenerateColors(); // Regenerate new colors
         uiManager.ResetUI(); // Reset the UI for the stage
         uiManager.ShowCheckButton(); // Ensure the "Check Answer" button is visible
     }
+
 
     // Progress to the next stage
     private void ProgressToNextStage()
@@ -181,11 +186,13 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("All stages completed!");
-            uiManager.ShowRestartButton();
+
+            // Show the completion panel when all stages are done
+            uiManager.HideCheckButton();
+            uiManager.HideInstructionPanel();
+            uiManager.ShowCompletionPanel();
         }
     }
-
-
 
     private bool CheckOriginalOrder()
     {
@@ -195,7 +202,7 @@ public class GameManager : MonoBehaviour
 
             if (draggableItem == null || draggableItem.TubeID != gridManager.OriginalTubeIDs[i])
             {
-                Debug.LogError($"Mismatch at index {i}");
+                Debug.Log($"Mismatch at index {i}. Player needs to retry.");
                 return false;
             }
         }
@@ -210,7 +217,7 @@ public class GameManager : MonoBehaviour
 
             if (draggableItem == null || draggableItem.TubeID != gridManager.OriginalTubeIDs[gridManager.OriginalTubeIDs.Length - 1 - i])
             {
-                Debug.LogError($"Mismatch at index {i}");
+                Debug.Log($"Mismatch at index {i}. Player needs to retry.");
                 return false;
             }
         }
@@ -261,6 +268,40 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Colors regenerated successfully.");
     }
+    private IEnumerator RestartStageWithNewColors()
+    {
+        Stage currentStage = stages[currentStageIndex];
+
+        // Clear the feedback after a short delay
+        yield return new WaitForSeconds(1f);
+        uiManager.UpdateResultText("", false);
+
+        // Clear and regenerate elements
+        gridManager.ClearElements();
+        stackManager.ClearElements();
+        gridManager.GenerateGridElements(currentStage.numTubes);
+        stackManager.GenerateStackElements(currentStage.numTubes);
+
+        Debug.Log("New colors generated. Starting countdown...");
+
+        // Countdown before moving elements to stack
+        int remainingTime = currentStage.timeLimit;
+        while (remainingTime > 0)
+        {
+            uiManager.UpdateCountdownText($"Time Left: {remainingTime}s");
+            yield return new WaitForSeconds(1f);
+            remainingTime--;
+        }
+
+        uiManager.UpdateCountdownText(""); // Clear the countdown text
+
+        // Shuffle and move elements to stack
+        gridManager.ShuffleGridElements();
+        stackManager.MoveElementsToStack(gridManager.GridElements);
+
+        Debug.Log("Stage restarted with reshuffled elements. Player can try again.");
+    }
+
 
 
 }
