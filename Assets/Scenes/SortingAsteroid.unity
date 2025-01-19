@@ -181,7 +181,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &10715711
 RectTransform:
   m_ObjectHideFlags: 0
@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139a72c30c41a9847b42538471fd6d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDuration: 10
+  gameDuration: 20
   timerText: {fileID: 2081433247}
 --- !u!4 &162895870
 Transform:
@@ -400,7 +400,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00057983, y: -216}
+  m_AnchoredPosition: {x: 0.14948, y: -216}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &305863047
@@ -475,7 +475,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00057983, y: -216}
+  m_AnchoredPosition: {x: 0.14948, y: -216}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &311354653
@@ -906,22 +906,81 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroidChallenges:
-  - challengeName: Sort by Size
+  - challengeName: Size
     sortingRule: {fileID: 11400000, guid: 9125431c5ff70f341828cfa9f79032a9, type: 2}
     spawnDelay: 1
-    spawnInterval: 2
-    maxAsteroids: 20
+    spawnInterval: 1
+    maxAsteroids: 10
     dropZones:
-    - LeftArea
     - RightArea
-  - challengeName: Sort by Size
-    sortingRule: {fileID: 11400000, guid: 9125431c5ff70f341828cfa9f79032a9, type: 2}
+    - LeftArea
+    dropZoneAssignments:
+    - dropZoneName: RightArea
+      displayName: Right
+      assignedType: 'Large '
+    - dropZoneName: LeftArea
+      displayName: Left
+      assignedType: Small
+    distractorPrefabs: []
+    mixedConditions: []
+  - challengeName: Color
+    sortingRule: {fileID: 11400000, guid: 35f8ac06321f696409f62de6193e83a7, type: 2}
     spawnDelay: 1
-    spawnInterval: 2
-    maxAsteroids: 20
+    spawnInterval: 1
+    maxAsteroids: 10
     dropZones:
     - TopArea
     - BottomArea
+    dropZoneAssignments:
+    - dropZoneName: TopArea
+      displayName: Top
+      assignedType: Green
+    - dropZoneName: BottomArea
+      displayName: Bottom
+      assignedType: Purple
+    distractorPrefabs: []
+    mixedConditions: []
+  - challengeName: Mixed Challenge
+    sortingRule: {fileID: 0}
+    spawnDelay: 1
+    spawnInterval: 1
+    maxAsteroids: 10
+    dropZones:
+    - RightArea
+    - LeftArea
+    - TopArea
+    - BottomArea
+    dropZoneAssignments:
+    - dropZoneName: RightArea
+      displayName: Right
+      assignedType: Large Green
+    - dropZoneName: LeftArea
+      displayName: Left
+      assignedType: Small Red
+    - dropZoneName: TopArea
+      displayName: Top
+      assignedType: Small Pink
+    - dropZoneName: BottomArea
+      displayName: Bottom
+      assignedType: White
+    distractorPrefabs: []
+    mixedConditions:
+    - dropZoneName: RightArea
+      size: Large
+      color: {r: 0, g: 1, b: 0.0663147, a: 1}
+      displayName: Green
+    - dropZoneName: LeftArea
+      size: Small
+      color: {r: 1, g: 0.09674524, b: 0, a: 1}
+      displayName: Red
+    - dropZoneName: TopArea
+      size: Small
+      color: {r: 1, g: 0, b: 0.95713806, a: 1}
+      displayName: Pink
+    - dropZoneName: BottomArea
+      size: Small
+      color: {r: 1, g: 1, b: 1, a: 1}
+      displayName: White
 --- !u!4 &834358585
 Transform:
   m_ObjectHideFlags: 0
@@ -1101,7 +1160,7 @@ RectTransform:
   m_GameObject: {fileID: 998514594}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1590923738}
@@ -1109,7 +1168,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.00057983, y: 212}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 190.78, y: 195.61}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &998514596
 MonoBehaviour:
@@ -1242,8 +1301,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00057983, y: 0.0015564}
-  m_SizeDelta: {x: 1011.6, y: 569.4}
+  m_AnchoredPosition: {x: 0.14947, y: 0.00177}
+  m_SizeDelta: {x: 1011.8, y: 569.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1074262986
 MonoBehaviour:
@@ -1265,7 +1324,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1324273242821514598, guid: eea1699efccf2f342942156adf640b98, type: 3}
+  m_Sprite: {fileID: -328194125700478928, guid: c78db1b863e96d54990045713967cea8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1317,8 +1376,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -280, y: -20}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -316, y: 23}
+  m_SizeDelta: {x: 89.995, y: 96.47}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1109800288
 MonoBehaviour:
@@ -1392,7 +1451,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00054932, y: 212}
+  m_AnchoredPosition: {x: -0.00057983, y: 212}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1273227072
@@ -1728,7 +1787,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323251065}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1737,8 +1796,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.021118164, y: 40}
-  m_SizeDelta: {x: 271, y: 93.7077}
+  m_AnchoredPosition: {x: 3.65, y: 82.58}
+  m_SizeDelta: {x: 107.31, y: 309}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1323251067
 MonoBehaviour:
@@ -1825,7 +1884,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -11.812897, y: 0, z: -9.450317, w: -217.27359}
+  m_margin: {x: -229.83621, y: 0, z: -245.73187, w: 15.180893}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -2023,15 +2082,15 @@ RectTransform:
   m_GameObject: {fileID: 1520492604}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1590923738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -280, y: -20}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -316, y: 23}
+  m_SizeDelta: {x: 181.16, y: 199.98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1520492606
 MonoBehaviour:
@@ -2347,6 +2406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1675297963}
   - component: {fileID: 1675297962}
+  - component: {fileID: 1675297964}
   m_Layer: 0
   m_Name: AsteroidGameUIManager
   m_TagString: Untagged
@@ -2384,6 +2444,103 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &1675297964
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675297961}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1719206573
 GameObject:
   m_ObjectHideFlags: 0

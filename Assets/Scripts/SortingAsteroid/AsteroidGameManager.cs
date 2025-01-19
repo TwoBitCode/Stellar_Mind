@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AsteroidGameManager : MonoBehaviour
 {
@@ -92,25 +93,39 @@ public class AsteroidGameManager : MonoBehaviour
         string instructions = GenerateInstructions();
         uiManager.ShowInstructions(instructions, StartGame);
     }
-
-
     private string GenerateInstructions()
     {
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
-        if (currentChallenge == null || currentChallenge.dropZoneAssignments == null)
+        if (currentChallenge == null)
         {
             return "Follow the sorting rules.";
         }
 
         string instructions = "Sort asteroids as follows:\n";
-        foreach (var assignment in currentChallenge.dropZoneAssignments)
+
+        if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
         {
-            instructions += $"- {assignment.assignedType} asteroids to the {assignment.dropZoneName.Replace("Area", "").ToLower()}\n";
+            // Mixed Challenge Instructions
+            foreach (var condition in currentChallenge.mixedConditions)
+            {
+                string colorName = !string.IsNullOrEmpty(condition.displayName)
+                    ? condition.displayName
+                    : $"Custom Color ({condition.color.r:F2}, {condition.color.g:F2}, {condition.color.b:F2})";
+
+                instructions += $"- {condition.size} {colorName} asteroids to the {condition.dropZoneName.Replace("Area", "").ToLower()}\n";
+            }
         }
+        else if (currentChallenge.dropZoneAssignments != null)
+        {
+            // Regular Challenge Instructions
+            foreach (var assignment in currentChallenge.dropZoneAssignments)
+            {
+                instructions += $"- {assignment.assignedType} asteroids to the {assignment.dropZoneName.Replace("Area", "").ToLower()}\n";
+            }
+        }
+
         return instructions;
     }
-
-
 
 
 
@@ -118,27 +133,57 @@ public class AsteroidGameManager : MonoBehaviour
     {
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
 
-        if (currentChallenge == null || currentChallenge.dropZones == null || currentChallenge.sortingRule == null)
+        if (currentChallenge == null || currentChallenge.dropZones == null)
         {
             Debug.LogError("Invalid challenge setup!");
             return;
         }
 
-        var rule = currentChallenge.sortingRule as MixedSortingRule;
-        if (rule == null) return;
+        // Ensure dropZoneAssignments is initialized
+        if (currentChallenge.dropZoneAssignments == null)
+        {
+            currentChallenge.dropZoneAssignments = new List<DropZoneAssignment>();
+        }
 
         currentChallenge.dropZoneAssignments.Clear();
 
-        foreach (var condition in rule.conditions)
+        // Handle mixed conditions
+        if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
         {
-            currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
+            for (int i = 0; i < currentChallenge.mixedConditions.Count && i < currentChallenge.dropZones.Count; i++)
             {
-                dropZoneName = condition.dropZoneName,
-                assignedType = $"{condition.size} {condition.color}"
-            });
+                var condition = currentChallenge.mixedConditions[i];
+                currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
+                {
+                    dropZoneName = currentChallenge.dropZones[i],
+                    assignedType = $"{condition.size} {condition.color}" // E.g., "Small Red"
+                });
+            }
+        }
+        else if (currentChallenge.sortingRule is ISortingRule rule)
+        {
+            // Handle regular sorting rules
+            foreach (var dropZoneName in currentChallenge.dropZones)
+            {
+                var assignedType = rule.GetRandomType();
+                currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
+                {
+                    dropZoneName = dropZoneName,
+                    assignedType = assignedType
+                });
+            }
+        }
+        else
+        {
+            Debug.LogError("No valid sorting rule or mixed conditions found for the challenge.");
+        }
+
+        // Log assignments for debugging
+        foreach (var assignment in currentChallenge.dropZoneAssignments)
+        {
+            Debug.Log($"Drop Zone '{assignment.dropZoneName}' assigned to type '{assignment.assignedType}'");
         }
     }
-
 
 
 
@@ -157,15 +202,54 @@ public class AsteroidGameManager : MonoBehaviour
     {
         if (currentAsteroidCount >= maxAsteroids) return;
 
+        var currentChallenge = asteroidChallengeManager.CurrentChallenge;
+        if (currentChallenge == null)
+        {
+            Debug.LogError("No current challenge available!");
+            return;
+        }
+
+        // Check if the current challenge allows distractors
+        bool allowDistractors = currentChallenge.distractorPrefabs != null && currentChallenge.distractorPrefabs.Count > 0;
+
+        // Decide whether to spawn a distractor only if they are allowed
+        bool isDistractor = allowDistractors && Random.value < 0.2f; // Adjust the probability as needed
+
+        // Select the appropriate prefab
+        GameObject selectedPrefab;
+        if (isDistractor)
+        {
+            // Pick a random distractor prefab
+            selectedPrefab = currentChallenge.distractorPrefabs[Random.Range(0, currentChallenge.distractorPrefabs.Count)];
+        }
+        else
+        {
+            selectedPrefab = asteroidPrefab; // Use the regular asteroid prefab
+        }
+
+        // Calculate spawn position within the spawn area
         Vector3 spawnPosition = new Vector3(
             Random.Range(-spawnHorizontalRange, spawnHorizontalRange),
             Random.Range(-spawnVerticalRange, spawnVerticalRange),
-            0);
+            0
+        );
 
-        GameObject asteroid = Instantiate(asteroidPrefab, spawnArea);
+        // Instantiate the asteroid
+        GameObject asteroid = Instantiate(selectedPrefab, spawnArea);
         asteroid.transform.localPosition = spawnPosition;
 
-        ApplySortingRules(asteroid);
+        if (!isDistractor)
+        {
+            // Apply sorting rules to regular asteroids
+            ApplySortingRules(asteroid);
+        }
+        else
+        {
+            // Distractor logic: no sorting applied, purely for confusion
+            Debug.Log("Spawned distractor asteroid!");
+        }
+
+        // Track the spawned asteroid
         activeAsteroids.Add(asteroid);
         currentAsteroidCount++;
     }
@@ -175,19 +259,64 @@ public class AsteroidGameManager : MonoBehaviour
 
     private void ApplySortingRules(GameObject asteroid)
     {
-        var rule = asteroidChallengeManager.CurrentChallenge?.sortingRule as ISortingRule;
-
-        if (rule == null)
+        var currentChallenge = asteroidChallengeManager.CurrentChallenge;
+        if (currentChallenge == null)
         {
-            Debug.LogError("Sorting rule is either not assigned or does not implement ISortingRule!");
+            Debug.LogError("No current challenge available!");
             return;
         }
 
-        string assignedType = rule.GetCategory(asteroid);
-        Debug.Log($"Asteroid type assigned dynamically: {assignedType}");
+        if (asteroid.TryGetComponent<SortingDraggableItem>(out var draggableItem))
+        {
+            if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
+            {
+                // Mixed Challenge: Assign size and color from MixedConditions
+                int conditionIndex = currentAsteroidCount % currentChallenge.mixedConditions.Count;
+                var condition = currentChallenge.mixedConditions[conditionIndex];
 
-        rule.ApplyVisuals(asteroid);
+                // Map string size to scale values for UI Image
+                Vector3 scale = condition.size == "Small" ? Vector3.one * 0.5f : Vector3.one * 1.5f;
+
+                draggableItem.AssignedSize = condition.size == "Small" ? 1.0f : 3.0f; // Assign float value for logic
+                draggableItem.AssignedColor = condition.color;
+                draggableItem.AssignedType = $"{condition.size} {condition.displayName}";
+
+                // Apply size and color to the UI Image
+                var rectTransform = asteroid.GetComponent<RectTransform>();
+                if (rectTransform != null)
+                {
+                    rectTransform.localScale = scale; // Adjust scale for size
+                }
+                var image = asteroid.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.color = condition.color; // Apply color
+                }
+
+                Debug.Log($"Mixed Challenge: Assigned {draggableItem.AssignedType} with Scale: {scale} to {condition.dropZoneName}");
+            }
+            else if (currentChallenge.sortingRule is ISortingRule rule)
+            {
+                // Regular Challenge: Use sorting rule
+                string assignedType = rule.GetCategory(asteroid);
+                draggableItem.AssignedType = assignedType;
+                rule.ApplyVisuals(asteroid);
+                Debug.Log($"Regular Challenge: Assigned type: {assignedType}");
+            }
+            else
+            {
+                Debug.LogError("No valid sorting rule or mixed conditions found for the challenge.");
+            }
+        }
+        else
+        {
+            Debug.LogError("SortingDraggableItem component is missing on the asteroid.");
+        }
     }
+
+
+
+
 
     public void EndChallenge()
     {

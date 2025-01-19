@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class AsteroidChallengeManager : MonoBehaviour
 {
-    [SerializeField] private List<AsteroidChallenge> asteroidChallenges;
+    [Header("Asteroid Challenges")]
+    [SerializeField] // Ensures the field is serialized and visible in the Inspector
+    private List<AsteroidChallenge> asteroidChallenges = new List<AsteroidChallenge>();
+
     private int currentChallengeIndex = 0;
 
     public AsteroidChallenge CurrentChallenge

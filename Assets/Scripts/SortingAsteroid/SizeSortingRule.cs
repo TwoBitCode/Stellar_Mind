@@ -36,7 +36,7 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
             else if (draggable.AssignedType == "Large")
             {
                 item.transform.localScale = largeSize;
-                Debug.Log($"Asteroid scaled to large size: {largeSize}");
+               // Debug.Log($"Asteroid scaled to large size: {largeSize}");
             }
         }
         else

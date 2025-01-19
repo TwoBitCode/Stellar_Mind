@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -38,18 +39,31 @@ public class SortingDraggableItem : DraggableItem
             Debug.LogError("ScoreManager not found in the scene!");
         }
 
-        // Apply visuals based on the assigned type and rule
+        // Apply visuals based on the assigned type or mixed conditions
         var currentChallenge = gameManager?.ChallengeManager?.CurrentChallenge;
-        var rule = currentChallenge?.sortingRule as ISortingRule;
 
-        if (rule != null)
+        if (currentChallenge != null)
         {
-            rule.ApplyVisuals(gameObject);
-            Debug.Log($"Asteroid visuals applied for type: {AssignedType}");
+            if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
+            {
+                // Mixed challenge: visuals are based on assigned size and color
+                GetComponent<Image>().color = AssignedColor;
+                Debug.Log($"Asteroid visuals applied for Mixed Challenge: {AssignedType}");
+            }
+            else if (currentChallenge.sortingRule is ISortingRule rule)
+            {
+                // Regular challenge: Apply sorting rule visuals
+                rule.ApplyVisuals(gameObject);
+                Debug.Log($"Asteroid visuals applied for Regular Challenge: {AssignedType}");
+            }
+            else
+            {
+                Debug.LogError("No valid sorting rule or mixed conditions found!");
+            }
         }
         else
         {
-            Debug.LogError("Sorting rule not found or invalid!");
+            Debug.LogError("No current challenge available!");
         }
     }
 
@@ -74,13 +88,32 @@ public class SortingDraggableItem : DraggableItem
         // Check all active drop zones
         foreach (var assignment in currentChallenge.dropZoneAssignments)
         {
-            if (IsOverCorrectDropZone(AssignedType, assignment.dropZoneName))
+            if (IsOverCorrectDropZone(assignment.dropZoneName))
             {
-                if (assignment.assignedType == AssignedType)
+                if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
                 {
-                    Debug.Log($"Correct placement in {assignment.dropZoneName} for AssignedType: {AssignedType}");
-                    HandleCorrectPlacement();
-                    return;
+                    // Mixed Challenge: Check size and color
+                    var matchingCondition = currentChallenge.mixedConditions.Find(
+                        condition => condition.dropZoneName == assignment.dropZoneName
+                                     && condition.size == GetSizeAsString(AssignedSize) // Compare size as string
+                                     && condition.color == AssignedColor);
+
+                    if (matchingCondition != null)
+                    {
+                        Debug.Log($"Correct placement for Mixed Condition: {matchingCondition.dropZoneName}");
+                        HandleCorrectPlacement();
+                        return;
+                    }
+                }
+                else
+                {
+                    // Regular Challenge: Check only the assigned type
+                    if (assignment.assignedType == AssignedType)
+                    {
+                        Debug.Log($"Correct placement in {assignment.dropZoneName} for AssignedType: {AssignedType}");
+                        HandleCorrectPlacement();
+                        return;
+                    }
                 }
             }
         }
@@ -92,7 +125,7 @@ public class SortingDraggableItem : DraggableItem
 
 
 
-    private bool IsOverCorrectDropZone(string assignedType, string dropZoneName)
+    private bool IsOverCorrectDropZone(string dropZoneName)
     {
         RectTransform area = GameObject.Find(dropZoneName)?.GetComponent<RectTransform>();
         if (area == null)
@@ -106,8 +139,15 @@ public class SortingDraggableItem : DraggableItem
         return isOver;
     }
 
+    private string GetSizeAsString(float sizeValue)
+    {
+        return sizeValue == 1.0f ? "Small" : sizeValue == 3.0f ? "Large" : "Unknown";
+    }
+
     private void HandleCorrectPlacement()
     {
+        Debug.Log("Correct placement handled!");
+
         // Add points using the existing ScoreManager
         if (scoreManager != null)
         {
@@ -118,14 +158,37 @@ public class SortingDraggableItem : DraggableItem
             Debug.LogError("ScoreManager instance is not available!");
         }
 
+        // Instantiate and position the correct indicator
         if (correctIndicatorPrefab != null)
         {
+            // Create the indicator as a child of the canvas or parent
             GameObject correctIndicator = Instantiate(correctIndicatorPrefab, transform.parent);
-            Destroy(correctIndicator, destroyDelay);
+
+
+            // Match the position of the dropped asteroid
+            //correctIndicator.transform.position = transform.position;
+
+            //// Ensure the indicator is visible and properly placed
+            //var rectTransform = correctIndicator.GetComponent<RectTransform>();
+            //if (rectTransform != null)
+            //{
+            //    rectTransform.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
+            //}
+
+            // Destroy the indicator after a delay
+           Destroy(correctIndicator, destroyDelay);
+        }
+        else
+        {
+            Debug.LogWarning("CorrectIndicatorPrefab is not assigned!");
         }
 
-        Destroy(gameObject); // Remove the asteroid after correct placement
+        // Destroy the asteroid after correct placement
+        Destroy(gameObject);
     }
+
+
+
 
     private void HandleIncorrectPlacement()
     {
@@ -137,4 +200,52 @@ public class SortingDraggableItem : DraggableItem
 
         Destroy(gameObject, destroyDelay); // Remove the asteroid after incorrect placement
     }
+
+
+
+    //private bool IsOverCorrectDropZone(string dropZoneName)
+    //{
+    //    RectTransform area = GameObject.Find(dropZoneName)?.GetComponent<RectTransform>();
+    //    if (area == null)
+    //    {
+    //        Debug.LogError($"Drop area '{dropZoneName}' not found!");
+    //        return false;
+    //    }
+
+    //    bool isOver = RectTransformUtility.RectangleContainsScreenPoint(area, Input.mousePosition, Camera.main);
+    //    Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
+    //    return isOver;
+    //}
+
+    //private void HandleCorrectPlacement()
+    //{
+    //    // Add points using the existing ScoreManager
+    //    if (scoreManager != null)
+    //    {
+    //        scoreManager.AddScore(pointsForCorrectDrop);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("ScoreManager instance is not available!");
+    //    }
+
+    //    if (correctIndicatorPrefab != null)
+    //    {
+    //        GameObject correctIndicator = Instantiate(correctIndicatorPrefab, transform.parent);
+    //        Destroy(correctIndicator, destroyDelay);
+    //    }
+
+    //    Destroy(gameObject); // Remove the asteroid after correct placement
+    //}
+
+    //private void HandleIncorrectPlacement()
+    //{
+    //    if (incorrectIndicatorPrefab != null)
+    //    {
+    //        GameObject incorrectIndicator = Instantiate(incorrectIndicatorPrefab, transform.parent);
+    //        Destroy(incorrectIndicator, destroyDelay);
+    //    }
+
+    //    Destroy(gameObject, destroyDelay); // Remove the asteroid after incorrect placement
+    //}
 }
