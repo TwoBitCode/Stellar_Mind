@@ -32,30 +32,40 @@ public class AsteroidGameManager : MonoBehaviour
 
     [Header("Game Components")]
     [SerializeField] private GameTimer gameTimer;
+    [SerializeField] private AsteroidsGameIntroductionManager introductionManager;
+    private bool isIntroductionComplete = false;
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
 
     private void Start()
     {
-        Canvas canvas = FindAnyObjectByType<Canvas>();
-        // Ensure the end panel is hidden at the start
-        if (endPanel != null)
+        if (endPanel != null) endPanel.SetActive(false);
+
+        if (introductionManager != null)
         {
-            endPanel.SetActive(false);
+            // Play the introduction sequence
+            introductionManager.PlayIntroduction(OnIntroductionComplete);
         }
-
-        // Get the DoorManager instance
-        //doorManager = Object.FindFirstObjectByType<DoorManager>();
-        //if (doorManager == null)
-        //{
-        //    Debug.LogError("DoorManager not found in the scene!");
-        //}
-
-        gameTimer.OnTimerEnd += EndChallenge;
-        InitializeChallenge();
+        else
+        {
+            // Skip introduction and start the game
+            Debug.LogWarning("Introduction Manager is missing. Starting challenges directly.");
+            StartChallenges();
+        }
+    }
+    private void OnIntroductionComplete()
+    {
+        isIntroductionComplete = true;
+        Debug.Log("Introduction complete. Starting challenges...");
+        StartChallenges();
     }
 
-
+    private void StartChallenges()
+    {
+        gameTimer.OnTimerEnd += EndChallenge;
+        InitializeChallenge();
+    
+    }
 
 
     private void Update()
@@ -326,24 +336,21 @@ public class AsteroidGameManager : MonoBehaviour
         // Clear all remaining asteroids
         ClearAsteroids();
 
-        //// Mark the game as completed
-        //if (doorManager != null)
-        //{
-        //    doorManager.MarkGameAsCompleted(2); // Replace 0 with the index of this mini-game
-        //}
-
-        // Check if there are more challenges
+        // Advance to the next challenge
         asteroidChallengeManager.AdvanceToNextChallenge();
 
         if (!asteroidChallengeManager.HasMoreChallenges)
         {
+            Debug.Log("No more challenges. Showing the end panel.");
             ShowEndPanel(); // Show the end panel if all challenges are completed
         }
         else
         {
-            InitializeChallenge(); // Start the next challenge
+            Debug.Log($"Moving to the next challenge: {asteroidChallengeManager.CurrentChallenge.challengeName}");
+            InitializeChallenge(); // Start the next challenge, including showing instructions
         }
     }
+
 
 
     private void ShowEndPanel()

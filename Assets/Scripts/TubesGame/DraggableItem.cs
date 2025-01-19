@@ -37,7 +37,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [SerializeField] private const string LOG_BEGIN_DRAG = "Begin drag";
     [SerializeField] private const string LOG_DRAGGING = "Dragging";
     [SerializeField] private const string LOG_END_DRAG = "End drag";
-    public void OnBeginDrag(PointerEventData eventData)
+    public virtual void OnBeginDrag(PointerEventData eventData)
     {
         Debug.Log(LOG_BEGIN_DRAG);
 
