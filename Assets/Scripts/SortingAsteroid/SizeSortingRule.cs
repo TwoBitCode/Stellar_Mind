@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu(menuName = "Asteroid Challenges/Size Sorting Rule")]
 public class SizeSortingRule : ScriptableObject, ISortingRule
@@ -9,12 +10,15 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
     [Tooltip("Scale for large asteroids")]
     public Vector3 largeSize = new Vector3(1.2f, 1.2f, 1.2f);
 
+    // List to track unassigned types
+    private List<string> remainingTypes = new List<string> { "Small", "Large" };
+
     public string GetCategory(GameObject item)
     {
         if (item.TryGetComponent<SortingDraggableItem>(out var draggable))
         {
             // Assign type based on predefined logic
-            string type = Random.value > 0.5f ? "Large" : "Small";
+            string type = GetRandomType(); // Use the improved method for type selection
             draggable.AssignedType = type; // Store the type
             return type;
         }
@@ -36,7 +40,7 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
             else if (draggable.AssignedType == "Large")
             {
                 item.transform.localScale = largeSize;
-                // Debug.Log($"Asteroid scaled to large size: {largeSize}");
+                Debug.Log($"Asteroid scaled to large size: {largeSize}");
             }
         }
         else
@@ -45,10 +49,22 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
         }
     }
 
-    // New method for ISortingRule
     public string GetRandomType()
     {
-        // Randomly return "Small" or "Large"
-        return Random.value > 0.5f ? "Small" : "Large";
+        // Ensure each type is seen at least once before repeating
+        if (remainingTypes.Count == 0)
+        {
+            // Reset the list when all types have been used
+            remainingTypes.Add("Small");
+            remainingTypes.Add("Large");
+        }
+
+        // Select a random type from the remaining list
+        int index = Random.Range(0, remainingTypes.Count);
+        string selectedType = remainingTypes[index];
+        remainingTypes.RemoveAt(index); // Remove the selected type to avoid repetition
+
+        Debug.Log($"Randomly selected type: {selectedType}. Remaining: {string.Join(", ", remainingTypes)}");
+        return selectedType;
     }
 }
