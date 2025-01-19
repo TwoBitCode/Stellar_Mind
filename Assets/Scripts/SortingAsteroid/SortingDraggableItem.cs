@@ -176,7 +176,7 @@ public class SortingDraggableItem : DraggableItem
             //}
 
             // Destroy the indicator after a delay
-           Destroy(correctIndicator, destroyDelay);
+            Destroy(correctIndicator, destroyDelay);
         }
         else
         {

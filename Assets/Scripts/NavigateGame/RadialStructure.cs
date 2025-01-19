@@ -16,7 +16,7 @@ public class RadialStructureWithLayerConnections : MonoBehaviour
     [SerializeField] private int secondLayerBranches = 2;   // Number of sub-branches per branch in the second layer
     [SerializeField] private int thirdLayerBranches = 3;    // Number of sub-branches per second-layer circle in the third layer
     [SerializeField] private float secondLayerSpreadAngle = Mathf.PI / 4; // Spread angle for second-layer branches
-   //[SerializeField] private float thirdLayerSpreadAngle = Mathf.PI / 6; // Spread angle for third-layer branches
+                                                                          //[SerializeField] private float thirdLayerSpreadAngle = Mathf.PI / 6; // Spread angle for third-layer branches
     [SerializeField] private float branchCenteringFactor = 2f; // Factor for centering sub-branches around the parent branch
 
     private List<GameObject> firstLayerCircles = new List<GameObject>();
