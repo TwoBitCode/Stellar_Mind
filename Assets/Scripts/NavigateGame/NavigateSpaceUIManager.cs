@@ -14,7 +14,7 @@ public class NavigateSpaceUIManager : MonoBehaviour
 
 
     [Header("Highlight Settings")]
-    [SerializeField] private float startDelay = 2.0f;
+    //[SerializeField] private float startDelay = 2.0f;
     [SerializeField] private float highlightSpeed = 1.0f;
     [SerializeField] private Color highlightColor = Color.yellow;
     [SerializeField] private Material glowMaterial;
@@ -88,36 +88,36 @@ public class NavigateSpaceUIManager : MonoBehaviour
             startButton.SetActive(false);
         }
 
-        if (currentTrajectoryPath != null)
-        {
-            AlienGuideManager.Instance.NotifyHighlightStart(); // Alien feedback
-            isPathShowing = true;
-            StartCoroutine(DelayedHighlightStart(currentTrajectoryPath, startDelay));
-        }
+        //if (currentTrajectoryPath != null)
+        //{
+        //    AlienGuideManager.Instance.NotifyHighlightStart(); // Alien feedback
+        //    isPathShowing = true;
+        //    StartCoroutine(DelayedHighlightStart(currentTrajectoryPath, startDelay));
+        //}
     }
 
-    private IEnumerator DelayedHighlightStart(Node[] trajectoryPath, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        StartHighlightingPath(trajectoryPath);
-    }
+    //private IEnumerator DelayedHighlightStart(Node[] trajectoryPath, float delay)
+    //{
+    //    yield return new WaitForSeconds(delay);
+    //    StartHighlightingPath(trajectoryPath);
+    //}
 
-    public void StartHighlightingPath(Node[] trajectoryPath)
-    {
-        if (trajectoryPath == null || trajectoryPath.Length == 0)
-        {
-            Debug.LogWarning("No trajectory path to highlight.");
-            return;
-        }
+    //public void StartHighlightingPath(Node[] trajectoryPath)
+    //{
+    //    if (trajectoryPath == null || trajectoryPath.Length == 0)
+    //    {
+    //        Debug.LogWarning("No trajectory path to highlight.");
+    //        return;
+    //    }
 
-        Debug.Log("Starting to highlight the trajectory path...");
-        if (highlightCoroutine != null)
-        {
-            StopCoroutine(highlightCoroutine);
-        }
+    //    Debug.Log("Starting to highlight the trajectory path...");
+    //    if (highlightCoroutine != null)
+    //    {
+    //        StopCoroutine(highlightCoroutine);
+    //    }
 
-        highlightCoroutine = StartCoroutine(HighlightTrajectory(trajectoryPath));
-    }
+    //    highlightCoroutine = StartCoroutine(HighlightTrajectory(trajectoryPath));
+    //}
 
 
     public void HighlightTargetNode(Node targetNode)

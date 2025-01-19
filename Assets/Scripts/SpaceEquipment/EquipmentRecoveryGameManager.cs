@@ -51,6 +51,16 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             Debug.LogError("OverallScoreManager instance not found!");
         }
 
+        //// Mark this mini-game as completed
+        //if (DoorManager != null)
+        //{
+        //    DoorManager.MarkGameAsCompleted(3); // Replace 1 with the index of this mini-game
+        //}
+        //else
+        //{
+        //    Debug.LogError("DoorManager instance not found!");
+        //}
+
         // Show the level complete panel
         if (levelCompletePanel != null)
         {

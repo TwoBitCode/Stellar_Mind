@@ -11,13 +11,17 @@ public class RadialStructureWithLayerConnections : MonoBehaviour
     [Header("Layer Settings")]
     [SerializeField] private float firstLayerRadius = 3f;   // Radius for the first layer
     [SerializeField] private float secondLayerRadius = 1.5f; // Radius for the second layer
+    [SerializeField] private float thirdLayerRadius = 1.0f; // Radius for the third layer
     [SerializeField] private int firstLayerBranches = 4;    // Number of branches in the first layer
     [SerializeField] private int secondLayerBranches = 2;   // Number of sub-branches per branch in the second layer
+    [SerializeField] private int thirdLayerBranches = 3;    // Number of sub-branches per second-layer circle in the third layer
     [SerializeField] private float secondLayerSpreadAngle = Mathf.PI / 4; // Spread angle for second-layer branches
+   //[SerializeField] private float thirdLayerSpreadAngle = Mathf.PI / 6; // Spread angle for third-layer branches
     [SerializeField] private float branchCenteringFactor = 2f; // Factor for centering sub-branches around the parent branch
 
     private List<GameObject> firstLayerCircles = new List<GameObject>();
     private List<List<GameObject>> secondLayerCircles = new List<List<GameObject>>();
+    private List<List<GameObject>> thirdLayerCircles = new List<List<GameObject>>();
 
     void Start()
     {
@@ -36,6 +40,9 @@ public class RadialStructureWithLayerConnections : MonoBehaviour
 
         // Connect second-layer circles between branches
         ConnectSecondLayerInCycle();
+
+        // Generate the third layer
+        CreateThirdLayer();
     }
 
     // Generates the first layer of circles around the center
@@ -88,6 +95,32 @@ public class RadialStructureWithLayerConnections : MonoBehaviour
 
         // Connect all circles within the same branch
         ConnectLayerCircles(branchCircles);
+    }
+
+    // Generates the third layer of circles from the second layer
+    void CreateThirdLayer()
+    {
+        for (int i = 0; i < secondLayerCircles.Count; i++)
+        {
+            List<GameObject> thirdBranchCircles = new List<GameObject>();
+            foreach (var secondLayerCircle in secondLayerCircles[i])
+            {
+                for (int j = 0; j < thirdLayerBranches; j++)
+                {
+                    float offsetAngle = j * Mathf.PI * 2 / thirdLayerBranches; // Evenly space around the second-layer circle
+                    Vector3 position = secondLayerCircle.transform.position + new Vector3(Mathf.Cos(offsetAngle), Mathf.Sin(offsetAngle), 0) * thirdLayerRadius;
+
+                    // Create the third-layer circle
+                    GameObject thirdLayerCircle = Instantiate(circlePrefab, position, Quaternion.identity, transform);
+                    thirdLayerCircle.name = $"Layer 3 - Second Branch {i + 1} - Circle {j + 1}";
+                    thirdBranchCircles.Add(thirdLayerCircle);
+
+                    // Draw a line between the second-layer circle and this third-layer circle
+                    DrawLine(secondLayerCircle.transform.position, position, transform);
+                }
+            }
+            thirdLayerCircles.Add(thirdBranchCircles);
+        }
     }
 
     // Connects all circles in a single layer

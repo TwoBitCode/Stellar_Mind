@@ -38,7 +38,7 @@ public class NavigateSpaceManager : MonoBehaviour
         // Show mission instructions
         NavigateSpaceUIManager.Instance.ShowMissionDetails(
             mission.missionName,
-            instruction, // Display the specific instruction for the mission
+            instruction,
             mission.trajectoryPath
         );
 
@@ -48,11 +48,11 @@ public class NavigateSpaceManager : MonoBehaviour
             NavigateSpaceUIManager.Instance.HighlightTargetNode(mission.targetNode);
         }
 
-        // Set the player's starting position
-        currentNode = mission.startNode ?? startNode;
-        PlayerController.Instance.SetPosition(currentNode.transform.position);
+        // **Updated Logic: Set player's starting node**
+        Node startingNode = mission.startNode != null ? mission.startNode : startNode;
+        currentNode = startingNode;
+        PlayerController.Instance.SetPosition(startingNode.transform.position);
     }
-
 
 
 
@@ -138,13 +138,6 @@ public class NavigateSpaceManager : MonoBehaviour
 
         // Update the alien text to reflect the restart
         AlienGuideManager.Instance.UpdateAlienText("Follow the highlighted trajectory to complete the mission!");
-
-        // Re-highlight the trajectory path for Reconstruct Trajectory missions
-        if (mission.missionType == SpaceMission.MissionType.ReconstructTrajectory)
-        {
-            Debug.Log("Re-highlighting trajectory for Reconstruct Trajectory mission.");
-            NavigateSpaceUIManager.Instance.StartHighlightingPath(mission.trajectoryPath);
-        }
     }
 
 

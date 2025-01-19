@@ -8,55 +8,96 @@ public class ColorSortingRule : ScriptableObject, ISortingRule
     [Tooltip("Define type-color pairs for sorting")]
     public List<TypeColorPair> typeColorPairs;
 
+    // A HashSet to track assigned types (unique)
+    private HashSet<string> assignedTypes = new HashSet<string>();
+
     public string GetCategory(GameObject item)
     {
         if (item.TryGetComponent<SortingDraggableItem>(out var draggable))
         {
-            // Use the already assigned type if available
-            if (!string.IsNullOrEmpty(draggable.AssignedType))
-            {
-                return draggable.AssignedType;
-            }
+            // Ensure we have unassigned types
+            List<TypeColorPair> unassignedPairs = GetUnassignedPairs();
 
-            // Otherwise, assign a new random type
-            if (typeColorPairs.Count > 0)
+            if (unassignedPairs.Count > 0)
             {
-                string assignedType = typeColorPairs[Random.Range(0, typeColorPairs.Count)].typeName;
-                draggable.AssignedType = assignedType; // Store for consistency
-                Debug.Log($"Assigned random type: {assignedType}");
-                return assignedType;
+                // Select a type-color pair from the unassigned list
+                var assignedPair = unassignedPairs[Random.Range(0, unassignedPairs.Count)];
+                assignedTypes.Add(assignedPair.typeName); // Mark this type as assigned
+
+                draggable.AssignedType = assignedPair.typeName; // Assign the type name
+                draggable.AssignedColor = assignedPair.color;   // Assign the color
+
+                Debug.Log($"Assigned Type: {assignedPair.typeName}, Assigned Color: {assignedPair.color}");
+                return assignedPair.typeName; // Return the assigned type name
             }
             else
             {
-                Debug.LogError("typeColorPairs list is empty! Cannot assign a random type.");
-                return null;
+                Debug.LogWarning("No unassigned types available. Resetting assigned types.");
+                ResetAssignedTypes(); // Reset when all types are used
+                return GetCategory(item); // Retry
             }
         }
 
         Debug.LogError("SortingDraggableItem component missing on the asteroid!");
-        return null;
+        return "None"; // Fallback value
     }
 
-    public void ApplyVisuals(GameObject item)
+    public void ApplyVisuals(GameObject asteroid)
     {
-        if (item.TryGetComponent(out Image image) && item.TryGetComponent<SortingDraggableItem>(out var draggable))
+        if (asteroid.TryGetComponent<Image>(out var image))
         {
-            var pair = typeColorPairs.Find(p => p.typeName == draggable.AssignedType);
-
-            if (pair != null)
+            if (asteroid.TryGetComponent<SortingDraggableItem>(out var draggableItem))
             {
-                image.color = pair.color; // Apply the matching color
-                Debug.Log($"Asteroid visuals applied for type: {draggable.AssignedType}");
+                // Check if the AssignedColor is valid and exists in typeColorPairs
+                if (typeColorPairs.Exists(pair => pair.color == draggableItem.AssignedColor))
+                {
+                    image.color = draggableItem.AssignedColor; // Apply color
+                    Debug.Log($"Asteroid visuals applied. Type: {draggableItem.AssignedType}, Color: {draggableItem.AssignedColor}");
+                }
+                else
+                {
+                    Debug.LogWarning("AssignedColor is invalid or not found in typeColorPairs, applying default color.");
+                    image.color = Color.white; // Default fallback
+                }
             }
             else
             {
-                Debug.LogWarning($"No color mapping found for type: {draggable.AssignedType}. Applying default color.");
-                image.color = Color.white; // Apply a default color (e.g., white)
+                Debug.LogError("SortingDraggableItem component missing on the asteroid!");
             }
         }
         else
         {
-            Debug.LogError("Image or SortingDraggableItem component not found on the asteroid!");
+            Debug.LogError("Image component missing on the asteroid prefab!");
         }
+    }
+
+    public string GetRandomType()
+    {
+        List<TypeColorPair> unassignedPairs = GetUnassignedPairs();
+
+        if (unassignedPairs.Count > 0)
+        {
+            var randomPair = unassignedPairs[Random.Range(0, unassignedPairs.Count)];
+            assignedTypes.Add(randomPair.typeName); // Mark as assigned
+
+            Debug.Log($"Randomly selected type: {randomPair.typeName}, Color: {randomPair.color}");
+            return randomPair.typeName;
+        }
+
+        Debug.LogWarning("No unassigned types available. Resetting assigned types.");
+        ResetAssignedTypes(); // Reset when all types are used
+        return GetRandomType(); // Retry
+    }
+
+    private List<TypeColorPair> GetUnassignedPairs()
+    {
+        // Return type-color pairs that are not yet assigned
+        return typeColorPairs.FindAll(pair => !assignedTypes.Contains(pair.typeName));
+    }
+
+    private void ResetAssignedTypes()
+    {
+        // Clear the assigned types
+        assignedTypes.Clear();
     }
 }
