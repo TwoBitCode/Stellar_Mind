@@ -5,13 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainMenu.unity
     guid: d59b55cffe374ea46bf60142977b6be4
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/InstructionsScene.unity
     guid: e7459810fff54cf468e822b8bb9c37f7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/gameEntryMap.unity
     guid: ebc1883f3dc2a2a46a85d823d276179f
   - enabled: 1
@@ -20,24 +20,33 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SortingAsteroid.unity
     guid: e033e187826b10b4f8b4a5ce76235720
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/GameOverScene.unity
     guid: 27af003d417790347aa54bd0580ee91a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/OverallGameOver.unity
     guid: b253092983ec9cc40a452020a6bc5099
   - enabled: 1
     path: Assets/Scenes/GameMapScene-V.unity
     guid: a91074e972b5b874a9c56f3b6b268072
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/WelcomeScene-vivi.unity
     guid: d1ea131f6019fdc4b9c9320976221376
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SelectPlayerScene-vivi.unity
     guid: ef2b57957b5c8db4d885a242fd736639
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/AlienSignalDecoding.unity
     guid: 2896f15b904e2204194a0118884e552f
+  - enabled: 1
+    path: Assets/Scenes/SpaceEquipmentRecoveryMission.unity
+    guid: ed66f5f4594e4ce48933aacd3b7bfba8
+  - enabled: 1
+    path: Assets/Scenes/WiresConnection.unity
+    guid: f7cba1f7db068b04080696e605c2ccef
+  - enabled: 1
+    path: Assets/Scenes/NavigateTheSpaceship.unity
+    guid: cc7669a7f13245443b3c6fccf60155ba
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

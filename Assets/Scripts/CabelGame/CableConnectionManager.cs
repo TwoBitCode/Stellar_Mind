@@ -25,16 +25,30 @@ public class CableConnectionManager : MonoBehaviour
 
     [Header("Stage Management")]
     public int currentStage = 0;
-    [SerializeField]
-    private PanelTransitionHandler panelTransitionHandler;
+    [SerializeField] private PanelTransitionHandler panelTransitionHandler;
     public TextMeshProUGUI timerText; // Text for the timer
     public float countdownTime = 5f; // Time for the countdown
-    [SerializeField]
-    private SparkEffectHandler sparkEffectHandler; // Ensure this is assigned in the Inspector
+    [SerializeField] private SparkEffectHandler sparkEffectHandler; // Ensure this is assigned in the Inspector
 
+    [Header("End Panel")]
+    [SerializeField] private GameObject endPanel; // Panel to show when all stages are completed
+    private DoorManager doorManager;
 
     void Start()
     {
+        // Ensure the end panel is initially hidden
+        if (endPanel != null)
+        {
+            endPanel.SetActive(false);
+        }
+
+        // Access the DoorManager singleton
+        doorManager = Object.FindFirstObjectByType<DoorManager>();
+        if (doorManager == null)
+        {
+            Debug.LogError("DoorManager not found in the scene!");
+        }
+
         // Load the first stage
         LoadStage(currentStage);
     }
@@ -45,6 +59,29 @@ public class CableConnectionManager : MonoBehaviour
         if (stageIndex >= stages.Length)
         {
             Debug.Log("All stages completed!");
+
+            // Mark the mini-game as completed in DoorManager
+            //if (doorManager != null)
+            //{
+            //    doorManager.MarkGameAsCompleted(1); // Replace 3 with the correct index for this mini-game
+            //}
+            //else
+            //{
+            //    Debug.LogError("DoorManager instance not found!");
+            //}
+
+            // Show the end panel
+            if (endPanel != null)
+            {
+                endPanel.SetActive(true);
+            }
+
+            // Hide the disconnected panel
+            if (stages[currentStage - 1].disconnectedPanel != null) // Ensure the previous stage exists
+            {
+                stages[currentStage - 1].disconnectedPanel.SetActive(false);
+            }
+
             return;
         }
 
@@ -58,7 +95,6 @@ public class CableConnectionManager : MonoBehaviour
             });
         }
     }
-
 
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
@@ -145,6 +181,7 @@ public class CableConnectionManager : MonoBehaviour
         }
         return null;
     }
+
     public void OnStartButtonClick()
     {
         CableConnectionStage stage = stages[currentStage];
@@ -158,6 +195,7 @@ public class CableConnectionManager : MonoBehaviour
         // Start the countdown timer
         StartCoroutine(StartCountdown(stage));
     }
+
     private IEnumerator StartCountdown(CableConnectionStage stage)
     {
         float timeRemaining = countdownTime;
@@ -196,6 +234,4 @@ public class CableConnectionManager : MonoBehaviour
             );
         }
     }
-
-
 }

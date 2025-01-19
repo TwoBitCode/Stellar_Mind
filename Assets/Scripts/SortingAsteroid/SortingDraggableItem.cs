@@ -14,7 +14,7 @@ public class SortingDraggableItem : DraggableItem
 
     [SerializeField] private GameObject correctIndicatorPrefab;
     [SerializeField] private GameObject incorrectIndicatorPrefab;
-
+    public Color AssignedColor { get; set; } // Store assigned color
 
     private AsteroidGameManager gameManager;
     private ScoreManager scoreManager;

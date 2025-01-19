@@ -11,7 +11,7 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private GameObject instructionPanel;
     [SerializeField] private Button checkAnswerButton;
     [Header("Completion Panel")]
-    [SerializeField] private GameObject completionPanel; // Add reference for the completion panel
+    [SerializeField] private GameObject completionPanel;
 
     public void ShowCompletionPanel()
     {
@@ -27,8 +27,7 @@ public class TubesUIManager : MonoBehaviour
     {
         resultText.text = ""; // Clear any feedback
         countdownText.text = "";
-        checkAnswerButton.GetComponentInChildren<TextMeshProUGUI>().text = "Check Result";
-        checkAnswerButton.gameObject.SetActive(true);
+        ShowCheckButton(); // Always reset the "Check Result" button visibility
     }
 
     public void UpdateCountdownText(string text)
@@ -36,17 +35,10 @@ public class TubesUIManager : MonoBehaviour
         countdownText.text = text;
     }
 
-    public void UpdateResultText(string text, bool isCorrect)
+    public void UpdateResultText(string text)
     {
+        // Only updates the feedback text; does not touch the button
         resultText.text = text;
-        if (isCorrect)
-        {
-            checkAnswerButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            checkAnswerButton.GetComponentInChildren<TextMeshProUGUI>().text = "Try Again";
-        }
     }
 
     public void ShowInstructionPanel(string text)

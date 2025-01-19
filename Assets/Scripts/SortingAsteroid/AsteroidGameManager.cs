@@ -8,10 +8,12 @@ public class AsteroidGameManager : MonoBehaviour
     [SerializeField] private Transform spawnArea;
     [SerializeField] private float spawnHorizontalRange = 200f;
     [SerializeField] private float spawnVerticalRange = 100f;
-
+    [SerializeField] private GameObject endPanel; // Assign in Inspector
     [Header("Game Components")]
     [SerializeField] private GameTimer timerManager;
     [SerializeField] private AsteroidGameUIManager uiManager;
+    private DoorManager doorManager;
+
 
     [Header("Challenge Manager")]
     [SerializeField] private AsteroidChallengeManager asteroidChallengeManager;
@@ -26,17 +28,32 @@ public class AsteroidGameManager : MonoBehaviour
     private float spawnTimer;
     private List<GameObject> activeAsteroids = new List<GameObject>(); // Track spawned asteroids
 
-
+    [Header("Game Components")]
+    [SerializeField] private GameTimer gameTimer;
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
 
     private void Start()
     {
-        // Subscribe to timer events
-        timerManager.OnTimerEnd += EndChallenge;
+        // Ensure the end panel is hidden at the start
+        if (endPanel != null)
+        {
+            endPanel.SetActive(false);
+        }
 
+        // Get the DoorManager instance
+        doorManager = Object.FindFirstObjectByType<DoorManager>();
+        if (doorManager == null)
+        {
+            Debug.LogError("DoorManager not found in the scene!");
+        }
+
+        gameTimer.OnTimerEnd += EndChallenge;
         InitializeChallenge();
     }
+
+
+
 
     private void Update()
     {
@@ -93,31 +110,45 @@ public class AsteroidGameManager : MonoBehaviour
     {
         var rule = asteroidChallengeManager.CurrentChallenge.sortingRule;
 
+        if (rule == null)
+        {
+            Debug.LogError("No sorting rule assigned for the current challenge!");
+            LeftType = "DefaultLeft";
+            RightType = "DefaultRight";
+            return;
+        }
+
         if (rule is ColorSortingRule colorRule)
         {
             var types = colorRule.typeColorPairs;
             if (types.Count >= 2)
             {
-                LeftType = types[0].typeName;
-                RightType = types[1].typeName;
-                Debug.Log($"Assigned LeftType: {LeftType}, RightType: {RightType}");
+                LeftType = types[0].color.ToString();
+                RightType = types[1].color.ToString();
+                Debug.Log($"Assigned LeftColor: {LeftType}, RightColor: {RightType}");
             }
             else
             {
-                Debug.LogError("Not enough types defined in the ColorSortingRule!");
+                Debug.LogError("Not enough colors defined in the ColorSortingRule!");
+                LeftType = "DefaultLeftColor";
+                RightType = "DefaultRightColor";
             }
         }
         else if (rule is SizeSortingRule)
         {
             LeftType = "Small";
             RightType = "Large";
-            Debug.Log($"Assigned LeftType: {LeftType}, RightType: {RightType}");
+            Debug.Log($"Assigned LeftType: Small, RightType: Large");
         }
         else
         {
-            Debug.LogError("Unsupported sorting rule for assigning drop zone types!");
+            Debug.LogError($"Unsupported sorting rule type: {rule.GetType().Name}");
+            LeftType = "DefaultLeft";
+            RightType = "DefaultRight";
         }
     }
+
+
 
     private void StartGame()
     {
@@ -162,11 +193,42 @@ public class AsteroidGameManager : MonoBehaviour
 
     public void EndChallenge()
     {
-        isGameActive = false;
-        Debug.Log("Challenge ended! Time is up.");
+        isGameActive = false; // Stop the game
+        Debug.Log("Timer ended! Challenge is over.");
+
+        // Clear all remaining asteroids
+        ClearAsteroids();
+
+        //// Mark the game as completed
+        //if (doorManager != null)
+        //{
+        //    doorManager.MarkGameAsCompleted(2); // Replace 0 with the index of this mini-game
+        //}
+
+        // Check if there are more challenges
         asteroidChallengeManager.AdvanceToNextChallenge();
-        InitializeChallenge(); // Start the next challenge
+
+        if (!asteroidChallengeManager.HasMoreChallenges)
+        {
+            ShowEndPanel(); // Show the end panel if all challenges are completed
+        }
+        else
+        {
+            InitializeChallenge(); // Start the next challenge
+        }
     }
+
+
+    private void ShowEndPanel()
+    {
+        if (endPanel != null)
+        {
+            endPanel.SetActive(true); // Activate the end panel
+        }
+
+        uiManager.HideAllUI(); // Hide any remaining UI elements
+    }
+
 
     private void ClearAsteroids()
     {
@@ -174,12 +236,12 @@ public class AsteroidGameManager : MonoBehaviour
         {
             if (asteroid != null)
             {
-                Destroy(asteroid);
+                Destroy(asteroid); // Destroy each asteroid GameObject
             }
         }
 
-        activeAsteroids.Clear(); // Clear the list
-        Debug.Log("Cleared all asteroids from the previous challenge.");
+        activeAsteroids.Clear(); // Clear the list to reset it
+        Debug.Log("All remaining asteroids have been cleared.");
     }
 
 }

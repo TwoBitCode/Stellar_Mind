@@ -419,7 +419,6 @@ MonoBehaviour:
   secondLayerBranches: 2
   thirdLayerBranches: 3
   secondLayerSpreadAngle: 0.7853982
-  thirdLayerSpreadAngle: 0.5235988
   branchCenteringFactor: 2
 --- !u!1 &633504854192868764
 GameObject:

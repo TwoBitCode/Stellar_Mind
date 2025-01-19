@@ -49,4 +49,16 @@ public class AsteroidGameUIManager : MonoBehaviour
             timerText.text = $"{minutes:00}:{seconds:00}";
         }
     }
+    public void HideAllUI()
+    {
+        if (instructionsPanel != null)
+        {
+            instructionsPanel.SetActive(false);
+        }
+
+        if (timerText != null)
+        {
+            timerText.gameObject.SetActive(false);
+        }
+    }
 }

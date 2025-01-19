@@ -11,6 +11,7 @@ public class Stage
     public int timeLimit;
     public int scoreReward;
     public string instructionText;
+
 }
 
 public class GameManager : MonoBehaviour
@@ -23,6 +24,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GridManager gridManager;
     [SerializeField] private StackManager stackManager;
     [SerializeField] private TubesUIManager uiManager;
+    private DoorManager doorManager;
+
 
     private int currentStageIndex = 0;
 
@@ -31,6 +34,13 @@ public class GameManager : MonoBehaviour
     {
         ValidateSetup();
 
+        // Access the DoorManager singleton
+        doorManager = Object.FindFirstObjectByType<DoorManager>();
+        if (doorManager == null)
+        {
+            Debug.LogError("DoorManager not found in the scene!");
+        }
+
         // Play the introduction
         introductionManager.PlayIntroduction(() =>
         {
@@ -38,6 +48,7 @@ public class GameManager : MonoBehaviour
             ShowStageIntroduction(currentStageIndex); // Show instructions for the first stage
         });
     }
+
 
     private void ValidateSetup()
     {
@@ -102,6 +113,9 @@ public class GameManager : MonoBehaviour
         gridManager.ShuffleGridElements();
         stackManager.MoveElementsToStack(gridManager.GridElements);
         Debug.Log("Stage setup completed. Player can now start.");
+
+        // Show "Check Result" button only after the timer
+        uiManager.ShowCheckButton();
     }
 
     private IEnumerator ShuffleAndDisplayStage(Stage stage)
@@ -146,21 +160,19 @@ public class GameManager : MonoBehaviour
         if (isCorrect)
         {
             Debug.Log($"Stage {currentStageIndex + 1} completed successfully.");
-
-            // Award score for the stage
             OverallScoreManager.Instance.AddScore(currentStage.scoreReward);
-
-            uiManager.UpdateResultText("Correct Order!", true); // Success feedback
-            uiManager.HideCheckButton(); // Hide the button after success
-            ProgressToNextStage(); // Proceed to the next stage
+            uiManager.UpdateResultText("Correct Order!"); // Only updates feedback
+            uiManager.HideCheckButton(); // Hides the button on success
+            ProgressToNextStage();
         }
         else
         {
-            Debug.Log("Incorrect order. Reshuffling and restarting the stage...");
-            uiManager.UpdateResultText("Incorrect, reshuffling and starting again.", false); // Feedback
-            StartCoroutine(RestartStageWithNewColors()); // Restart with reshuffling
+            Debug.Log("Incorrect order. Player can try again.");
+            uiManager.UpdateResultText("Incorrect! Try Again."); // Keeps feedback clear
+                                                                 // Button remains visible for retry
         }
     }
+
 
 
 
@@ -178,6 +190,9 @@ public class GameManager : MonoBehaviour
     // Progress to the next stage
     private void ProgressToNextStage()
     {
+        // Clear feedback before moving to the next stage
+        uiManager.ResetUI();
+
         currentStageIndex++;
         if (currentStageIndex < stages.Count)
         {
@@ -187,12 +202,19 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("All stages completed!");
 
+            //// Mark this mini-game as completed in the DoorManager
+            //if (doorManager != null)
+            //{
+            //    doorManager.MarkGameAsCompleted(0); // Replace 2 with the correct index for this mini-game
+            //}
+
             // Show the completion panel when all stages are done
             uiManager.HideCheckButton();
             uiManager.HideInstructionPanel();
             uiManager.ShowCompletionPanel();
         }
     }
+
 
     private bool CheckOriginalOrder()
     {
@@ -229,7 +251,8 @@ public class GameManager : MonoBehaviour
         if (isCorrect)
         {
             Stage currentStage = stages[currentStageIndex];
-            uiManager.UpdateResultText("Correct Order!", true);
+            uiManager.UpdateResultText("Correct Order!");
+
 
             Debug.Log($"Stage {currentStageIndex + 1} completed. Awarding {currentStage.scoreReward} points.");
             currentStageIndex++;
@@ -238,7 +261,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            uiManager.UpdateResultText("Incorrect Order! Try Again.", false);
+            uiManager.UpdateResultText("Incorrect Order! Try Again.");
+
             StartStage();
         }
     }
@@ -274,7 +298,7 @@ public class GameManager : MonoBehaviour
 
         // Clear the feedback after a short delay
         yield return new WaitForSeconds(1f);
-        uiManager.UpdateResultText("", false);
+        uiManager.UpdateResultText("");
 
         // Clear and regenerate elements
         gridManager.ClearElements();

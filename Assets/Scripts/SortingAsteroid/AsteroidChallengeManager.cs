@@ -10,26 +10,25 @@ public class AsteroidChallengeManager : MonoBehaviour
     {
         get
         {
-            // Check if the index is valid before accessing the list
             if (currentChallengeIndex < asteroidChallenges.Count)
             {
                 return asteroidChallenges[currentChallengeIndex];
             }
 
             Debug.LogWarning("No more challenges available!");
-            return null; // Return null if out of bounds
+            return null;
         }
     }
+
+    public bool HasMoreChallenges => currentChallengeIndex < asteroidChallenges.Count;
 
     public void AdvanceToNextChallenge()
     {
         currentChallengeIndex++;
-        if (currentChallengeIndex >= asteroidChallenges.Count)
+
+        if (!HasMoreChallenges)
         {
             Debug.Log("All asteroid challenges completed!");
-            return;
         }
-
-        Debug.Log($"Starting Asteroid Challenge: {CurrentChallenge.challengeName}");
     }
 }

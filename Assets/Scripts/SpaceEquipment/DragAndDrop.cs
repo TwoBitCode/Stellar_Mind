@@ -5,6 +5,7 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 {
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
+    private Vector2 pointerOffset; // Stores the offset between the pointer and the object's center
 
     private void Awake()
     {
@@ -16,6 +17,14 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         canvasGroup.blocksRaycasts = false;
 
+        // Calculate the offset between the mouse position and the object's position
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out pointerOffset
+        );
+
         // Play drag start sound
         if (AudioFeedbackManager.Instance != null)
         {
@@ -24,11 +33,19 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
     }
 
-
     public void OnDrag(PointerEventData eventData)
     {
         // Update the object's position based on the drag
-        rectTransform.anchoredPosition += eventData.delta;
+        Vector2 localPointerPosition;
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rectTransform.parent as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out localPointerPosition
+        ))
+        {
+            rectTransform.localPosition = localPointerPosition - pointerOffset;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -36,5 +53,4 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         Debug.Log($"{gameObject.name} dropped!");
         canvasGroup.blocksRaycasts = true; // Re-enable raycasts after dragging
     }
-
 }
