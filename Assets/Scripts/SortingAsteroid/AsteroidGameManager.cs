@@ -13,7 +13,7 @@ public class AsteroidGameManager : MonoBehaviour
     [SerializeField] private GameTimer timerManager;
     [SerializeField] private AsteroidGameUIManager uiManager;
     private DoorManager doorManager;
-
+    private RectTransform canvasRect; // Reference to the canvas RectTransform
 
     [Header("Challenge Manager")]
     [SerializeField] private AsteroidChallengeManager asteroidChallengeManager;
@@ -27,6 +27,7 @@ public class AsteroidGameManager : MonoBehaviour
     private bool isGameActive;
     private float spawnTimer;
     private List<GameObject> activeAsteroids = new List<GameObject>(); // Track spawned asteroids
+    [SerializeField] private List<GameObject> allDropZones; // Drag all drop zones here in the Inspector
 
     [Header("Game Components")]
     [SerializeField] private GameTimer gameTimer;
@@ -35,6 +36,7 @@ public class AsteroidGameManager : MonoBehaviour
 
     private void Start()
     {
+        Canvas canvas = FindAnyObjectByType<Canvas>();
         // Ensure the end panel is hidden at the start
         if (endPanel != null)
         {
@@ -42,11 +44,11 @@ public class AsteroidGameManager : MonoBehaviour
         }
 
         // Get the DoorManager instance
-        doorManager = Object.FindFirstObjectByType<DoorManager>();
-        if (doorManager == null)
-        {
-            Debug.LogError("DoorManager not found in the scene!");
-        }
+        //doorManager = Object.FindFirstObjectByType<DoorManager>();
+        //if (doorManager == null)
+        //{
+        //    Debug.LogError("DoorManager not found in the scene!");
+        //}
 
         gameTimer.OnTimerEnd += EndChallenge;
         InitializeChallenge();
@@ -83,7 +85,9 @@ public class AsteroidGameManager : MonoBehaviour
         maxAsteroids = currentChallenge.maxAsteroids;
         currentAsteroidCount = 0;
 
+        // Assign drop zones and update instructions
         AssignDropZoneTypes();
+        SetupDropZones(currentChallenge.dropZones);
 
         string instructions = GenerateInstructions();
         uiManager.ShowInstructions(instructions, StartGame);
@@ -92,61 +96,51 @@ public class AsteroidGameManager : MonoBehaviour
 
     private string GenerateInstructions()
     {
-        if (asteroidChallengeManager.CurrentChallenge.sortingRule is ColorSortingRule)
+        var currentChallenge = asteroidChallengeManager.CurrentChallenge;
+        if (currentChallenge == null || currentChallenge.dropZoneAssignments == null)
         {
-            return $"Drag {LeftType} asteroids to the left basket and {RightType} asteroids to the right basket.";
+            return "Follow the sorting rules.";
         }
-        else if (asteroidChallengeManager.CurrentChallenge.sortingRule is SizeSortingRule)
+
+        string instructions = "Sort asteroids as follows:\n";
+        foreach (var assignment in currentChallenge.dropZoneAssignments)
         {
-            return "Drag small asteroids to the left basket and large asteroids to the right basket.";
+            instructions += $"- {assignment.assignedType} asteroids to the {assignment.dropZoneName.Replace("Area", "").ToLower()}\n";
         }
-        else
-        {
-            return "Follow the instructions for this challenge.";
-        }
+        return instructions;
     }
+
+
+
+
 
     private void AssignDropZoneTypes()
     {
-        var rule = asteroidChallengeManager.CurrentChallenge.sortingRule;
+        var currentChallenge = asteroidChallengeManager.CurrentChallenge;
 
-        if (rule == null)
+        if (currentChallenge == null || currentChallenge.dropZones == null || currentChallenge.sortingRule == null)
         {
-            Debug.LogError("No sorting rule assigned for the current challenge!");
-            LeftType = "DefaultLeft";
-            RightType = "DefaultRight";
+            Debug.LogError("Invalid challenge setup!");
             return;
         }
 
-        if (rule is ColorSortingRule colorRule)
+        var rule = currentChallenge.sortingRule as MixedSortingRule;
+        if (rule == null) return;
+
+        currentChallenge.dropZoneAssignments.Clear();
+
+        foreach (var condition in rule.conditions)
         {
-            var types = colorRule.typeColorPairs;
-            if (types.Count >= 2)
+            currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
             {
-                LeftType = types[0].color.ToString();
-                RightType = types[1].color.ToString();
-                Debug.Log($"Assigned LeftColor: {LeftType}, RightColor: {RightType}");
-            }
-            else
-            {
-                Debug.LogError("Not enough colors defined in the ColorSortingRule!");
-                LeftType = "DefaultLeftColor";
-                RightType = "DefaultRightColor";
-            }
-        }
-        else if (rule is SizeSortingRule)
-        {
-            LeftType = "Small";
-            RightType = "Large";
-            Debug.Log($"Assigned LeftType: Small, RightType: Large");
-        }
-        else
-        {
-            Debug.LogError($"Unsupported sorting rule type: {rule.GetType().Name}");
-            LeftType = "DefaultLeft";
-            RightType = "DefaultRight";
+                dropZoneName = condition.dropZoneName,
+                assignedType = $"{condition.size} {condition.color}"
+            });
         }
     }
+
+
+
 
 
 
@@ -158,6 +152,7 @@ public class AsteroidGameManager : MonoBehaviour
         Debug.Log("Game started!");
     }
 
+    // Adjusted SpawnAsteroid method based on your earlier version
     private void SpawnAsteroid()
     {
         if (currentAsteroidCount >= maxAsteroids) return;
@@ -174,6 +169,9 @@ public class AsteroidGameManager : MonoBehaviour
         activeAsteroids.Add(asteroid);
         currentAsteroidCount++;
     }
+
+
+
 
     private void ApplySortingRules(GameObject asteroid)
     {
@@ -242,6 +240,28 @@ public class AsteroidGameManager : MonoBehaviour
 
         activeAsteroids.Clear(); // Clear the list to reset it
         Debug.Log("All remaining asteroids have been cleared.");
+    }
+    private void SetupDropZones(List<string> activeDropZoneNames)
+    {
+        // Hide all drop zones
+        foreach (var dropZone in allDropZones)
+        {
+            dropZone.SetActive(false);
+        }
+
+        // Activate only the required drop zones for the current challenge
+        foreach (var zoneName in activeDropZoneNames)
+        {
+            var dropZone = allDropZones.Find(dz => dz.name == zoneName);
+            if (dropZone != null)
+            {
+                dropZone.SetActive(true);
+            }
+            else
+            {
+                Debug.LogWarning($"Drop zone with name {zoneName} not found!");
+            }
+        }
     }
 
 }

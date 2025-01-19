@@ -44,4 +44,11 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
             Debug.LogError("SortingDraggableItem component missing on the asteroid!");
         }
     }
+
+    // New method for ISortingRule
+    public string GetRandomType()
+    {
+        // Randomly return "Small" or "Large"
+        return Random.value > 0.5f ? "Small" : "Large";
+    }
 }

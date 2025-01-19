@@ -7,7 +7,7 @@ public class SortingDraggableItem : DraggableItem
 {
     public string AssignedType { get; set; } // Dynamically assigned type
     public float AssignedSize { get; set; } // Dynamically assigned size
-
+    public bool IsDistractor { get; set; } // Determines if the asteroid is a distractor
 
     [SerializeField] private int pointsForCorrectDrop = 10;
     [SerializeField] private float destroyDelay = 0.2f;
@@ -52,47 +52,57 @@ public class SortingDraggableItem : DraggableItem
             Debug.LogError("Sorting rule not found or invalid!");
         }
     }
+
     public override void OnEndDrag(PointerEventData eventData)
     {
-        base.OnEndDrag(eventData);
-
-        if (gameManager == null)
+        if (IsDistractor)
         {
-            Debug.LogError("GameManager is not assigned!");
+            Debug.Log("Distractor asteroid ignored!");
+            Destroy(gameObject, destroyDelay); // Distractors disappear after being dropped
             return;
         }
 
-        // Validate placement based on the assigned type
-        if (gameManager.LeftType == AssignedType && IsOverArea("LeftArea"))
+        base.OnEndDrag(eventData);
+
+        var currentChallenge = gameManager?.ChallengeManager?.CurrentChallenge;
+        if (currentChallenge == null)
         {
-            Debug.Log($"Correct placement in LeftArea for type: {AssignedType}");
-            HandleCorrectPlacement();
+            Debug.LogError("No current challenge available!");
+            return;
         }
-        else if (gameManager.RightType == AssignedType && IsOverArea("RightArea"))
+
+        // Check all active drop zones
+        foreach (var assignment in currentChallenge.dropZoneAssignments)
         {
-            Debug.Log($"Correct placement in RightArea for type: {AssignedType}");
-            HandleCorrectPlacement();
+            if (IsOverCorrectDropZone(AssignedType, assignment.dropZoneName))
+            {
+                if (assignment.assignedType == AssignedType)
+                {
+                    Debug.Log($"Correct placement in {assignment.dropZoneName} for AssignedType: {AssignedType}");
+                    HandleCorrectPlacement();
+                    return;
+                }
+            }
         }
-        else
-        {
-            Debug.Log($"Incorrect placement for type: {AssignedType}");
-            HandleIncorrectPlacement();
-        }
+
+        Debug.Log($"Incorrect placement for AssignedType: {AssignedType}");
+        HandleIncorrectPlacement();
     }
 
 
 
-    private bool IsOverArea(string areaName)
+
+    private bool IsOverCorrectDropZone(string assignedType, string dropZoneName)
     {
-        RectTransform area = GameObject.Find(areaName)?.GetComponent<RectTransform>();
+        RectTransform area = GameObject.Find(dropZoneName)?.GetComponent<RectTransform>();
         if (area == null)
         {
-            Debug.LogError($"Drop area '{areaName}' not found!");
+            Debug.LogError($"Drop area '{dropZoneName}' not found!");
             return false;
         }
 
         bool isOver = RectTransformUtility.RectangleContainsScreenPoint(area, Input.mousePosition, Camera.main);
-        Debug.Log($"Checking placement over {areaName}: {isOver}");
+        Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
         return isOver;
     }
 
@@ -116,7 +126,6 @@ public class SortingDraggableItem : DraggableItem
 
         Destroy(gameObject); // Remove the asteroid after correct placement
     }
-
 
     private void HandleIncorrectPlacement()
     {
