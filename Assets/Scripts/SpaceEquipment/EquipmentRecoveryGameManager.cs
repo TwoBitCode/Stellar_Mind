@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic; // Required for HashSet
 
 public class EquipmentRecoveryGameManager : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     public int totalParts; // Total number of parts that need to be placed correctly
     public int pointsForCompletion = 10; // Points awarded for completing the level, modifiable in the Inspector
     private int correctPartsPlaced = 0; // Counter for correctly placed parts
+    private HashSet<GameObject> placedParts = new HashSet<GameObject>(); // Tracks correctly placed parts
 
     [Header("UI Elements")]
     public GameObject levelCompletePanel; // Panel to show when the level is complete
@@ -26,11 +28,21 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         }
     }
 
-    public void PartPlacedCorrectly()
+    public void PartPlacedCorrectly(GameObject part)
     {
+        // Check if the part is already placed correctly
+        if (placedParts.Contains(part))
+        {
+            Debug.Log($"Part {part.name} is already placed correctly. Ignoring.");
+            return; // Exit early if the part was already counted
+        }
+
+        // Add part to the HashSet and update the count
+        placedParts.Add(part);
         correctPartsPlaced++;
         Debug.Log($"Correct parts placed: {correctPartsPlaced}/{totalParts}");
 
+        // Check if all parts are placed correctly
         if (correctPartsPlaced >= totalParts)
         {
             LevelComplete();
@@ -50,16 +62,6 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         {
             Debug.LogError("OverallScoreManager instance not found!");
         }
-
-        //// Mark this mini-game as completed
-        //if (DoorManager != null)
-        //{
-        //    DoorManager.MarkGameAsCompleted(3); // Replace 1 with the index of this mini-game
-        //}
-        //else
-        //{
-        //    Debug.LogError("DoorManager instance not found!");
-        //}
 
         // Show the level complete panel
         if (levelCompletePanel != null)

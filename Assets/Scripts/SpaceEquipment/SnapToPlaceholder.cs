@@ -22,7 +22,7 @@ public class SnapToPlaceholder : MonoBehaviour, IDropHandler
                 Debug.Log("Correct part dropped and snapped!");
 
                 // Notify the game manager about the correct placement
-                EquipmentRecoveryGameManager.Instance?.PartPlacedCorrectly();
+                EquipmentRecoveryGameManager.Instance?.PartPlacedCorrectly(droppedObject);
 
                 // Show "Correct!" feedback
                 EquipmentRecoveryUIManager.Instance?.ShowFeedback("Correct!", Color.green);
