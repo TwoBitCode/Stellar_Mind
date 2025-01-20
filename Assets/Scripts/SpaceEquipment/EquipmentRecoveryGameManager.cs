@@ -1,17 +1,18 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class EquipmentRecoveryGameManager : MonoBehaviour
 {
     public static EquipmentRecoveryGameManager Instance;
 
     [Header("Stage Settings")]
-    public List<EquipmentRecoveryStage> stages; // List of stage data (ScriptableObjects)
-    public List<GameObject> stagePanels; // List of stage panels (Canvas objects in the scene)
+    public List<EquipmentRecoveryStage> stages;
+    public List<GameObject> stagePanels;
 
     private int currentStageIndex = 0;
     private int correctPartsPlaced = 0;
     private HashSet<GameObject> placedParts = new HashSet<GameObject>();
+    private HashSet<GameObject> penalizedParts = new HashSet<GameObject>(); // Tracks penalized objects
 
     [Header("UI Elements")]
     public GameObject gameOverPanel;
@@ -35,8 +36,8 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     {
         correctPartsPlaced = 0;
         placedParts.Clear();
+        penalizedParts.Clear(); // Clear penalties for new stage
 
-        // Activate the current stage panel
         for (int i = 0; i < stagePanels.Count; i++)
         {
             stagePanels[i].SetActive(i == currentStageIndex);
@@ -50,7 +51,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         if (placedParts.Contains(part)) return;
 
         placedParts.Add(part);
+        penalizedParts.Remove(part); // Clear penalty tracking on correct placement
         correctPartsPlaced++;
+
         Debug.Log($"Correct parts placed: {correctPartsPlaced}/{CurrentStage.totalParts}");
 
         if (correctPartsPlaced >= CurrentStage.totalParts)
@@ -59,30 +62,36 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         }
     }
 
+    public void PartPlacedIncorrectly(GameObject part)
+    {
+        if (!penalizedParts.Contains(part))
+        {
+            penalizedParts.Add(part); // Mark the part as penalized
+            Debug.Log("Player lost a point for incorrect placement.");
+
+            // Deduct 1 point using the OverallScoreManager
+            OverallScoreManager.Instance?.AddScore(-1);
+        }
+        else
+        {
+            Debug.Log("This part was already penalized for being incorrect.");
+        }
+    }
+
+
     private void StageComplete()
     {
         Debug.Log($"Stage {CurrentStage.stageName} complete!");
 
-        // Add points to the overall score
-        if (OverallScoreManager.Instance != null)
-        {
-            OverallScoreManager.Instance.AddScoreFromStage(CurrentStage.stageName, CurrentStage.pointsForCompletion);
-        }
-        else
-        {
-            Debug.LogError("OverallScoreManager instance not found!");
-        }
+        OverallScoreManager.Instance?.AddScoreFromStage(CurrentStage.stageName, CurrentStage.pointsForCompletion);
 
-        // Move to the next stage
         currentStageIndex++;
         if (currentStageIndex < stages.Count)
         {
-            Debug.Log($"Starting next stage: {stages[currentStageIndex].stageName}");
-            StartStage(); // Start the next stage
+            StartStage();
         }
         else
         {
-            Debug.Log("All stages complete. Triggering MiniGameComplete...");
             MiniGameComplete();
         }
     }
@@ -94,12 +103,5 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         {
             gameOverPanel.SetActive(true);
         }
-        else
-        {
-            Debug.LogError("Game over panel is not assigned!");
-        }
-
-        // Additional game-over logic (e.g., stopping interactions) can go here
     }
-
 }
