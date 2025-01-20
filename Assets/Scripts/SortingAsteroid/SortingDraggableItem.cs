@@ -66,7 +66,13 @@ public class SortingDraggableItem : DraggableItem
             Debug.LogError("No current challenge available!");
         }
     }
+    public override void OnBeginDrag(PointerEventData eventData)
+    {
+        base.OnBeginDrag(eventData);
 
+        // Play grab sound globally
+        GlobalAsteroidSoundManager.Instance?.PlayGrabSound();
+    }
     public override void OnEndDrag(PointerEventData eventData)
     {
         if (IsDistractor)
@@ -146,6 +152,7 @@ public class SortingDraggableItem : DraggableItem
 
     private void HandleCorrectPlacement()
     {
+        GlobalAsteroidSoundManager.Instance?.PlayCorrectSound();
         Debug.Log("Correct placement handled!");
 
         // Add points using the existing ScoreManager
@@ -192,6 +199,7 @@ public class SortingDraggableItem : DraggableItem
 
     private void HandleIncorrectPlacement()
     {
+        GlobalAsteroidSoundManager.Instance?.PlayIncorrectSound();
         if (incorrectIndicatorPrefab != null)
         {
             GameObject incorrectIndicator = Instantiate(incorrectIndicatorPrefab, transform.parent);
@@ -201,51 +209,4 @@ public class SortingDraggableItem : DraggableItem
         Destroy(gameObject, destroyDelay); // Remove the asteroid after incorrect placement
     }
 
-
-
-    //private bool IsOverCorrectDropZone(string dropZoneName)
-    //{
-    //    RectTransform area = GameObject.Find(dropZoneName)?.GetComponent<RectTransform>();
-    //    if (area == null)
-    //    {
-    //        Debug.LogError($"Drop area '{dropZoneName}' not found!");
-    //        return false;
-    //    }
-
-    //    bool isOver = RectTransformUtility.RectangleContainsScreenPoint(area, Input.mousePosition, Camera.main);
-    //    Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
-    //    return isOver;
-    //}
-
-    //private void HandleCorrectPlacement()
-    //{
-    //    // Add points using the existing ScoreManager
-    //    if (scoreManager != null)
-    //    {
-    //        scoreManager.AddScore(pointsForCorrectDrop);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("ScoreManager instance is not available!");
-    //    }
-
-    //    if (correctIndicatorPrefab != null)
-    //    {
-    //        GameObject correctIndicator = Instantiate(correctIndicatorPrefab, transform.parent);
-    //        Destroy(correctIndicator, destroyDelay);
-    //    }
-
-    //    Destroy(gameObject); // Remove the asteroid after correct placement
-    //}
-
-    //private void HandleIncorrectPlacement()
-    //{
-    //    if (incorrectIndicatorPrefab != null)
-    //    {
-    //        GameObject incorrectIndicator = Instantiate(incorrectIndicatorPrefab, transform.parent);
-    //        Destroy(incorrectIndicator, destroyDelay);
-    //    }
-
-    //    Destroy(gameObject, destroyDelay); // Remove the asteroid after incorrect placement
-    //}
 }

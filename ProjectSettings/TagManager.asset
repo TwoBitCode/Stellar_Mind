@@ -27,6 +27,8 @@ TagManager:
   - Blue Star
   - LockIcon
   - Door
+  - F0
+  - F1
   layers:
   - Default
   - TransparentFX

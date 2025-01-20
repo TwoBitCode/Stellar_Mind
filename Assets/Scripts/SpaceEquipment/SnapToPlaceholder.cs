@@ -16,30 +16,23 @@ public class SnapToPlaceholder : MonoBehaviour, IDropHandler
             Debug.Log($"Dropped object tag: {droppedObject.tag}"); // Log the tag of the dropped object
             if (droppedObject.CompareTag(correctPartTag))
             {
-                // Snap the part to the placeholder
                 droppedObject.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
 
                 Debug.Log("Correct part dropped and snapped!");
+                EquipmentRecoveryGameManager.Instance?.PartPlacedCorrectly(droppedObject);
 
-                // Notify the game manager about the correct placement
-                EquipmentRecoveryGameManager.Instance?.PartPlacedCorrectly();
-
-                // Show "Correct!" feedback
                 EquipmentRecoveryUIManager.Instance?.ShowFeedback("Correct!", Color.green);
-
-                // Play correct sound via the manager
                 AudioFeedbackManager.Instance?.PlayCorrectSound();
             }
             else
             {
                 Debug.Log("Incorrect part dropped!");
+                EquipmentRecoveryGameManager.Instance?.PartPlacedIncorrectly(droppedObject);
 
-                // Show "Try Again!" feedback
                 EquipmentRecoveryUIManager.Instance?.ShowFeedback("Try Again!", Color.red);
-
-                // Play incorrect sound via the manager
                 AudioFeedbackManager.Instance?.PlayIncorrectSound();
             }
+
         }
     }
 }

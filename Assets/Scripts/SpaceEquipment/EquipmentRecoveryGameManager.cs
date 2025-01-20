@@ -1,72 +1,107 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EquipmentRecoveryGameManager : MonoBehaviour
 {
-    public static EquipmentRecoveryGameManager Instance; // Singleton for global access
+    public static EquipmentRecoveryGameManager Instance;
 
-    [Header("Game Settings")]
-    public int totalParts; // Total number of parts that need to be placed correctly
-    public int pointsForCompletion = 10; // Points awarded for completing the level, modifiable in the Inspector
-    private int correctPartsPlaced = 0; // Counter for correctly placed parts
+    [Header("Stage Settings")]
+    public List<EquipmentRecoveryStage> stages;
+    public List<GameObject> stagePanels;
+
+    private int currentStageIndex = 0;
+    private int correctPartsPlaced = 0;
+    private HashSet<GameObject> placedParts = new HashSet<GameObject>();
+    private HashSet<GameObject> penalizedParts = new HashSet<GameObject>(); // Tracks penalized objects
 
     [Header("UI Elements")]
-    public GameObject levelCompletePanel; // Panel to show when the level is complete
+    public GameObject gameOverPanel;
 
     private void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Persist across scenes if needed
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate instances
+            Destroy(gameObject);
         }
     }
 
-    public void PartPlacedCorrectly()
+    private EquipmentRecoveryStage CurrentStage => stages[currentStageIndex];
+
+    public void StartStage()
     {
+        correctPartsPlaced = 0;
+        placedParts.Clear();
+        penalizedParts.Clear(); // Clear penalties for new stage
+
+        for (int i = 0; i < stagePanels.Count; i++)
+        {
+            stagePanels[i].SetActive(i == currentStageIndex);
+        }
+
+        Debug.Log($"Starting Stage: {CurrentStage.stageName} with {CurrentStage.totalParts} parts.");
+    }
+
+    public void PartPlacedCorrectly(GameObject part)
+    {
+        if (placedParts.Contains(part)) return;
+
+        placedParts.Add(part);
+        penalizedParts.Remove(part); // Clear penalty tracking on correct placement
         correctPartsPlaced++;
-        Debug.Log($"Correct parts placed: {correctPartsPlaced}/{totalParts}");
 
-        if (correctPartsPlaced >= totalParts)
+        Debug.Log($"Correct parts placed: {correctPartsPlaced}/{CurrentStage.totalParts}");
+
+        if (correctPartsPlaced >= CurrentStage.totalParts)
         {
-            LevelComplete();
+            StageComplete();
         }
     }
 
-    private void LevelComplete()
+    public void PartPlacedIncorrectly(GameObject part)
     {
-        Debug.Log("Level complete!");
-
-        // Add points to the overall score
-        if (OverallScoreManager.Instance != null)
+        if (!penalizedParts.Contains(part))
         {
-            OverallScoreManager.Instance.AddScoreFromStage("Equipment Recovery", pointsForCompletion);
+            penalizedParts.Add(part); // Mark the part as penalized
+            Debug.Log("Player lost a point for incorrect placement.");
+
+            // Deduct 1 point using the OverallScoreManager
+            OverallScoreManager.Instance?.AddScore(-1);
         }
         else
         {
-            Debug.LogError("OverallScoreManager instance not found!");
+            Debug.Log("This part was already penalized for being incorrect.");
         }
+    }
 
-        //// Mark this mini-game as completed
-        //if (DoorManager != null)
-        //{
-        //    DoorManager.MarkGameAsCompleted(3); // Replace 1 with the index of this mini-game
-        //}
-        //else
-        //{
-        //    Debug.LogError("DoorManager instance not found!");
-        //}
 
-        // Show the level complete panel
-        if (levelCompletePanel != null)
+    private void StageComplete()
+    {
+        Debug.Log($"Stage {CurrentStage.stageName} complete!");
+
+        OverallScoreManager.Instance?.AddScoreFromStage(CurrentStage.stageName, CurrentStage.pointsForCompletion);
+
+        currentStageIndex++;
+        if (currentStageIndex < stages.Count)
         {
-            levelCompletePanel.SetActive(true);
+            StartStage();
         }
+        else
+        {
+            MiniGameComplete();
+        }
+    }
 
-        // Additional logic (e.g., stopping interactions) can go here
+    private void MiniGameComplete()
+    {
+        Debug.Log("Mini-game complete!");
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
     }
 }

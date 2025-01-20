@@ -10,6 +10,9 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     public CableConnectionManager connectionManager; // Reference to the manager script
 
     public float snapDistance = 5f; // Distance threshold for snapping to a target
+    public float elbowOffset = 1f; // Offset for the elbow position
+
+    private Vector3 fixedStartPoint; // Cached start point world position
 
     void Start()
     {
@@ -17,14 +20,14 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
 
-        // Set up the LineRenderer
+        // Cache the start point world position
         if (lineRenderer != null && startPoint != null)
         {
-            lineRenderer.positionCount = 2; // Two points: start and end
-            //UpdateLineStartPosition();
+            lineRenderer.positionCount = 4; // Start, elbow, and end positions
             UpdateLineEndPosition();
         }
     }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         Debug.Log("Dragging Started");
@@ -42,9 +45,10 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         Vector2 pointerDelta = eventData.delta / canvas.scaleFactor;
         rectTransform.anchoredPosition += pointerDelta;
 
-        // Update the end position of the line during the drag
-        UpdateLineEndPosition();
+        // Update the wire positions during drag
+        UpdateWireTipsPosition();
     }
+
 
     public void OnPointerUp(PointerEventData eventData)
     {
@@ -84,17 +88,28 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             ResetToStartPosition();
         }
     }
+
     private void ResetToStartPosition()
     {
         // Move the cable back to its starting position
         rectTransform.anchoredPosition = startPoint.anchoredPosition;
 
         // Update the LineRenderer to reflect the reset position
-        UpdateLineEndPosition();
+        if (lineRenderer != null)
+        {
+            Vector3 worldEndPoint = GetWorldPosition(rectTransform);
+            worldEndPoint.z = 0; // Ensure the z position remains consistent
+
+            // Update the LineRenderer positions with fixed z values
+            Vector3 startPosition = GetWorldPosition(startPoint);
+            startPosition.z = 0;
+
+            lineRenderer.SetPosition(2, worldEndPoint); // Secondary elbow (directly to endpoint)
+            lineRenderer.SetPosition(3, worldEndPoint); // Endpoint
+        }
 
         Debug.Log("Cable reset to start position.");
     }
-
 
     private RectTransform GetClosestTarget()
     {
@@ -124,8 +139,6 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         return closestTarget;
     }
 
-
-
     private void SnapToTarget(RectTransform target)
     {
         if (target != null)
@@ -134,7 +147,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             rectTransform.position = target.position;
 
             // Update the LineRenderer to reflect the snapped position
-            UpdateLineEndPosition();
+            UpdateWireTipsPosition();
 
             Debug.Log($"Snapped to target: {target.name}");
         }
@@ -144,49 +157,71 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         }
     }
 
-
-    private void UpdateLineStartPosition()
-    {
-        if (lineRenderer != null && startPoint != null)
-        {
-            Vector3 worldStartPoint = GetWorldPosition(startPoint);
-            lineRenderer.SetPosition(0, worldStartPoint);
-        }
-    }
     private void UpdateLineEndPosition()
     {
         if (lineRenderer != null)
         {
-            Vector3 worldEndPoint = GetWorldPosition(rectTransform);
-            lineRenderer.SetPosition(1, worldEndPoint);
+            Vector3 draggablePosition = rectTransform.position;
+            draggablePosition.z = 0; // Ensure z remains consistent
 
-            // Update the rotation of the wire tips
-            UpdateWireTipsRotation();
+            // Update the LineRenderer's endpoint (Point 3)
+            lineRenderer.SetPosition(3, draggablePosition);
+
+            // Get the position of the first elbow (Point 1)
+            Vector3 firstElbow = lineRenderer.GetPosition(1);
+
+            // Calculate the direction vector from the first elbow to the draggable endpoint
+            Vector3 directionToEnd = (draggablePosition - firstElbow).normalized;
+
+            // Calculate the position of the second elbow (Point 2) slightly before the endpoint
+            Vector3 secondElbow = draggablePosition - directionToEnd * 0.5f; // Adjust 0.5f for proximity to Point 3
+            secondElbow.z = 0; // Ensure consistent z position
+
+            // Update the secondary elbow (Point 2)
+            lineRenderer.SetPosition(2, secondElbow);
+
         }
-    }
-
+        }
+    
 
     private Vector3 GetWorldPosition(RectTransform rect)
     {
         Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, rect.position);
         return canvas.worldCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, canvas.worldCamera.nearClipPlane));
     }
-    private void UpdateWireTipsRotation()
+
+    private void UpdateWireTipsPosition()
     {
         if (lineRenderer != null)
         {
-            // Get the start and end positions of the LineRenderer
-            Vector3 startPoint = lineRenderer.GetPosition(0);
-            Vector3 endPoint = lineRenderer.GetPosition(1);
+            // Get the draggable object's position (Point 3)
+            Vector3 draggablePosition = rectTransform.position;
+            draggablePosition.z = 0; // Ensure z remains consistent
 
-            // Calculate the direction vector and the angle
-            Vector2 direction = (endPoint - startPoint).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            // Update the LineRenderer's endpoint (Point 3)
+            lineRenderer.SetPosition(3, draggablePosition);
 
-            // Rotate the RectTransform of this wire to match the angle
-            rectTransform.rotation = Quaternion.Euler(0, 0, angle);
+            // Get the position of Point 1 (First Elbow)
+            Vector3 firstElbow = lineRenderer.GetPosition(1);
+
+            // Calculate the direction vector from Point 1 to Point 3
+            Vector3 directionToEnd = (draggablePosition - firstElbow).normalized;
+
+            // Calculate the position of the secondary elbow (Point 2)
+            Vector3 secondElbow = draggablePosition - directionToEnd * 0.5f; // Place the elbow closer to the endpoint
+            secondElbow.x -= elbowOffset; // Subtract from x to bend left
+            secondElbow.y = draggablePosition.y; // Align the y-coordinate to Point 3
+            secondElbow.z = 0; // Ensure consistent z position
+
+            // Update the secondary elbow position (Point 2)
+            lineRenderer.SetPosition(2, secondElbow);
+
+            // Debug all positions to verify calculations
+            Debug.Log($"P0: {lineRenderer.GetPosition(0)} | P1: {lineRenderer.GetPosition(1)} | P2: {lineRenderer.GetPosition(2)} | P3: {lineRenderer.GetPosition(3)}");
         }
     }
+
+
 
 
 }
