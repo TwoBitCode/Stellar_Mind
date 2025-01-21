@@ -104,8 +104,8 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             Vector3 startPosition = GetWorldPosition(startPoint);
             startPosition.z = 0;
 
-            lineRenderer.SetPosition(2, worldEndPoint); // Secondary elbow (directly to endpoint)
-            lineRenderer.SetPosition(3, worldEndPoint); // Endpoint
+            lineRenderer.SetPosition(2, startPosition); // Secondary elbow (directly to endpoint)
+            lineRenderer.SetPosition(3, startPosition); // Endpoint
         }
 
         Debug.Log("Cable reset to start position.");
@@ -217,7 +217,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             lineRenderer.SetPosition(2, secondElbow);
 
             // Debug all positions to verify calculations
-            Debug.Log($"P0: {lineRenderer.GetPosition(0)} | P1: {lineRenderer.GetPosition(1)} | P2: {lineRenderer.GetPosition(2)} | P3: {lineRenderer.GetPosition(3)}");
+            //Debug.Log($"P0: {lineRenderer.GetPosition(0)} | P1: {lineRenderer.GetPosition(1)} | P2: {lineRenderer.GetPosition(2)} | P3: {lineRenderer.GetPosition(3)}");
         }
     }
 

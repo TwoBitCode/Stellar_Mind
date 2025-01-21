@@ -9,6 +9,8 @@ public class DialoguePanel : MonoBehaviour
     public string[] dialogues; // Array of dialogue lines
     public float typingSpeed = 0.05f; // Speed for typing effect
     public GameObject startButton; // Reference to the start button (hide initially)
+    public AudioSource typingAudioSource; // AudioSource to play the typing sound
+    public AudioClip typingSound; // Sound effect for each line of dialogue
 
     private int currentDialogueIndex = 0;
     private Action onDialogueComplete;
@@ -19,6 +21,11 @@ public class DialoguePanel : MonoBehaviour
         if (startButton != null)
         {
             startButton.SetActive(false); // Hide start button initially
+        }
+
+        if (typingAudioSource == null)
+        {
+            Debug.LogWarning("Typing AudioSource is not assigned.");
         }
     }
 
@@ -34,6 +41,8 @@ public class DialoguePanel : MonoBehaviour
     {
         if (currentDialogueIndex < dialogues.Length)
         {
+            // Play sound at the start of the dialogue line
+            PlayTypingSound();
             StartCoroutine(TypeDialogue(dialogues[currentDialogueIndex]));
             currentDialogueIndex++;
         }
@@ -78,6 +87,14 @@ public class DialoguePanel : MonoBehaviour
         if (startButton != null)
         {
             startButton.SetActive(true); // Show the start button
+        }
+    }
+
+    private void PlayTypingSound()
+    {
+        if (typingAudioSource != null && typingSound != null)
+        {
+            typingAudioSource.PlayOneShot(typingSound);
         }
     }
 }
