@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public class CableConnectionManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class CableConnectionManager : MonoBehaviour
         public RectTransform[] targets; // Shapes (targets) for the stage
         public DialoguePanel dialoguePanel; // Dialogue panel for the stage
         public int scoreToAdd; // Score to add upon stage completion
+        public string completionMessage; // Custom message to show on the "Stage Complete" panel
     }
 
     public CableConnectionStage[] stages; // All stages in the mini-game
@@ -30,6 +32,10 @@ public class CableConnectionManager : MonoBehaviour
     public float countdownTime = 5f; // Time for the countdown
     public CountdownTimer countdownTimer; // Reference to the CountdownTimer script
     public GameObject timerUI; // Assign the timer UI Image in the Inspector
+    [Header("Stage Complete Panel")]
+    [SerializeField] private GameObject stageCompletePanel; // Assign the "Stage Complete" panel in the Inspector
+    [SerializeField] private TextMeshProUGUI stageCompleteText; // Optional: Text to display custom messages
+    [SerializeField] private Button nextStageButton; // Button to proceed to the next stage
 
 
     [SerializeField] private SparkEffectHandler sparkEffectHandler; // Ensure this is assigned in the Inspector
@@ -57,6 +63,10 @@ public class CableConnectionManager : MonoBehaviour
         if (stageIndex >= stages.Length)
         {
             Debug.Log("All stages completed!");
+            if (endPanel != null)
+            {
+                endPanel.SetActive(true); // Show the end panel
+            }
             return;
         }
 
@@ -72,15 +82,22 @@ public class CableConnectionManager : MonoBehaviour
             stage.dialoguePanel.StartDialogue(() =>
             {
                 Debug.Log("Dialogue completed. Enabling timer UI.");
-
-                // Enable the timer UI inside the connected panel
                 if (timerUI != null)
                 {
                     timerUI.SetActive(true);
                 }
             });
         }
+        else
+        {
+            // No dialogue for this stage; start the timer directly
+            if (timerUI != null)
+            {
+                timerUI.SetActive(true);
+            }
+        }
     }
+
 
 
 
@@ -107,9 +124,10 @@ public class CableConnectionManager : MonoBehaviour
                     OverallScoreManager.Instance.AddScoreFromStage($"Stage {currentStage + 1}", stage.scoreToAdd);
                 }
 
-                currentStage++;
-                LoadStage(currentStage);
+                // Show the "Stage Complete" panel
+                ShowStageCompletePanel();
             }
+
         }
         else
         {
@@ -233,5 +251,44 @@ public class CableConnectionManager : MonoBehaviour
             countdownTimer.OnTimerEnd -= OnCountdownEnd;
         }
     }
+    private void ShowStageCompletePanel()
+    {
+        if (stageCompletePanel != null)
+        {
+            // כיבוי הפאנלים של השלב הנוכחי
+            CableConnectionStage currentStageData = stages[currentStage];
+            if (currentStageData.connectedPanel != null)
+            {
+                currentStageData.connectedPanel.SetActive(false);
+            }
+            if (currentStageData.disconnectedPanel != null)
+            {
+                currentStageData.disconnectedPanel.SetActive(false);
+            }
+
+         
+            stageCompletePanel.SetActive(true);
+            if (stageCompleteText != null)
+            {
+                string message = currentStageData.completionMessage;
+                stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
+            }
+
+         
+            if (nextStageButton != null)
+            {
+                nextStageButton.onClick.RemoveAllListeners(); 
+                nextStageButton.onClick.AddListener(() =>
+                {
+                    stageCompletePanel.SetActive(false); 
+                    currentStage++;
+                    LoadStage(currentStage); 
+                });
+            }
+        }
+    }
+
+
+
 
 }
