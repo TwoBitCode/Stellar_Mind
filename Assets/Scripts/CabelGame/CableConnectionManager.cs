@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public class CableConnectionManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class CableConnectionManager : MonoBehaviour
         public RectTransform[] targets; // Shapes (targets) for the stage
         public DialoguePanel dialoguePanel; // Dialogue panel for the stage
         public int scoreToAdd; // Score to add upon stage completion
+        public string completionMessage; // Custom message to show on the "Stage Complete" panel
     }
 
     public CableConnectionStage[] stages; // All stages in the mini-game
@@ -28,6 +30,14 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private PanelTransitionHandler panelTransitionHandler;
     public TextMeshProUGUI timerText; // Text for the timer
     public float countdownTime = 5f; // Time for the countdown
+    public CountdownTimer countdownTimer; // Reference to the CountdownTimer script
+    public GameObject timerUI; // Assign the timer UI Image in the Inspector
+    [Header("Stage Complete Panel")]
+    [SerializeField] private GameObject stageCompletePanel; // Assign the "Stage Complete" panel in the Inspector
+    [SerializeField] private TextMeshProUGUI stageCompleteText; // Optional: Text to display custom messages
+    [SerializeField] private Button nextStageButton; // Button to proceed to the next stage
+
+
     [SerializeField] private SparkEffectHandler sparkEffectHandler; // Ensure this is assigned in the Inspector
 
     [Header("End Panel")]
@@ -41,15 +51,9 @@ public class CableConnectionManager : MonoBehaviour
         {
             endPanel.SetActive(false);
         }
-
-        // Access the DoorManager singleton
-        doorManager = Object.FindFirstObjectByType<DoorManager>();
-        if (doorManager == null)
-        {
-            Debug.LogError("DoorManager not found in the scene!");
-        }
-
         // Load the first stage
+        timerUI.SetActive(false);
+
         LoadStage(currentStage);
     }
 
@@ -59,42 +63,44 @@ public class CableConnectionManager : MonoBehaviour
         if (stageIndex >= stages.Length)
         {
             Debug.Log("All stages completed!");
-
-            // Mark the mini-game as completed in DoorManager
-            //if (doorManager != null)
-            //{
-            //    doorManager.MarkGameAsCompleted(1); // Replace 3 with the correct index for this mini-game
-            //}
-            //else
-            //{
-            //    Debug.LogError("DoorManager instance not found!");
-            //}
-
-            // Show the end panel
             if (endPanel != null)
             {
-                endPanel.SetActive(true);
+                endPanel.SetActive(true); // Show the end panel
             }
-
-            // Hide the disconnected panel
-            if (stages[currentStage - 1].disconnectedPanel != null) // Ensure the previous stage exists
-            {
-                stages[currentStage - 1].disconnectedPanel.SetActive(false);
-            }
-
             return;
         }
 
         CableConnectionStage stage = stages[stageIndex];
 
+        if (stage.connectedPanel != null)
+        {
+            stage.connectedPanel.SetActive(true); // Show the connected panel
+        }
+
         if (stage.dialoguePanel != null)
         {
             stage.dialoguePanel.StartDialogue(() =>
             {
-                Debug.Log("Dialogue completed. Waiting for player to start.");
+                Debug.Log("Dialogue completed. Enabling timer UI.");
+                if (timerUI != null)
+                {
+                    timerUI.SetActive(true);
+                }
             });
         }
+        else
+        {
+            // No dialogue for this stage; start the timer directly
+            if (timerUI != null)
+            {
+                timerUI.SetActive(true);
+            }
+        }
     }
+
+
+
+
 
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
@@ -118,9 +124,10 @@ public class CableConnectionManager : MonoBehaviour
                     OverallScoreManager.Instance.AddScoreFromStage($"Stage {currentStage + 1}", stage.scoreToAdd);
                 }
 
-                currentStage++;
-                LoadStage(currentStage);
+                // Show the "Stage Complete" panel
+                ShowStageCompletePanel();
             }
+
         }
         else
         {
@@ -191,33 +198,35 @@ public class CableConnectionManager : MonoBehaviour
         {
             stage.dialoguePanel.gameObject.SetActive(false);
         }
-
+        timerUI.SetActive(true);
         // Start the countdown timer
-        StartCoroutine(StartCountdown(stage));
+        if (countdownTimer != null)
+        {
+            countdownTimer.timerText = timerText; // Set the timerText dynamically
+            countdownTimer.OnTimerStart += OnCountdownStart;
+            countdownTimer.OnTimerUpdate += OnCountdownUpdate;
+            countdownTimer.OnTimerEnd += OnCountdownEnd;
+
+            countdownTimer.StartCountdown(countdownTime);
+        }
     }
 
-    private IEnumerator StartCountdown(CableConnectionStage stage)
+    private void OnCountdownStart()
     {
-        float timeRemaining = countdownTime;
+        Debug.Log("Countdown started!");
+    }
 
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(true);
-        }
+    private void OnCountdownUpdate(float timeRemaining)
+    {
+        //Debug.Log($"Time remaining: {timeRemaining}");
+    }
 
-        while (timeRemaining > 0)
-        {
-            timerText.text = Mathf.Ceil(timeRemaining).ToString();
-            timeRemaining -= Time.deltaTime;
-            yield return null;
-        }
-
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(false);
-        }
+    private void OnCountdownEnd()
+    {
+        Debug.Log("Countdown ended!");
 
         // Trigger the panel transition
+        CableConnectionStage stage = stages[currentStage];
         if (panelTransitionHandler != null)
         {
             panelTransitionHandler.ShowConnectedPanel(
@@ -233,5 +242,53 @@ public class CableConnectionManager : MonoBehaviour
                 }
             );
         }
+
+        // Cleanup timer events
+        if (countdownTimer != null)
+        {
+            countdownTimer.OnTimerStart -= OnCountdownStart;
+            countdownTimer.OnTimerUpdate -= OnCountdownUpdate;
+            countdownTimer.OnTimerEnd -= OnCountdownEnd;
+        }
     }
+    private void ShowStageCompletePanel()
+    {
+        if (stageCompletePanel != null)
+        {
+            // כיבוי הפאנלים של השלב הנוכחי
+            CableConnectionStage currentStageData = stages[currentStage];
+            if (currentStageData.connectedPanel != null)
+            {
+                currentStageData.connectedPanel.SetActive(false);
+            }
+            if (currentStageData.disconnectedPanel != null)
+            {
+                currentStageData.disconnectedPanel.SetActive(false);
+            }
+
+         
+            stageCompletePanel.SetActive(true);
+            if (stageCompleteText != null)
+            {
+                string message = currentStageData.completionMessage;
+                stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
+            }
+
+         
+            if (nextStageButton != null)
+            {
+                nextStageButton.onClick.RemoveAllListeners(); 
+                nextStageButton.onClick.AddListener(() =>
+                {
+                    stageCompletePanel.SetActive(false); 
+                    currentStage++;
+                    LoadStage(currentStage); 
+                });
+            }
+        }
+    }
+
+
+
+
 }
