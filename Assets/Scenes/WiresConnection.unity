@@ -4004,7 +4004,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.409, y: 9.679, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -20.38, y: -3.7}
+  m_AnchoredPosition: {x: -28, y: -2.6}
   m_SizeDelta: {x: 74.02, y: 21.4}
   m_Pivot: {x: 0.45079723, y: 0.50002563}
 --- !u!114 &765253382
@@ -4019,7 +4019,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebd1fc24a903e6142abc09c00de4eb33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetID: Blue Cable
+  targetID: Green Cable
 --- !u!225 &765253383
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4446,8 +4446,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.409, y: 9.679, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -33.2, y: 0.00001049}
-  m_SizeDelta: {x: 46.7, y: 20.26}
+  m_AnchoredPosition: {x: -37.41, y: -1.92}
+  m_SizeDelta: {x: 55.23, y: 24.11}
   m_Pivot: {x: 0.5, y: 0.5000003}
 --- !u!114 &863885611
 MonoBehaviour:
@@ -4461,7 +4461,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebd1fc24a903e6142abc09c00de4eb33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetID: Green Cable
+  targetID: Black Cable
 --- !u!225 &863885612
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -9344,8 +9344,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.409, y: 9.679, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -32.3, y: 2.9}
-  m_SizeDelta: {x: 46.7, y: 20.26}
+  m_AnchoredPosition: {x: -36.15, y: 2.9}
+  m_SizeDelta: {x: 54.5, y: 20.26}
   m_Pivot: {x: 0.49999994, y: 0.50000036}
 --- !u!114 &1516777644
 MonoBehaviour:
@@ -12958,8 +12958,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.409, y: 9.679, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -34.5, y: 0.0000076294}
-  m_SizeDelta: {x: 46.7, y: 20.26}
+  m_AnchoredPosition: {x: -38.73, y: -0.38}
+  m_SizeDelta: {x: 55.28, y: 21.03}
   m_Pivot: {x: 0.5, y: 0.5000003}
 --- !u!114 &1986438261
 MonoBehaviour:
