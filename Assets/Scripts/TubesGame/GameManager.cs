@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         // Timer starts here
         while (remainingTime > 0)
         {
-            uiManager.UpdateCountdownText($"Time Left: {remainingTime}s");
+            uiManager.UpdateCountdownText($"{remainingTime}s");
             yield return new WaitForSeconds(1f);
             remainingTime--;
         }

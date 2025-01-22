@@ -18,7 +18,7 @@ public class AsteroidGameUIManager : MonoBehaviour
 
         // Display the instructions
         instructionsPanel.SetActive(true);
-        instructionsText.text = instructions;
+        //instructionsText.text = instructions;
 
         // Configure the start button
         Button startButton = instructionsPanel.GetComponentInChildren<Button>();
