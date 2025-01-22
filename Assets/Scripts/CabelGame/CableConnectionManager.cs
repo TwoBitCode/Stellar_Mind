@@ -266,7 +266,7 @@ public class CableConnectionManager : MonoBehaviour
                 currentStageData.disconnectedPanel.SetActive(false);
             }
 
-         
+
             stageCompletePanel.SetActive(true);
             if (stageCompleteText != null)
             {
@@ -274,15 +274,15 @@ public class CableConnectionManager : MonoBehaviour
                 stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
             }
 
-         
+
             if (nextStageButton != null)
             {
-                nextStageButton.onClick.RemoveAllListeners(); 
+                nextStageButton.onClick.RemoveAllListeners();
                 nextStageButton.onClick.AddListener(() =>
                 {
-                    stageCompletePanel.SetActive(false); 
+                    stageCompletePanel.SetActive(false);
                     currentStage++;
-                    LoadStage(currentStage); 
+                    LoadStage(currentStage);
                 });
             }
         }
