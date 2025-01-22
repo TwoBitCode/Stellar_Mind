@@ -18,6 +18,9 @@ public class AsteroidChallenge
     public float spawnDelay = 1f;
     public float spawnInterval = 2f;
     public int maxAsteroids = 20;
+    [TextArea(2, 5)]
+    public string instructionsHebrew; // Hebrew instructions for this challenge
+
 
     [Tooltip("List of drop zone names to activate for this challenge")]
     public List<string> dropZones;

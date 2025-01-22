@@ -1050,9 +1050,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: 
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_isRightToLeft: 1
+  m_fontAsset: {fileID: 11400000, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
+  m_sharedMaterial: {fileID: 5276240468773084248, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1083,7 +1083,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1373,28 +1373,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroidChallenges:
-  - challengeName: Size
-    sortingRule: {fileID: 11400000, guid: 9125431c5ff70f341828cfa9f79032a9, type: 2}
-    spawnDelay: 1
-    spawnInterval: 1
-    maxAsteroids: 10
-    dropZones:
-    - RightArea
-    - LeftArea
-    dropZoneAssignments:
-    - dropZoneName: RightArea
-      displayName: Right
-      assignedType: 'Large '
-    - dropZoneName: LeftArea
-      displayName: Left
-      assignedType: Small
-    distractorPrefabs: []
-    mixedConditions: []
   - challengeName: Color
     sortingRule: {fileID: 11400000, guid: 35f8ac06321f696409f62de6193e83a7, type: 2}
     spawnDelay: 1
     spawnInterval: 1
     maxAsteroids: 10
+    instructionsHebrew: "\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
+      \u05D9\u05E8\u05D5\u05E7\u05D9\u05DD \u05DC\u05DE\u05E2\u05DC\u05D4\n\u05E1\u05D2\u05D5\u05DC\u05D9\u05DD
+      \u05DC\u05DE\u05D8\u05D4"
     dropZones:
     - TopArea
     - BottomArea
@@ -1407,11 +1393,35 @@ MonoBehaviour:
       assignedType: Purple
     distractorPrefabs: []
     mixedConditions: []
+  - challengeName: Size
+    sortingRule: {fileID: 11400000, guid: 9125431c5ff70f341828cfa9f79032a9, type: 2}
+    spawnDelay: 1
+    spawnInterval: 1
+    maxAsteroids: 10
+    instructionsHebrew: "\u05D0\u05E1\u05D5\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
+      \u05D2\u05D3\u05D5\u05DC\u05D9\u05DD \u05DC\u05D9\u05DE\u05D9\u05DF\n\u05E7\u05D8\u05E0\u05D9\u05DD
+      \u05DC\u05E9\u05DE\u05D0\u05DC"
+    dropZones:
+    - RightArea
+    - LeftArea
+    dropZoneAssignments:
+    - dropZoneName: RightArea
+      displayName: Right
+      assignedType: Large
+    - dropZoneName: LeftArea
+      displayName: Left
+      assignedType: Small
+    distractorPrefabs: []
+    mixedConditions: []
   - challengeName: Mixed Challenge
     sortingRule: {fileID: 0}
     spawnDelay: 1
     spawnInterval: 1
     maxAsteroids: 10
+    instructionsHebrew: "\u05DE\u05D9\u05D9\u05E0\u05D5 \u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD\n\u05D2\u05D3\u05D5\u05DC\u05D9\u05DD
+      \u05D9\u05E8\u05D5\u05E7\u05D9\u05DD \u05DC\u05D9\u05DE\u05D9\u05DF\n\u05D0\u05D3\u05D5\u05DE\u05D9\u05DD
+      \u05DC\u05E9\u05DE\u05D0\u05DC\n\u05E1\u05D2\u05D5\u05DC\u05D9\u05DD \u05DC\u05DE\u05E2\u05DC\u05D4\n\u05DC\u05D1\u05E0\u05D9\u05DD
+      \u05DC\u05DE\u05D8\u05D4"
     dropZones:
     - RightArea
     - LeftArea
@@ -2629,10 +2639,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Instructions:'
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
+  m_text: "\u05D4\u05D5\u05E8\u05D0\u05D5\u05EA:"
+  m_isRightToLeft: 1
+  m_fontAsset: {fileID: 11400000, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
+  m_sharedMaterial: {fileID: 5276240468773084248, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3813,12 +3823,13 @@ MonoBehaviour:
   startButton: {fileID: 400680081}
   asteroidPrefab: {fileID: 2783008009699449463, guid: f0fd3db20d5d5684199c86088a6a268c, type: 3}
   dialogueLines:
-  - We must catch the Astroids!
+  - "\u05D0\u05E0\u05D7\u05E0\u05D5 \u05D7\u05D9\u05D9\u05D1\u05D9\u05DD \u05DC\u05EA\u05E4\u05D5\u05E1
+    \u05D0\u05EA \u05D4\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD,
+    \u05D0\u05EA\u05DD \u05DE\u05D5\u05DB\u05E0\u05D9\u05DD?"
   typingSpeed: 0.05
   numberOfAsteroids: 100
   asteroidFallDurationRange: {x: 0.6, y: 1}
   asteroidFallSound: {fileID: 2132596607}
-  asteroidSpeedRange: {x: 500, y: 500}
 --- !u!4 &2132596606
 Transform:
   m_ObjectHideFlags: 0

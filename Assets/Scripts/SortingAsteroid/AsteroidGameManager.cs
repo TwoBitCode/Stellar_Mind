@@ -33,7 +33,7 @@ public class AsteroidGameManager : MonoBehaviour
     [Header("Game Components")]
     [SerializeField] private GameTimer gameTimer;
     [SerializeField] private AsteroidsGameIntroductionManager introductionManager;
-    private bool isIntroductionComplete = false;
+   private bool isIntroductionComplete = false;
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
 
@@ -108,34 +108,36 @@ public class AsteroidGameManager : MonoBehaviour
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
         if (currentChallenge == null)
         {
-            return "Follow the sorting rules.";
+            return "הוראות אינן זמינות.";
         }
 
-        string instructions = "Sort asteroids as follows:\n";
+        // Use predefined Hebrew instructions if available
+        if (!string.IsNullOrEmpty(currentChallenge.instructionsHebrew))
+        {
+            return currentChallenge.instructionsHebrew;
+        }
+
+        // Fallback to dynamically generated instructions
+        string instructions = "מיינו את האסטרואידים לפי הכללים:\n";
 
         if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
         {
-            // Mixed Challenge Instructions
             foreach (var condition in currentChallenge.mixedConditions)
             {
-                string colorName = !string.IsNullOrEmpty(condition.displayName)
-                    ? condition.displayName
-                    : $"Custom Color ({condition.color.r:F2}, {condition.color.g:F2}, {condition.color.b:F2})";
-
-                instructions += $"- {condition.size} {colorName} asteroids to the {condition.dropZoneName.Replace("Area", "").ToLower()}\n";
+                instructions += $"- {condition.size} {condition.displayName} ל-{condition.dropZoneName.Replace("Area", "").ToLower()}\n";
             }
         }
         else if (currentChallenge.dropZoneAssignments != null)
         {
-            // Regular Challenge Instructions
             foreach (var assignment in currentChallenge.dropZoneAssignments)
             {
-                instructions += $"- {assignment.assignedType} asteroids to the {assignment.dropZoneName.Replace("Area", "").ToLower()}\n";
+                instructions += $"- {assignment.assignedType} ל-{assignment.dropZoneName.Replace("Area", "").ToLower()}\n";
             }
         }
 
         return instructions;
     }
+
 
 
 

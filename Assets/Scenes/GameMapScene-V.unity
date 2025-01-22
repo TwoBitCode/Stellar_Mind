@@ -171,10 +171,12 @@ MonoBehaviour:
   - SortingAsteroid
   - SpaceEquipmentRecoveryMission
   gameNames:
-  - Tubes
-  - Wires
-  - Sorting astroids
-  - SpaceEquipmentRecovery
+  - "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05E1\u05D3\u05E8 \u05DE\u05D1\u05D7\u05E0\u05D5\u05EA!"
+  - "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05EA\u05E7\u05DF \u05D0\u05EA \u05DE\u05E2\u05E8\u05DB\u05EA
+    \u05D4\u05D7\u05E9\u05DE\u05DC!"
+  - "\u05D1\u05D5\u05D0\u05D5 \u05DC\u05DE\u05D9\u05D9\u05DF \u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD!"
+  - "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05EA\u05E7\u05DF \u05D0\u05EA \u05D4\u05E8\u05D5\u05D1\u05D5\u05D8
+    \u05E9\u05DC\u05E0\u05D5!"
   hoverSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
   clickSound: {fileID: 8300000, guid: eda0a1f5d2f57f34a9b66d1323c890cd, type: 3}
 --- !u!4 &220993060
@@ -416,10 +418,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: hi
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
+  m_text: "\u05D1\u05D7\u05E8\u05D5 \u05DE\u05E9\u05D7\u05E7!"
+  m_isRightToLeft: 1
+  m_fontAsset: {fileID: 11400000, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
+  m_sharedMaterial: {fileID: 5276240468773084248, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -450,7 +452,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0

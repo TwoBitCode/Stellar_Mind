@@ -10,16 +10,15 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
     [Tooltip("Scale for large asteroids")]
     public Vector3 largeSize = new Vector3(1.2f, 1.2f, 1.2f);
 
-    // List to track unassigned types
-    private List<string> remainingTypes = new List<string> { "Small", "Large" };
+    private Queue<string> typeQueue = new Queue<string>(new[] { "Small", "Large" }); // Queue for cyclic selection
 
     public string GetCategory(GameObject item)
     {
         if (item.TryGetComponent<SortingDraggableItem>(out var draggable))
         {
-            // Assign type based on predefined logic
-            string type = GetRandomType(); // Use the improved method for type selection
-            draggable.AssignedType = type; // Store the type
+            // Assign type from the queue
+            string type = GetNextType();
+            draggable.AssignedType = type;
             return type;
         }
 
@@ -49,22 +48,20 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
         }
     }
 
+    // Implement GetRandomType to satisfy ISortingRule
     public string GetRandomType()
     {
-        // Ensure each type is seen at least once before repeating
-        if (remainingTypes.Count == 0)
-        {
-            // Reset the list when all types have been used
-            remainingTypes.Add("Small");
-            remainingTypes.Add("Large");
-        }
+        // Redirect to GetNextType to maintain compatibility
+        return GetNextType();
+    }
 
-        // Select a random type from the remaining list
-        int index = Random.Range(0, remainingTypes.Count);
-        string selectedType = remainingTypes[index];
-        remainingTypes.RemoveAt(index); // Remove the selected type to avoid repetition
+    private string GetNextType()
+    {
+        // Dequeue the next type and re-enqueue it to the end
+        string nextType = typeQueue.Dequeue();
+        typeQueue.Enqueue(nextType);
 
-        Debug.Log($"Randomly selected type: {selectedType}. Remaining: {string.Join(", ", remainingTypes)}");
-        return selectedType;
+        Debug.Log($"Selected type: {nextType}");
+        return nextType;
     }
 }
