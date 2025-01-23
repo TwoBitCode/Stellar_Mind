@@ -299,4 +299,41 @@ itch game link - Assignment 4: https://twobitcode.itch.io/steller-mind
 
 - 
 
+---
 
+## 🎨 Credits and Resources
+
+### 🎵 Audio  
+- **Sound Effects and Music**  
+  Source: [Freesound](https://freesound.org/)
+
+### ✍️ Fonts  
+- **Google Fonts**  
+  All fonts used in the project are sourced from [Google Fonts](https://fonts.google.com/).
+
+### 🖼️ Images & Visuals  
+- **Generated Content**  
+  - AI-generated images created using [DALL·E](https://openai.com/dall-e).  
+- **Free Image Resources**  
+  - Some images sourced from [Vecteezy](https://www.vecteezy.com/).
+
+### 🎬 Trailer Creation  
+- **Tools Used**  
+  - [Clipchamp](https://www.clipchamp.com/)  
+  - [Pictory](https://pictory.ai/)  
+  - [Vidful](https://vidful.ai/)
+
+### 💻 Code Assistance  
+- **AI Assistance**  
+  - Code suggestions and troubleshooting support were provided with the help of [OpenAI's ChatGPT](https://openai.com/chatgpt).
+
+### 🖼️ Assets  
+- **Unity Asset Store Packages**  
+  The following assets were used to enhance the game's visuals and UI:  
+  - 🌌 [105 Colorful 2D Planet Icons](https://assetstore.unity.com/packages/2d/gui/icons/105-colorful-2d-planet-icons-71084)  
+  - 🐻 [Cute GUI Pack Lite](https://assetstore.unity.com/packages/2d/gui/icons/cute-gui-pack-lite-202389)  
+  - 🎮 [Fun Hyper Casual UI Pack (Free)](https://assetstore.unity.com/packages/2d/gui/icons/fun-hyper-casual-ui-pack-free-302632)  
+  - 🍭 [Sweet Land GUI](https://assetstore.unity.com/packages/2d/gui/sweet-land-gui-208285)  
+  - 💜 [Violet Themed UI](https://assetstore.unity.com/packages/2d/gui/violet-themed-ui-235559)  
+
+---
