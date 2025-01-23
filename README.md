@@ -298,15 +298,14 @@ itch game link - Assignment 6: https://twobitcode.itch.io/stellar-mind-with-stor
 
 itch game link - Assignment 4: https://twobitcode.itch.io/steller-mind
 
-- 
-
 ---
-
 ## 🎨 Credits and Resources
 
 ### 🎵 Audio  
 - **Sound Effects and Music**  
-  Source: [Freesound](https://freesound.org/)
+  Source: [Freesound](https://freesound.org/)  
+- **Voiceover**  
+  - Hebrew voiceovers were generated using the text-to-voice feature of [Clipchamp](https://www.clipchamp.com/).
 
 ### ✍️ Fonts  
 - **Google Fonts**  
