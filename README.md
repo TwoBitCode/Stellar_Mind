@@ -1,7 +1,8 @@
 # 🚀 Stellar Mind: A Space Adventure for Cognitive Growth 🌌
 
 **Stellar Mind** is an engaging, space-themed educational game designed to help children with ADHD improve their working memory and executive functions. Through interactive missions, captivating narratives, and strategic challenges, children develop practical skills while embarking on an interstellar journey to save the galaxy! 🌟
-![download (1)](https://github.com/user-attachments/assets/cf21a9cf-fbb7-49ae-9f23-6ad5ebd2b307)
+
+![DALL·E 2025-01-21 20 51 34 - A vibrant Pixar-style illustration of two very young children astronauts, a boy (Leo) and a girl (Maya), around 4-5 years old, floating weightlessly t](https://github.com/user-attachments/assets/5573928f-2373-49f4-9695-435a5d1fdac2)
 
 ---
 # UML Diagram for Project
