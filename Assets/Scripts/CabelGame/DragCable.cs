@@ -181,8 +181,8 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             lineRenderer.SetPosition(2, secondElbow);
 
         }
-        }
-    
+    }
+
 
     private Vector3 GetWorldPosition(RectTransform rect)
     {
@@ -220,8 +220,4 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             //Debug.Log($"P0: {lineRenderer.GetPosition(0)} | P1: {lineRenderer.GetPosition(1)} | P2: {lineRenderer.GetPosition(2)} | P3: {lineRenderer.GetPosition(3)}");
         }
     }
-
-
-
-
 }

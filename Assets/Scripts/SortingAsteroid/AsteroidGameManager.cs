@@ -33,7 +33,7 @@ public class AsteroidGameManager : MonoBehaviour
     [Header("Game Components")]
     [SerializeField] private GameTimer gameTimer;
     [SerializeField] private AsteroidsGameIntroductionManager introductionManager;
-   private bool isIntroductionComplete = false;
+    private bool isIntroductionComplete = false;
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
 
@@ -64,7 +64,7 @@ public class AsteroidGameManager : MonoBehaviour
     {
         gameTimer.OnTimerEnd += EndChallenge;
         InitializeChallenge();
-    
+
     }
 
 
