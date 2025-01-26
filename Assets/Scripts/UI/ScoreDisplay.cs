@@ -10,7 +10,7 @@ public class ScoreDisplay : MonoBehaviour
     {
         if (OverallScoreManager.Instance != null)
         {
-            overallScoreText.text = "Overall Score: " + OverallScoreManager.Instance.OverallScore.ToString();
+            overallScoreText.text = OverallScoreManager.Instance.OverallScore.ToString();
         }
         else
         {

@@ -5,7 +5,7 @@ public class WelcomeUIManager : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private TMP_InputField playerNameInput;
-    [SerializeField] private TMP_InputField targetScoreInput;
+    //[SerializeField] private TMP_InputField targetScoreInput;
     [SerializeField] private TextMeshProUGUI welcomeMessage;
     [SerializeField] private GameObject startButton;
 
@@ -17,9 +17,9 @@ public class WelcomeUIManager : MonoBehaviour
 
     private void InitializeWelcomeMessage()
     {
-        welcomeMessage.isRightToLeftText = true;
-        welcomeMessage.alignment = TextAlignmentOptions.Right;
-        welcomeMessage.text = "ברוך הבא למשחק! הזן את שמך וניקוד המטרה.";
+        //welcomeMessage.isRightToLeftText = true;
+        //welcomeMessage.alignment = TextAlignmentOptions.Right;
+        //welcomeMessage.text = "ברוך הבא למשחק! הזן את שמך וניקוד המטרה.";
     }
 
     public void UpdateStartButtonVisibility(bool isEnabled)

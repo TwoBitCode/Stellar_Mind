@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeColorPairs:
   - typeName: Purple
-    color: {r: 0.6158309, g: 0, b: 1, a: 1}
+    color: {r: 0, g: 0.65887403, b: 1, a: 1}
   - typeName: Green
-    color: {r: 0, g: 1, b: 0.054526806, a: 1}
+    color: {r: 0.735849, g: 0, b: 0.41834703, a: 1}

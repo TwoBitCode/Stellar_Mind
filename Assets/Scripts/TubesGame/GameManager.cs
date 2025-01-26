@@ -17,8 +17,10 @@ public class Stage
 public class GameManager : MonoBehaviour
 {
     [Header("Game Settings")]
-    [SerializeField] private float shuffleDelay = 2f;
+    [SerializeField] private float shuffleDelay = 2f; // Delay before shuffling
+    [SerializeField] private float feedbackDuration = 2f; // Duration to show feedback
     [SerializeField] private List<Stage> stages;
+    [SerializeField] private GameObject countdownBackground; // Timer background
 
     [Header("Managers")]
     [SerializeField] private GridManager gridManager;
@@ -26,20 +28,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TubesUIManager uiManager;
     private DoorManager doorManager;
 
-
     private int currentStageIndex = 0;
 
-    [SerializeField] private TubesGameIntroductionManager introductionManager; // Reference to the new introduction manager
+    [SerializeField] private TubesGameIntroductionManager introductionManager; // Introduction manager
+ 
     private void Start()
     {
         ValidateSetup();
 
         // Access the DoorManager singleton
-        doorManager = Object.FindFirstObjectByType<DoorManager>();
+  /*      doorManager = Object.FindFirstObjectByType<DoorManager>();
         if (doorManager == null)
         {
             Debug.LogError("DoorManager not found in the scene!");
-        }
+        }*/
 
         // Play the introduction
         introductionManager.PlayIntroduction(() =>
@@ -98,16 +100,26 @@ public class GameManager : MonoBehaviour
     {
         int remainingTime = stage.timeLimit;
 
+        // Show the timer background
+        if (countdownBackground != null)
+        {
+            countdownBackground.SetActive(true);
+        }
+
         // Timer starts here
         while (remainingTime > 0)
         {
-            uiManager.UpdateCountdownText($"Time Left: {remainingTime}s");
+            uiManager.UpdateCountdownText($"{remainingTime}s");
             yield return new WaitForSeconds(1f);
             remainingTime--;
         }
 
-        // Clear the timer display after countdown finishes
+        // Clear the timer display and hide the background
         uiManager.UpdateCountdownText("");
+        if (countdownBackground != null)
+        {
+            countdownBackground.SetActive(false);
+        }
 
         // Shuffle the grid and finalize setup
         gridManager.ShuffleGridElements();
@@ -117,6 +129,7 @@ public class GameManager : MonoBehaviour
         // Show "Check Result" button only after the timer
         uiManager.ShowCheckButton();
     }
+
 
     private IEnumerator ShuffleAndDisplayStage(Stage stage)
     {
@@ -161,33 +174,31 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log($"Stage {currentStageIndex + 1} completed successfully.");
             OverallScoreManager.Instance.AddScore(currentStage.scoreReward);
-            uiManager.UpdateResultText("Correct Order!"); // Only updates feedback
+            uiManager.UpdateResultText("יפה מאוד"); // Feedback for success
             uiManager.HideCheckButton(); // Hides the button on success
-            ProgressToNextStage();
+            StartCoroutine(HandleFeedbackDelay(true));
         }
         else
         {
-            Debug.Log("Incorrect order. Player can try again.");
-            uiManager.UpdateResultText("Incorrect! Try Again."); // Keeps feedback clear
-                                                                 // Button remains visible for retry
+            Debug.Log("Incorrect order. Restarting stage with new colors...");
+            uiManager.UpdateResultText("לא נורא..נסה שוב"); // Feedback for failure
+            StartCoroutine(HandleFeedbackDelay(false));
+        }
+    }
+    private IEnumerator HandleFeedbackDelay(bool isCorrect)
+    {
+        yield return new WaitForSeconds(feedbackDuration);
+
+        if (isCorrect)
+        {
+            ProgressToNextStage(); // Move to the next stage
+        }
+        else
+        {
+            StartCoroutine(RestartStageWithNewColors()); // Restart the stage
         }
     }
 
-
-
-
-
-
-    private void RetryStage()
-    {
-        Debug.Log("Retrying the current stage with new colors...");
-        RegenerateColors(); // Regenerate new colors
-        uiManager.ResetUI(); // Reset the UI for the stage
-        uiManager.ShowCheckButton(); // Ensure the "Check Answer" button is visible
-    }
-
-
-    // Progress to the next stage
     private void ProgressToNextStage()
     {
         // Clear feedback before moving to the next stage
@@ -246,27 +257,6 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private void DisplayResult(bool isCorrect)
-    {
-        if (isCorrect)
-        {
-            Stage currentStage = stages[currentStageIndex];
-            uiManager.UpdateResultText("Correct Order!");
-
-
-            Debug.Log($"Stage {currentStageIndex + 1} completed. Awarding {currentStage.scoreReward} points.");
-            currentStageIndex++;
-
-            ShowStageIntroduction(currentStageIndex);
-        }
-        else
-        {
-            uiManager.UpdateResultText("Incorrect Order! Try Again.");
-
-            StartStage();
-        }
-    }
-
     public void RestartGame()
     {
         Debug.Log("Restarting the game...");
@@ -296,9 +286,17 @@ public class GameManager : MonoBehaviour
     {
         Stage currentStage = stages[currentStageIndex];
 
-        // Clear the feedback after a short delay
-        yield return new WaitForSeconds(1f);
-        uiManager.UpdateResultText("");
+        Debug.Log("Restarting the current stage with new colors...");
+
+        // Clear feedback and UI
+        uiManager.UpdateResultText(""); // Clear feedback
+        uiManager.UpdateCountdownText(""); // Clear countdown text
+
+        // Show the timer background
+        if (countdownBackground != null)
+        {
+            countdownBackground.SetActive(true);
+        }
 
         // Clear and regenerate elements
         gridManager.ClearElements();
@@ -306,18 +304,28 @@ public class GameManager : MonoBehaviour
         gridManager.GenerateGridElements(currentStage.numTubes);
         stackManager.GenerateStackElements(currentStage.numTubes);
 
-        Debug.Log("New colors generated. Starting countdown...");
+        Debug.Log("Colors regenerated. Waiting for them to stabilize...");
+
+        // Add a small delay for colors to stabilize
+        yield return new WaitForSeconds(0.5f); // Adjust the duration if needed
+
+        Debug.Log("Starting countdown...");
 
         // Countdown before moving elements to stack
         int remainingTime = currentStage.timeLimit;
         while (remainingTime > 0)
         {
-            uiManager.UpdateCountdownText($"Time Left: {remainingTime}s");
+            uiManager.UpdateCountdownText($"{remainingTime}s");
             yield return new WaitForSeconds(1f);
             remainingTime--;
         }
 
-        uiManager.UpdateCountdownText(""); // Clear the countdown text
+        // Clear the timer display and hide the background
+        uiManager.UpdateCountdownText("");
+        if (countdownBackground != null)
+        {
+            countdownBackground.SetActive(false);
+        }
 
         // Shuffle and move elements to stack
         gridManager.ShuffleGridElements();
@@ -325,6 +333,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Stage restarted with reshuffled elements. Player can try again.");
     }
+
 
 
 

@@ -1,0 +1,611 @@
+fileFormatVersion: 2
+guid: ea29d0158e78df648b155ea7b6abe21e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3610964849078662340
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_0
+  - first:
+      213: 6866496316464604735
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_1
+  - first:
+      213: -1225442546063263786
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_2
+  - first:
+      213: 347903785909227535
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_3
+  - first:
+      213: -3479412766203224114
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_4
+  - first:
+      213: 3856435116975953017
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_5
+  - first:
+      213: -5395396902599385030
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_6
+  - first:
+      213: -1919302186482124581
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_7
+  - first:
+      213: 3365701232880069970
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_8
+  - first:
+      213: -7563175386801157834
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_9
+  - first:
+      213: 2725949632976239518
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_10
+  - first:
+      213: 5748973985792164948
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_11
+  - first:
+      213: 6571716193385548606
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_12
+  - first:
+      213: 1388160930875465572
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_13
+  - first:
+      213: -6521045872131650
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_14
+  - first:
+      213: 2690460840108362894
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_15
+  - first:
+      213: 6013187919009973304
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_16
+  - first:
+      213: -3503695123529442573
+    second: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5
+        width: 500
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3b8e3af99643edc0800000000000000
+      internalID: -3610964849078662340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 130
+        width: 352
+        height: 293
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f36a6620502ba4f50800000000000000
+      internalID: 6866496316464604735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 250
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d7bf3d3f7a5efee0800000000000000
+      internalID: -1225442546063263786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_3
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 275
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f00122766a004d400800000000000000
+      internalID: 347903785909227535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_4
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 217
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecf5f7b1684a6bfc0800000000000000
+      internalID: -3479412766203224114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_5
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 140
+        width: 13
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97491be7e4fc48530800000000000000
+      internalID: 3856435116975953017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_6
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 122
+        width: 48
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3022566a13bf15b0800000000000000
+      internalID: -5395396902599385030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_7
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 131
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd83a1e84d44d55e0800000000000000
+      internalID: -1919302186482124581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_8
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 97
+        width: 46
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25d29e5607f55be20800000000000000
+      internalID: 3365701232880069970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_9
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 118
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6394dbf9e043a0790800000000000000
+      internalID: -7563175386801157834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_10
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 79
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9bb72d9fb484d520800000000000000
+      internalID: 2725949632976239518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_11
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 72
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4548a16716578cf40800000000000000
+      internalID: 5748973985792164948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_12
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 77
+        width: 59
+        height: 39
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3b8d673f0d633b50800000000000000
+      internalID: 6571716193385548606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_13
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 53
+        width: 46
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46f58e7030db34310800000000000000
+      internalID: 1388160930875465572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_14
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 75
+        width: 31
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb14a31b425d8eff0800000000000000
+      internalID: -6521045872131650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_15
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 49
+        width: 64
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8c02c021ef665520800000000000000
+      internalID: 2690460840108362894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_16
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 68
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83482489d82237350800000000000000
+      internalID: 6013187919009973304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_17
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 47
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fa52c839df506fc0800000000000000
+      internalID: -3503695123529442573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e96f93a9f0e84724f9ec138a20fc6315
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_0: -3610964849078662340
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_1: 6866496316464604735
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_10: 2725949632976239518
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_11: 5748973985792164948
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_12: 6571716193385548606
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_13: 1388160930875465572
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_14: -6521045872131650
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_15: 2690460840108362894
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_16: 6013187919009973304
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_17: -3503695123529442573
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_2: -1225442546063263786
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_3: 347903785909227535
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_4: -3479412766203224114
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_5: 3856435116975953017
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_6: -5395396902599385030
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_7: -1919302186482124581
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_8: 3365701232880069970
+      DALL_E_2025-01-26_13.11.03_-_A_standalone_cartoon-style_broken_spaceship_asset__visibly_damaged_with_cracks__dents__and_scattered_debris._The_spaceship_has_smoke_and_glowing_effec-removebg-preview_9: -7563175386801157834
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

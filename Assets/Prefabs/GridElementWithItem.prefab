@@ -89,6 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 8151959850463372267}
+  dragSoundSource: {fileID: 0}
 --- !u!1 &6688124407794529442
 GameObject:
   m_ObjectHideFlags: 0
