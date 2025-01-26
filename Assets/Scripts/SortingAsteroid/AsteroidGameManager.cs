@@ -287,7 +287,7 @@ public class AsteroidGameManager : MonoBehaviour
                 var condition = currentChallenge.mixedConditions[conditionIndex];
 
                 // Map string size to scale values for UI Image
-                Vector3 scale = condition.size == "Small" ? Vector3.one * 0.5f : Vector3.one * 1.5f;
+                Vector3 scale = condition.size == "Small" ? Vector3.one * 1.0f : Vector3.one * 1.7f;
 
                 draggableItem.AssignedSize = condition.size == "Small" ? 1.0f : 3.0f; // Assign float value for logic
                 draggableItem.AssignedColor = condition.color;
