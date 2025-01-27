@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      bubble-removebg-preview 2_0: 6297758008549846356
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
