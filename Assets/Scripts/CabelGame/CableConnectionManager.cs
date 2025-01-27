@@ -77,11 +77,33 @@ public class CableConnectionManager : MonoBehaviour
             stage.connectedPanel.SetActive(true); // Show the connected panel
         }
 
+        // Handle dialogue panel and its canvas
         if (stage.dialoguePanel != null)
         {
+            // Ensure the canvas containing the dialogue panel is active
+            Canvas dialogueCanvas = stage.dialoguePanel.GetComponentInParent<Canvas>();
+            if (dialogueCanvas != null)
+            {
+                dialogueCanvas.gameObject.SetActive(true); // Enable the canvas
+            }
+
+            stage.dialoguePanel.gameObject.SetActive(true); // Show the dialogue panel
+
             stage.dialoguePanel.StartDialogue(() =>
             {
                 Debug.Log("Dialogue completed. Enabling timer UI.");
+
+                // Turn off the dialogue panel and its canvas
+                if (stage.dialoguePanel != null)
+                {
+                    stage.dialoguePanel.gameObject.SetActive(false);
+                }
+                if (dialogueCanvas != null)
+                {
+                    dialogueCanvas.gameObject.SetActive(false); // Disable the canvas
+                }
+
+                // Enable the timer UI
                 if (timerUI != null)
                 {
                     timerUI.SetActive(true);
@@ -97,6 +119,8 @@ public class CableConnectionManager : MonoBehaviour
             }
         }
     }
+
+
 
 
 
