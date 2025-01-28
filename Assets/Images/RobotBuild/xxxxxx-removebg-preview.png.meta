@@ -1,11 +1,10 @@
 fileFormatVersion: 2
-guid: 23b80e03e04bfbe4380e6826885a555d
+guid: 5740abcad5030a742a9ddefe1faf324b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4661774357961430797
-    second: DALL_E_2025-01-20_09.56.59_-_A_cute_and_colorful_robot_illustration_designed_for_children__composed_of_exactly_10_detachable_parts._The_robot_should_appear_in_multiple_playful_col-removebg-preview-rem
-      (1)_0
+      213: 7079574619647772593
+    second: xxxxxx-removebg-preview_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -127,14 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DALL_E_2025-01-20_09.56.59_-_A_cute_and_colorful_robot_illustration_designed_for_children__composed_of_exactly_10_detachable_parts._The_robot_should_appear_in_multiple_playful_col-removebg-preview-rem
-        (1)_0
+      name: xxxxxx-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 11
-        width: 143
-        height: 98
+        x: 74
+        y: 73
+        width: 384
+        height: 258
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3f82faaabec0e4fb0800000000000000
-      internalID: -4661774357961430797
+      spriteID: 1b70afc7b93bf3260800000000000000
+      internalID: 7079574619647772593
       vertices: []
       indices: 
       edges: []
@@ -162,8 +160,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      DALL_E_2025-01-20_09.56.59_-_A_cute_and_colorful_robot_illustration_designed_for_children__composed_of_exactly_10_detachable_parts._The_robot_should_appear_in_multiple_playful_col-removebg-preview-rem (1)_0: -4661774357961430797
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

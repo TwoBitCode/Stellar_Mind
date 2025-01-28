@@ -108,6 +108,17 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
         workspaceStartButton.SetActive(false); // Hide the start button
 
         Debug.Log("Player can now interact with the robot parts!");
-        // Additional logic to enable interactions can go here
+
+        // Start the first stage
+        if (EquipmentRecoveryGameManager.Instance != null)
+        {
+            Debug.Log("Calling StartStage() from UIManager...");
+            EquipmentRecoveryGameManager.Instance.StartStage();
+        }
+        else
+        {
+            Debug.LogError("EquipmentRecoveryGameManager.Instance is null! Cannot start the stage.");
+        }
     }
+
 }
