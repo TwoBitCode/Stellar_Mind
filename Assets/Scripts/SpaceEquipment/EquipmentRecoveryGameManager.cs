@@ -19,6 +19,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     [Header("UI Elements")]
     public GameObject gameOverPanel;
 
+    public bool isInteractionAllowed = false; // Prevent dragging until allowed
     private void Awake()
     {
         if (Instance == null)
@@ -62,6 +63,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         correctPartsPlaced = 0;
         placedParts.Clear();
         penalizedParts.Clear();
+        isInteractionAllowed = false;
 
         // Activate the correct panel
         for (int i = 0; i < stagePanels.Count; i++)
@@ -104,6 +106,10 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             image.color = Color.black; // Set the image color to black
             Debug.Log($"Successfully turned {targetObjectName} black.");
         }
+
+        // Enable interaction after the robot turns black
+        isInteractionAllowed = true;
+        Debug.Log("Interaction allowed.");
     }
 
 
@@ -192,5 +198,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         {
             gameOverPanel.SetActive(true);
         }
+    }
+    public bool IsInteractionAllowed()
+    {
+        return isInteractionAllowed;
     }
 }
