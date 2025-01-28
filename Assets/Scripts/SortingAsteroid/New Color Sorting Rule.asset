@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: New Color Sorting Rule
   m_EditorClassIdentifier: 
   typeColorPairs:
-  - typeName: Purple
+  - typeName: Blue
     color: {r: 0, g: 0.65887403, b: 1, a: 1}
-  - typeName: Green
+  - typeName: Pink
     color: {r: 0.735849, g: 0, b: 0.41834703, a: 1}

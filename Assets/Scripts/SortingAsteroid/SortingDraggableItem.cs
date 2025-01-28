@@ -10,7 +10,7 @@ public class SortingDraggableItem : DraggableItem
     public float AssignedSize { get; set; } // Dynamically assigned size
     public bool IsDistractor { get; set; } // Determines if the asteroid is a distractor
 
-    [SerializeField] private int pointsForCorrectDrop = 10;
+    //[SerializeField] private int pointsForCorrectDrop = 10;
     [SerializeField] private float destroyDelay = 0.2f;
 
     [SerializeField] private GameObject correctIndicatorPrefab;
@@ -153,60 +153,34 @@ public class SortingDraggableItem : DraggableItem
     private void HandleCorrectPlacement()
     {
         GlobalAsteroidSoundManager.Instance?.PlayCorrectSound();
-        Debug.Log("Correct placement handled!");
 
-        // Add points using the existing ScoreManager
-        if (scoreManager != null)
-        {
-            scoreManager.AddScore(pointsForCorrectDrop);
-        }
-        else
-        {
-            Debug.LogError("ScoreManager instance is not available!");
-        }
+        // Notify the game manager
+        gameManager?.OnAsteroidSorted(true);
 
-        // Instantiate and position the correct indicator
         if (correctIndicatorPrefab != null)
         {
-            // Create the indicator as a child of the canvas or parent
             GameObject correctIndicator = Instantiate(correctIndicatorPrefab, transform.parent);
-
-
-            // Match the position of the dropped asteroid
-            //correctIndicator.transform.position = transform.position;
-
-            //// Ensure the indicator is visible and properly placed
-            //var rectTransform = correctIndicator.GetComponent<RectTransform>();
-            //if (rectTransform != null)
-            //{
-            //    rectTransform.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
-            //}
-
-            // Destroy the indicator after a delay
             Destroy(correctIndicator, destroyDelay);
         }
-        else
-        {
-            Debug.LogWarning("CorrectIndicatorPrefab is not assigned!");
-        }
 
-        // Destroy the asteroid after correct placement
         Destroy(gameObject);
     }
-
-
-
 
     private void HandleIncorrectPlacement()
     {
         GlobalAsteroidSoundManager.Instance?.PlayIncorrectSound();
+
+        // Notify the game manager
+        gameManager?.OnAsteroidSorted(false);
+
         if (incorrectIndicatorPrefab != null)
         {
             GameObject incorrectIndicator = Instantiate(incorrectIndicatorPrefab, transform.parent);
             Destroy(incorrectIndicator, destroyDelay);
         }
 
-        Destroy(gameObject, destroyDelay); // Remove the asteroid after incorrect placement
+        Destroy(gameObject, destroyDelay);
     }
+
 
 }
