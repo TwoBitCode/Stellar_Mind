@@ -1,10 +1,11 @@
 fileFormatVersion: 2
-guid: 0902ae45e4bb56d43aa27112334b9e5c
+guid: 29a88b73f80a5574992786a0a4aa62c3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6056795805524173652
-    second: Screenshot_2025-01-27_173600-removebg-previewuoo-removebg-preview_0
+      213: 3403232008747173577
+    second: Cartoon_electrical_cables_flat_vector_illustrations_setll-removebg-preview
+      (1)gg_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +127,14 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Screenshot_2025-01-27_173600-removebg-previewuoo-removebg-preview_0
+      name: Cartoon_electrical_cables_flat_vector_illustrations_setll-removebg-preview
+        (1)gg_0
       rect:
         serializedVersion: 2
-        x: 175
-        y: 62
-        width: 238
-        height: 159
+        x: 26
+        y: 93
+        width: 131
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +143,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4532851e1bf0e0450800000000000000
-      internalID: 6056795805524173652
+      spriteID: 9c64d991b75ba3f20800000000000000
+      internalID: 3403232008747173577
       vertices: []
       indices: 
       edges: []
@@ -160,7 +162,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Cartoon_electrical_cables_flat_vector_illustrations_setll-removebg-preview (1)gg_0: 3403232008747173577
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
