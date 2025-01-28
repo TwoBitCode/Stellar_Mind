@@ -168,56 +168,14 @@ public class AsteroidGameManager : MonoBehaviour
     {
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
 
-        if (currentChallenge == null || currentChallenge.dropZones == null)
+        if (currentChallenge == null || currentChallenge.dropZoneAssignments == null)
         {
             Debug.LogError("Invalid challenge setup!");
             return;
         }
 
-        // Ensure dropZoneAssignments is initialized
-        if (currentChallenge.dropZoneAssignments == null)
-        {
-            currentChallenge.dropZoneAssignments = new List<DropZoneAssignment>();
-        }
-
-        currentChallenge.dropZoneAssignments.Clear();
-
-        // Handle mixed conditions
-        if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
-        {
-            for (int i = 0; i < currentChallenge.mixedConditions.Count && i < currentChallenge.dropZones.Count; i++)
-            {
-                var condition = currentChallenge.mixedConditions[i];
-                currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
-                {
-                    dropZoneName = currentChallenge.dropZones[i],
-                    assignedType = $"{condition.size} {condition.color}" // E.g., "Small Red"
-                });
-            }
-        }
-        else if (currentChallenge.sortingRule is ISortingRule rule)
-        {
-            // Handle regular sorting rules
-            foreach (var dropZoneName in currentChallenge.dropZones)
-            {
-                var assignedType = rule.GetRandomType();
-                currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
-                {
-                    dropZoneName = dropZoneName,
-                    assignedType = assignedType
-                });
-            }
-        }
-        else
-        {
-            Debug.LogError("No valid sorting rule or mixed conditions found for the challenge.");
-        }
-
-        // Log assignments for debugging
-        foreach (var assignment in currentChallenge.dropZoneAssignments)
-        {
-            Debug.Log($"Drop Zone '{assignment.dropZoneName}' assigned to type '{assignment.assignedType}'");
-        }
+        // Do nothing. Keep the manually assigned drop zones in Unity
+        Debug.Log("Using predefined drop zone assignments. No randomization applied.");
     }
 
 
