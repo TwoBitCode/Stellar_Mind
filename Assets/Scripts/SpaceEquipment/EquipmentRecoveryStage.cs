@@ -11,4 +11,8 @@ public class EquipmentRecoveryStage : ScriptableObject
     public float stageTimeLimit;
     [Header("UI Settings")]
     public List<string> targetObjectNames; // Names of the UI objects to turn black
+    [Header("Bonus Settings")]
+    public float bonusTimeThreshold; // Minimum time left to earn a bonus
+    public int bonusPoints; // Bonus points awarded if completed within the threshold
+
 }

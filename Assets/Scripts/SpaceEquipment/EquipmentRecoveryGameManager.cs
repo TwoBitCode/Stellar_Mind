@@ -25,10 +25,10 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     private float gameTimeRemaining;
     private bool isGameActive = false;
 
-    [Header("Game Over UI")]
-    public GameObject gameOverPanel; // The panel that appears when time runs out
-    public UnityEngine.UI.Button restartButton;
-    public UnityEngine.UI.Button returnToMapButton;
+    [Header("Level Complete UI")]
+    public GameObject levelCompletePanel; // The panel that appears when the final stage is completed
+    public TextMeshProUGUI levelCompleteText; // Text to display final stage points and bonus
+    public UnityEngine.UI.Button levelCompleteButton; // Button to exit or return to the map
 
 
     public bool isInteractionAllowed = false; // Prevent dragging until allowed
@@ -48,16 +48,8 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     private EquipmentRecoveryStage CurrentStage => stages[currentStageIndex];
 
     private Dictionary<GameObject, Vector3> originalPositions = new Dictionary<GameObject, Vector3>();
-    private void Start()
-    {
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(false); // Ensure the panel is hidden at the start
-        }
 
-        restartButton.onClick.AddListener(RestartStage);
-        returnToMapButton.onClick.AddListener(ReturnToMap);
-    }
+
 
     private Dictionary<int, Dictionary<GameObject, Vector3>> stageOriginalPositions = new Dictionary<int, Dictionary<GameObject, Vector3>>();
 
@@ -204,6 +196,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
     private void StartGameTimer()
     {
+        // Reset the time for the new stage
         gameTimeRemaining = CurrentStage.stageTimeLimit;
 
         if (gameTimerUI == null)
@@ -212,9 +205,10 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             return;
         }
 
-        gameTimerUI.SetActive(true); // Show the full game timer UI
+        gameTimerUI.SetActive(true); // Ensure the timer UI is visible
         Debug.Log("Game Timer UI is now active.");
 
+        // Find the correct TextMeshProUGUI component
         TextMeshProUGUI gameTimerText = gameTimerUI.GetComponentInChildren<TextMeshProUGUI>();
         if (gameTimerText == null)
         {
@@ -222,20 +216,34 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             return;
         }
 
+        // Ensure the first frame updates correctly
+        gameTimerText.text = $"Time Left: {Mathf.Ceil(gameTimeRemaining)}s";
+
+        StopAllCoroutines(); // Stop any previous timer coroutine
         StartCoroutine(UpdateGameTimer(gameTimerText));
     }
 
+
+
     private IEnumerator UpdateGameTimer(TextMeshProUGUI gameTimerText)
     {
+        isGameActive = true; // Ensure the game is marked as active
+
         while (gameTimeRemaining > 0)
         {
-            gameTimerText.text = $"Time Left: {Mathf.Ceil(gameTimeRemaining)}s";
+            if (!isGameActive) yield break; // Stop the timer if the game is not active
+
+            gameTimerText.text = $"{Mathf.Ceil(gameTimeRemaining)}";
             yield return new WaitForSeconds(1f);
             gameTimeRemaining -= 1f;
         }
 
-        gameTimerUI.SetActive(false); // Hide the entire game timer UI when time runs out
-        GameOver();
+        // Only trigger GameOver if the player hasn't already won
+        if (isGameActive)
+        {
+            gameTimerUI.SetActive(false);
+            GameOver();
+        }
     }
 
 
@@ -288,17 +296,50 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         }
     }
 
-
     private void StageComplete()
     {
         Debug.Log($"Stage {CurrentStage.stageName} complete!");
 
-        // Add score for completing this stage
-        OverallScoreManager.Instance?.AddScoreFromStage(CurrentStage.stageName, CurrentStage.pointsForCompletion);
+        // Stop the game timer to prevent it from reaching zero
+        StopAllCoroutines();
+        gameTimerUI.SetActive(false); // Hide the timer UI
 
-        // Start the coroutine to wait before moving to the next stage
-        StartCoroutine(DelayedStageTransition());
+        isGameActive = false; // Prevent further interactions
+        isInteractionAllowed = false; // Disable player input
+
+        int totalPointsEarned = CurrentStage.pointsForCompletion;
+        int bonusEarned = 0;
+
+        // Check if the player earns a bonus
+        if (gameTimeRemaining >= CurrentStage.bonusTimeThreshold)
+        {
+            bonusEarned = CurrentStage.bonusPoints;
+            Debug.Log($"Bonus achieved! {bonusEarned} points awarded.");
+        }
+
+        // Add the score
+        OverallScoreManager.Instance?.AddScore(totalPointsEarned + bonusEarned);
+
+        if (currentStageIndex + 1 < stages.Count)
+        {
+            // Not the last stage - Show reward panel
+            if (EquipmentRecoveryUIManager.Instance != null)
+            {
+                EquipmentRecoveryUIManager.Instance.ShowRewardPanel(totalPointsEarned, bonusEarned);
+            }
+        }
+        else
+        {
+            // Last stage - Show Level Complete panel with final rewards
+            if (EquipmentRecoveryUIManager.Instance != null)
+            {
+                EquipmentRecoveryUIManager.Instance.ShowLevelCompletePanel(totalPointsEarned, bonusEarned);
+            }
+        }
+
     }
+
+
 
     private IEnumerator DelayedStageTransition()
     {
@@ -320,11 +361,14 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     private void MiniGameComplete()
     {
         Debug.Log("Mini-game complete!");
-        if (gameOverPanel != null)
+
+        if (EquipmentRecoveryUIManager.Instance != null)
         {
-            gameOverPanel.SetActive(true);
+            EquipmentRecoveryUIManager.Instance.ShowGameOverPanel();
         }
     }
+
+
     public bool IsInteractionAllowed()
     {
         return isInteractionAllowed;
@@ -337,17 +381,22 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         countdownTimerUI.SetActive(false);
         isInteractionAllowed = false;
 
-        if (gameOverPanel != null)
+        if (EquipmentRecoveryUIManager.Instance != null)
         {
-            gameOverPanel.SetActive(true); // Show the game over options
+            EquipmentRecoveryUIManager.Instance.ShowGameOverPanel();
         }
+
     }
     public void RestartStage()
     {
         Debug.Log($"Restarting Stage {currentStageIndex}...");
 
-        // Hide the game over panel
-        gameOverPanel.SetActive(false);
+        if (EquipmentRecoveryUIManager.Instance != null)
+        {
+            EquipmentRecoveryUIManager.Instance.HideGameOverPanel();
+        }
+
+        StopAllCoroutines(); // Stop any running timers
 
         // Reset all parts to their original positions for the current stage
         if (stageOriginalPositions.ContainsKey(currentStageIndex))
@@ -367,10 +416,11 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         placedParts.Clear();
         penalizedParts.Clear();
         isInteractionAllowed = false;
+        isGameActive = false;
 
-        // Restart the stage
         StartStage();
     }
+
 
 
     public void ReturnToMap()
@@ -378,5 +428,30 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         Debug.Log("Returning to map...");
         SceneManager.LoadScene("MapScene"); // Make sure the scene name matches your map scene
     }
+    public void NextStage()
+    {
+        Debug.Log("Proceeding to next stage...");
+
+        // Hide the reward panel before switching
+        if (EquipmentRecoveryUIManager.Instance != null)
+        {
+            EquipmentRecoveryUIManager.Instance.HideRewardPanel();
+        }
+
+        currentStageIndex++;
+
+        if (currentStageIndex < stages.Count)
+        {
+            Debug.Log($"Starting Stage {currentStageIndex}: {stages[currentStageIndex].stageName}");
+            StartStage(); // Start the next stage
+        }
+        else
+        {
+            Debug.Log("No more stages remaining. Mini-game complete!");
+            MiniGameComplete(); // If no more stages, finish the mini-game
+        }
+    }
+
+
 
 }
