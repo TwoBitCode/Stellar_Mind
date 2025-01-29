@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TubesUIManager : MonoBehaviour
 {
@@ -15,13 +16,22 @@ public class TubesUIManager : MonoBehaviour
     [Header("Failure Panel")]
     [SerializeField] private GameObject failurePanel;
     [SerializeField] private TextMeshProUGUI failureText;
-    [SerializeField] private Button retryButton; 
-    [SerializeField] private Button mainMenuButton; 
+    [SerializeField] private Button retryButton;
+    [SerializeField] private Button mainMenuButton;
 
     [Header("Completion Panel")]
     [SerializeField] private GameObject completionPanel;
     [Header("Timer Background")]
     [SerializeField] private Image timerBackground;
+
+
+    private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)
+
+    private void Start()
+    {
+        mainMenuButton.onClick.RemoveAllListeners(); // Ensure no duplicate listeners
+        mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
+    }
 
     public void ShowCompletionPanel()
     {
@@ -50,7 +60,7 @@ public class TubesUIManager : MonoBehaviour
     {
         if (sortingTimerText != null)
         {
-            sortingTimerText.text = text; 
+            sortingTimerText.text = text;
         }
     }
 
@@ -78,20 +88,6 @@ public class TubesUIManager : MonoBehaviour
     public void HideCheckButton()
     {
         checkAnswerButton.gameObject.SetActive(false);
-    }
-
-    public void ShowFailurePanel(string text, System.Action retryAction, System.Action mainMenuAction)
-    {
-        if (failurePanel != null)
-        {
-            failurePanel.SetActive(true);
-            failureText.text = text;
-            retryButton.onClick.RemoveAllListeners();
-            mainMenuButton.onClick.RemoveAllListeners();
-
-            retryButton.onClick.AddListener(() => retryAction.Invoke());
-            mainMenuButton.onClick.AddListener(() => mainMenuAction.Invoke());
-        }
     }
 
     public void HideFailurePanel()
@@ -123,5 +119,33 @@ public class TubesUIManager : MonoBehaviour
             Debug.LogWarning("Timer background image is not assigned in the TubesUIManager.");
         }
     }
+    public void ReturnToMap()
+    {
+        if (GameProgressManager.Instance != null)
+        {
+            // Save progress at the GameProgressManager level
+            GameProgressManager.Instance.SaveProgress();
+        }
+
+        Debug.Log("Returning to game selection map.");
+        SceneManager.LoadScene("GameMapScene-V"); // Update with your actual map scene name
+    }
+
+    public void ShowFailurePanel(string text, System.Action retryAction)
+    {
+        if (failurePanel != null)
+        {
+            failurePanel.SetActive(true);
+            failureText.text = text;
+            retryButton.onClick.RemoveAllListeners();
+            mainMenuButton.onClick.RemoveAllListeners();
+
+            retryButton.onClick.AddListener(() => retryAction.Invoke());
+            mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
+        }
+    }
+
+
+
 }
 

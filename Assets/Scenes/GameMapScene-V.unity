@@ -1581,6 +1581,18 @@ PrefabInstance:
       propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 220993059}
+    - target: {fileID: 4514178738317384984, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowGameName
+      objectReference: {fileID: 0}
+    - target: {fileID: 4514178738317384984, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ResetDoorText
+      objectReference: {fileID: 0}
+    - target: {fileID: 4514178738317384984, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadScene
+      objectReference: {fileID: 0}
     - target: {fileID: 5936706888870804346, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
       propertyPath: m_Name
       value: SortingAsteroidsDoor
@@ -1790,6 +1802,18 @@ PrefabInstance:
       propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 220993059}
+    - target: {fileID: 8613067547677208795, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowGameName
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613067547677208795, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ResetDoorText
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613067547677208795, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadScene
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1905,11 +1929,15 @@ PrefabInstance:
       objectReference: {fileID: 220993059}
     - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnMouseEnterDoor
+      value: ShowGameName
       objectReference: {fileID: 0}
     - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
       propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnMouseExitDoor
+      value: ResetDoorText
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadScene
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

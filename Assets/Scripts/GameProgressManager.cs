@@ -29,24 +29,28 @@ public class GameProgressManager : MonoBehaviour
             string json = File.ReadAllText(saveFilePath);
             playerProgress = JsonUtility.FromJson<PlayerProgress>(json);
 
-            if (playerProgress == null)
+            if (playerProgress == null || string.IsNullOrEmpty(playerProgress.playerName))
             {
-                Debug.LogError("Failed to load player progress. Creating new progress.");
+                Debug.LogWarning("Invalid or empty player progress. Resetting...");
                 playerProgress = new PlayerProgress("", "");
+                SaveProgress(); // Save new progress immediately
             }
-
-            // Ensure game progress is initialized after loading
-            playerProgress.EnsureGameProgressInitialized();
-
-            Debug.Log($"Loaded player data: {json}");
+            else
+            {
+                Debug.Log($"Loaded player progress: {JsonUtility.ToJson(playerProgress)}");
+            }
         }
         else
         {
-            Debug.Log("No save file found, creating new progress.");
+            Debug.LogWarning("No save file found. Creating new player progress.");
             playerProgress = new PlayerProgress("", "");
-            SaveProgress(); // Save a fresh progress file
+            SaveProgress();
         }
+
+        // Ensure progress is initialized to prevent errors
+        playerProgress.EnsureGameProgressInitialized();
     }
+
 
 
 
@@ -127,6 +131,21 @@ public class GameProgressManager : MonoBehaviour
 
         SaveProgress(); // Save the updated progress
     }
+    public void SaveLastPlayedStage(int gameIndex, int stageIndex)
+    {
+        if (playerProgress != null)
+        {
+            playerProgress.lastPlayedGame = gameIndex;
+            playerProgress.lastPlayedStage = stageIndex;
+            SaveProgress(); // Save the updated progress
+            Debug.Log($"Saved progress: Game {gameIndex}, Stage {stageIndex}");
+        }
+        else
+        {
+            Debug.LogError("Player progress is null! Cannot save stage.");
+        }
+    }
+
 
 
 

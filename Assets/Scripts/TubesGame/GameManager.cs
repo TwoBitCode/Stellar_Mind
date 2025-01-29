@@ -37,30 +37,54 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TubesGameIntroductionManager introductionManager; // Introduction manager
     [SerializeField] private GameObject errorPanel;
     private int gameIndex; // Store the game index
-
+    public static GameManager Instance { get; private set; }
     private void Start()
     {
         ValidateSetup();
 
-        // Get the last played game index
+        // Retrieve the last played game and stage from GameProgressManager
         gameIndex = GameProgressManager.Instance.GetPlayerProgress().lastPlayedGame;
+        currentStageIndex = GameProgressManager.Instance.GetPlayerProgress().lastPlayedStage;
 
-        if (GameProgressManager.Instance.GetPlayerProgress().gamesProgress.ContainsKey(gameIndex))
+        Debug.Log($"Loading game {gameIndex}, resuming from stage {currentStageIndex}");
+
+        if (gameIndex < 0 || currentStageIndex < 0)
         {
-            currentStageIndex = GetLastCompletedStage(gameIndex);
-            Debug.Log($"Resuming Game {gameIndex} from Stage {currentStageIndex}");
+            // If no previous progress, start from Stage 0
+            gameIndex = 1; // Default to Tubes Game
+            currentStageIndex = 0;
+            Debug.Log("No previous progress found, starting from Stage 0.");
+        }
+
+        // Skip intro if returning to a later stage
+        if (currentStageIndex > 0)
+        {
+            ShowStageIntroduction(currentStageIndex); // Immediately start the correct stage
         }
         else
         {
-            currentStageIndex = 0;
-            Debug.Log("No progress found, starting from stage 0.");
+            introductionManager.PlayIntroduction(() =>
+            {
+                ShowStageIntroduction(currentStageIndex);
+            });
         }
-
-        introductionManager.PlayIntroduction(() =>
-        {
-            ShowStageIntroduction(currentStageIndex);
-        });
     }
+
+
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Ensures GameManager persists across scenes
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
 
 
     // Helper function to find the last completed stage
@@ -311,43 +335,41 @@ public class GameManager : MonoBehaviour
     }
     private void ShowFailurePanel(string message)
     {
-        uiManager.ShowFailurePanel(
-            message,
-            () => RestartStage(), 
-            ReturnToMainMenu      
-        );
+        uiManager.ShowFailurePanel(message, () => RestartStage());
     }
 
 
-    private void ReturnToMainMenu()
-    {
-        int gameIndex = 1; // Tubes Game
 
-        // Ensure the game exists in the progress manager
+
+    public void ReturnToMainMenu()
+    {
+        int gameIndex = 1; // Update based on actual game index
+
         if (GameProgressManager.Instance.GetPlayerProgress().gamesProgress.ContainsKey(gameIndex))
         {
-            // Save the last played stage for this specific mini-game
             GameProgressManager.Instance.GetPlayerProgress().lastPlayedGame = gameIndex;
             GameProgressManager.Instance.GetPlayerProgress().lastPlayedStage = currentStageIndex;
 
             GameProgressManager.Instance.SaveProgress();
-
-            Debug.Log($"Saving progress before returning to menu. Last Stage: {currentStageIndex} in Game {gameIndex}");
+            Debug.Log($"Saving progress before returning to map. Last played game: {gameIndex}, Last played stage: {currentStageIndex}");
         }
         else
         {
             Debug.LogError($"Game index {gameIndex} not found in progress manager!");
         }
 
-        SceneManager.LoadScene("GameSelectionScene");
+        SceneManager.LoadScene("GameMapScene-V");
     }
+
+
+
 
 
     public void RestartStage()
     {
         Debug.Log("Restarting the current stage...");
         uiManager.HideFailurePanel();
-        StartStage();
+        ShowStageIntroduction(currentStageIndex); // Restart from the same stage
     }
 
 
