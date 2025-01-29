@@ -89,7 +89,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
         }
     }
 
-    private void ResetToStartPosition()
+    public void ResetToStartPosition()
     {
         // Move the cable back to its starting position
         rectTransform.anchoredPosition = startPoint.anchoredPosition;
