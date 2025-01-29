@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class Stage
@@ -35,24 +36,47 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TubesGameIntroductionManager introductionManager; // Introduction manager
     [SerializeField] private GameObject errorPanel;
+    private int gameIndex; // Store the game index
+
     private void Start()
     {
         ValidateSetup();
 
-        // Access the DoorManager singleton
-  /*      doorManager = Object.FindFirstObjectByType<DoorManager>();
-        if (doorManager == null)
-        {
-            Debug.LogError("DoorManager not found in the scene!");
-        }*/
+        // Get the last played game index
+        gameIndex = GameProgressManager.Instance.GetPlayerProgress().lastPlayedGame;
 
-        // Play the introduction
+        if (GameProgressManager.Instance.GetPlayerProgress().gamesProgress.ContainsKey(gameIndex))
+        {
+            currentStageIndex = GetLastCompletedStage(gameIndex);
+            Debug.Log($"Resuming Game {gameIndex} from Stage {currentStageIndex}");
+        }
+        else
+        {
+            currentStageIndex = 0;
+            Debug.Log("No progress found, starting from stage 0.");
+        }
+
         introductionManager.PlayIntroduction(() =>
         {
-            Debug.Log("Introduction complete. Showing first stage instructions...");
-            ShowStageIntroduction(currentStageIndex); // Show instructions for the first stage
+            ShowStageIntroduction(currentStageIndex);
         });
     }
+
+
+    // Helper function to find the last completed stage
+    private int GetLastCompletedStage(int gameIndex)
+    {
+        var gameProgress = GameProgressManager.Instance.GetPlayerProgress().gamesProgress[gameIndex];
+
+        for (int i = 0; i < gameProgress.stages.Count; i++)
+        {
+            if (!gameProgress.stages[i].isCompleted)
+                return i; // Return first unfinished stage
+        }
+        return gameProgress.stages.Count; // All completed, return last index
+    }
+
+
 
 
     private void ValidateSetup()
@@ -197,14 +221,17 @@ public class GameManager : MonoBehaviour
 
     private void ProgressToNextStage()
     {
-        uiManager.ResetUI(); 
+        uiManager.ResetUI();
+
+        // Mark current stage as completed in GameProgressManager
+        int gameIndex = 1; // This is the Tubes Game (change based on your system)
+        GameProgressManager.Instance.CompleteStage(gameIndex, currentStageIndex, CalculateScore(0, stages[currentStageIndex]));
 
         currentStageIndex++;
+
         if (currentStageIndex < stages.Count)
         {
-            
             uiManager.ChangeTimerBackgroundColor(Color.yellow);
-
             ShowStageIntroduction(currentStageIndex);
         }
         else
@@ -294,8 +321,27 @@ public class GameManager : MonoBehaviour
 
     private void ReturnToMainMenu()
     {
-        throw new NotImplementedException();
+        int gameIndex = 1; // Tubes Game
+
+        // Ensure the game exists in the progress manager
+        if (GameProgressManager.Instance.GetPlayerProgress().gamesProgress.ContainsKey(gameIndex))
+        {
+            // Save the last played stage for this specific mini-game
+            GameProgressManager.Instance.GetPlayerProgress().lastPlayedGame = gameIndex;
+            GameProgressManager.Instance.GetPlayerProgress().lastPlayedStage = currentStageIndex;
+
+            GameProgressManager.Instance.SaveProgress();
+
+            Debug.Log($"Saving progress before returning to menu. Last Stage: {currentStageIndex} in Game {gameIndex}");
+        }
+        else
+        {
+            Debug.LogError($"Game index {gameIndex} not found in progress manager!");
+        }
+
+        SceneManager.LoadScene("GameSelectionScene");
     }
+
 
     public void RestartStage()
     {

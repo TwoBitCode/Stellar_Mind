@@ -196,6 +196,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348051189}
   m_CullTransparentMesh: 1
+--- !u!1 &392234756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 392234758}
+  - component: {fileID: 392234757}
+  m_Layer: 0
+  m_Name: GameProgressManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &392234757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392234756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3df33a6d0dd8448ab98abe5b4c3f3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &392234758
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392234756}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.49679947, y: 0.76142794, z: 2169.1924}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &730430241
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,28 +324,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1514616135}
-        m_TargetAssemblyTypeName: InputValidator, Assembly-CSharp
-        m_MethodName: ValidateInputs
+      - m_Target: {fileID: 1514616134}
+        m_TargetAssemblyTypeName: WelcomeUIManager, Assembly-CSharp
+        m_MethodName: StartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1514616133}
-        m_TargetAssemblyTypeName: SceneTransitionManager, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: LioAndMayaScene
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &730430244
@@ -1292,9 +1324,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1514616135}
-        m_TargetAssemblyTypeName: InputValidator, Assembly-CSharp
-        m_MethodName: ValidateInputs
+      - m_Target: {fileID: 1514616134}
+        m_TargetAssemblyTypeName: WelcomeUIManager, Assembly-CSharp
+        m_MethodName: OnNameInputChanged
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1491,10 +1523,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1514616129}
-  - component: {fileID: 1514616131}
   - component: {fileID: 1514616134}
   - component: {fileID: 1514616133}
-  - component: {fileID: 1514616135}
   m_Layer: 0
   m_Name: WelcomeUIManager
   m_TagString: Untagged
@@ -1517,20 +1547,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1514616131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1514616127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05df8c4049304ed49a8b09414f0e3dd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultPlayerName: DefaultPlayer
-  defaultTargetScore: 100
 --- !u!114 &1514616133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1543,7 +1559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62a335485e814794e8080ac9b2f3c9c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: SelectPlayerScene-vivi
+  nextSceneName: LioAndMayaScene
   audioSource: {fileID: 730430247}
   clickSound: {fileID: 8300000, guid: eda0a1f5d2f57f34a9b66d1323c890cd, type: 3}
 --- !u!114 &1514616134
@@ -1559,22 +1575,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNameInput: {fileID: 1447004492}
-  welcomeMessage: {fileID: 0}
+  welcomeMessage: {fileID: 815002888}
   startButton: {fileID: 730430241}
---- !u!114 &1514616135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1514616127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daa4ab6f466d0664abf231be76f2fda1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerNameInput: {fileID: 1447004492}
-  uiManager: {fileID: 1514616134}
+  sceneTransitionManager: {fileID: 1514616133}
 --- !u!1 &1528904593
 GameObject:
   m_ObjectHideFlags: 0
@@ -2010,3 +2013,4 @@ SceneRoots:
   - {fileID: 1776496032}
   - {fileID: 1141482002}
   - {fileID: 1514616129}
+  - {fileID: 392234758}

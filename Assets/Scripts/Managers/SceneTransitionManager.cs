@@ -12,18 +12,25 @@ public class SceneTransitionManager : MonoBehaviour
     // Loads the next scene specified in the inspector
     public void LoadNextScene()
     {
+        string playerName = GameProgressManager.Instance.GetPlayerProgress().playerName;
+        if (string.IsNullOrEmpty(playerName) || playerName == "DefaultPlayer")
+        {
+            Debug.LogWarning("Player name not set! Blocking transition.");
+            return;
+        }
+
+        // המשך טעינת הסצנה
         if (audioSource != null && clickSound != null)
         {
-            // Play the click sound and wait for it to finish before transitioning
             audioSource.PlayOneShot(clickSound);
             StartCoroutine(WaitAndLoadScene(nextSceneName, clickSound.length));
         }
         else
         {
-            // Immediately load the next scene if no sound is assigned
             LoadSceneImmediately(nextSceneName);
         }
     }
+
 
     // Loads a specified scene by name
     public void LoadScene(string sceneName)

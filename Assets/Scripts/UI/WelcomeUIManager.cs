@@ -5,25 +5,55 @@ public class WelcomeUIManager : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private TMP_InputField playerNameInput;
-    //[SerializeField] private TMP_InputField targetScoreInput;
     [SerializeField] private TextMeshProUGUI welcomeMessage;
     [SerializeField] private GameObject startButton;
+    [SerializeField] private SceneTransitionManager sceneTransitionManager;
 
     private void Start()
     {
-        InitializeWelcomeMessage();
-        startButton.SetActive(false); // Hide start button by default
+        string savedName = GameProgressManager.Instance.GetPlayerProgress().playerName;
+
+        if (!string.IsNullOrEmpty(savedName))
+        {
+            Debug.Log($"Loaded existing player name: {savedName}");
+            playerNameInput.text = savedName;
+            startButton.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("No valid name found. Waiting for player input.");
+            startButton.SetActive(false); // מונע מהשחקן להתחיל בלי שם
+        }
     }
 
-    private void InitializeWelcomeMessage()
+
+    public void OnNameInputChanged()
     {
-        //welcomeMessage.isRightToLeftText = true;
-        //welcomeMessage.alignment = TextAlignmentOptions.Right;
-        //welcomeMessage.text = "ברוך הבא למשחק! הזן את שמך וניקוד המטרה.";
+        bool isValid = !string.IsNullOrEmpty(playerNameInput.text);
+        startButton.SetActive(isValid);
     }
 
-    public void UpdateStartButtonVisibility(bool isEnabled)
+    public void StartGame()
     {
-        startButton.SetActive(isEnabled);
+        if (string.IsNullOrEmpty(playerNameInput.text))
+        {
+            Debug.LogWarning("Player name is empty! Cannot proceed.");
+            return;
+        }
+
+        // שמירת שם השחקן
+        GameProgressManager.Instance.InitializePlayer(playerNameInput.text, "");
+        GameProgressManager.Instance.SaveProgress();
+
+        Debug.Log($"Player name saved: {GameProgressManager.Instance.GetPlayerProgress().playerName}");
+
+        // מעבר לסצנה הבאה
+        sceneTransitionManager.LoadNextScene();
     }
+
+
+
+
+
+
 }

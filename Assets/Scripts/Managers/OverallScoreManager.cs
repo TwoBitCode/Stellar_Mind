@@ -4,7 +4,7 @@ public class OverallScoreManager : MonoBehaviour
 {
     public static OverallScoreManager Instance { get; private set; } // Singleton instance
     private int overallScore; // Encapsulated overall score
-    private int targetScore;  // Target score loaded from PlayerDataManager
+    //private int targetScore;  // Target score loaded from PlayerDataManager
 
     void Awake()
     {
@@ -13,18 +13,17 @@ public class OverallScoreManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // Initialize score
-            if (!PlayerPrefs.HasKey("OverallScore"))
-            {
-                PlayerPrefs.SetInt("OverallScore", 0); // Default score
-            }
-            overallScore = PlayerPrefs.GetInt("OverallScore");
+            // טוען את הניקוד השמור מתוך `GameProgressManager`
+            overallScore = GameProgressManager.Instance.GetPlayerProgress().totalScore;
+
+            Debug.Log($"Loaded overallScore: {overallScore}");
         }
         else
         {
             Destroy(gameObject);
         }
     }
+
 
 
     // Property to access the overall score
@@ -35,14 +34,17 @@ public class OverallScoreManager : MonoBehaviour
     }
 
     // Property to access the target score
-    public int TargetScore => targetScore;
 
     // Method to add score
     public void AddScore(int score)
     {
-        OverallScore += score;
-        Debug.Log($"Added {score} to OverallScore. New OverallScore: {OverallScore}");
+        overallScore += score;
+        GameProgressManager.Instance.GetPlayerProgress().totalScore = overallScore;
+        GameProgressManager.Instance.SaveProgress();
+
+        Debug.Log($"Added {score} to OverallScore. New OverallScore: {overallScore}. Progress saved.");
     }
+
 
     // Method to reset the overall score
     public void ResetScore()
@@ -52,19 +54,7 @@ public class OverallScoreManager : MonoBehaviour
     }
 
     // Initialize target score from PlayerDataManager
-    private void InitializeTargetScore()
-    {
-        if (PlayerDataManager.Instance != null)
-        {
-            targetScore = PlayerDataManager.Instance.LoadTargetScore();
-            Debug.Log($"TargetScore initialized to {targetScore} from PlayerDataManager.");
-        }
-        else
-        {
-            Debug.Log("PlayerDataManager not found! Using default TargetScore.");
-            targetScore = 100; // Default target score
-        }
-    }
+
     public void AddScoreFromStage(string stageName, int score)
     {
         overallScore += score; // Update the overall score

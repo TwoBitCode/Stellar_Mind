@@ -14,28 +14,25 @@ public class CharacterDisplayManager : MonoBehaviour
 
     private void LoadCharacterSprite()
     {
-        // Set default PlayerPrefs if missing
-        if (!PlayerPrefs.HasKey("SelectedCharacter"))
-        {
-            PlayerPrefs.SetString("SelectedCharacter", "Boy"); // Default to "Boy"
-        }
+        string selectedCharacter = GameProgressManager.Instance.GetPlayerProgress().selectedCharacter;
 
-        string selectedCharacter = PlayerPrefs.GetString("SelectedCharacter");
+        if (string.IsNullOrEmpty(selectedCharacter))
+        {
+            Debug.LogError("No character selection found! Defaulting to Boy.");
+            selectedCharacter = "Boy"; // Default character
+        }
 
         if (selectedCharacter == "Girl")
         {
             characterImage.sprite = girlSprite;
         }
-        else if (selectedCharacter == "Boy")
-        {
-            characterImage.sprite = boySprite;
-        }
         else
         {
-            Debug.LogError("Invalid character selection or missing PlayerPrefs key.");
+            characterImage.sprite = boySprite;
         }
 
         Debug.Log($"Character Loaded: {selectedCharacter}");
     }
+
 
 }
