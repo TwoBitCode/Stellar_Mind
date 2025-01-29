@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EquipmentRecoveryGameManager : MonoBehaviour
@@ -15,9 +17,19 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     private int correctPartsPlaced = 0;
     private HashSet<GameObject> placedParts = new HashSet<GameObject>();
     private HashSet<GameObject> penalizedParts = new HashSet<GameObject>(); // Tracks penalized objects
+    [Header("Timers")]
+    public GameObject countdownTimerUI; // Full GameObject (background + text) for the countdown
+    public GameObject gameTimerUI; // Full GameObject (background + text) for the in-game timer
+    public float initialCountdownTime = 5f; // Time before robot turns black
 
-    [Header("UI Elements")]
-    public GameObject gameOverPanel;
+    private float gameTimeRemaining;
+    private bool isGameActive = false;
+
+    [Header("Game Over UI")]
+    public GameObject gameOverPanel; // The panel that appears when time runs out
+    public UnityEngine.UI.Button restartButton;
+    public UnityEngine.UI.Button returnToMapButton;
+
 
     public bool isInteractionAllowed = false; // Prevent dragging until allowed
     private void Awake()
@@ -35,19 +47,27 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
     private EquipmentRecoveryStage CurrentStage => stages[currentStageIndex];
 
+    private Dictionary<GameObject, Vector3> originalPositions = new Dictionary<GameObject, Vector3>();
+    private void Start()
+    {
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false); // Ensure the panel is hidden at the start
+        }
+
+        restartButton.onClick.AddListener(RestartStage);
+        returnToMapButton.onClick.AddListener(ReturnToMap);
+    }
+
+    private Dictionary<int, Dictionary<GameObject, Vector3>> stageOriginalPositions = new Dictionary<int, Dictionary<GameObject, Vector3>>();
+
     public void StartStage()
     {
         Debug.Log("StartStage() called!");
 
         if (stages == null || stages.Count == 0)
         {
-            Debug.LogError("stages list is empty!");
-            return;
-        }
-
-        if (stagePanels == null || stagePanels.Count == 0)
-        {
-            Debug.LogError("stagePanels list is empty!");
+            Debug.LogError("Stages list is empty!");
             return;
         }
 
@@ -71,32 +91,94 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             stagePanels[i].SetActive(i == currentStageIndex);
         }
 
-        Debug.Log("Resetting stage logic and looking for images to turn black...");
+        // Store original positions for each stage
+        if (!stageOriginalPositions.ContainsKey(currentStageIndex))
+        {
+            stageOriginalPositions[currentStageIndex] = new Dictionary<GameObject, Vector3>();
 
-        // Start the delay before turning the robot black
+            foreach (Transform part in stagePanels[currentStageIndex].transform)
+            {
+                if (!stageOriginalPositions[currentStageIndex].ContainsKey(part.gameObject))
+                {
+                    stageOriginalPositions[currentStageIndex][part.gameObject] = part.position;
+                }
+            }
+        }
+
+        // Ensure timers are fully hidden at the start
+        countdownTimerUI.SetActive(false);
+        gameTimerUI.SetActive(false);
+
+        Debug.Log($"Stage {currentStageIndex} ({CurrentStage.stageName}) has a time limit of {CurrentStage.stageTimeLimit} seconds.");
+
+        StartCoroutine(PreGameCountdown());
+    }
+
+
+    private IEnumerator PreGameCountdown()
+    {
+        float countdown = initialCountdownTime;
+        countdownTimerUI.SetActive(true); // Show the full countdown UI
+
+        TextMeshProUGUI countdownText = countdownTimerUI.GetComponentInChildren<TextMeshProUGUI>();
+        if (countdownText == null)
+        {
+            Debug.LogError("Countdown Timer UI is missing a TextMeshProUGUI component.");
+            yield break;
+        }
+
+        while (countdown > 0)
+        {
+            countdownText.text = $"{Mathf.Ceil(countdown)}";
+            yield return new WaitForSeconds(1f);
+            countdown -= 1f;
+        }
+
+        countdownTimerUI.SetActive(false); // Hide the entire countdown UI
         StartCoroutine(DelayedTurnBlack());
     }
 
 
+
     private IEnumerator DelayedTurnBlack()
     {
-        Debug.Log("Waiting 3 seconds before turning black...");
-        yield return new WaitForSeconds(3f); // Wait for 3 seconds
-
         Debug.Log("Turning images black...");
+
+        // Check if CurrentStage is valid
+        if (CurrentStage == null)
+        {
+            Debug.LogError("CurrentStage is null! Cannot process target objects.");
+            yield break;
+        }
+
+        // Check if targetObjectNames is valid
+        if (CurrentStage.targetObjectNames == null || CurrentStage.targetObjectNames.Count == 0)
+        {
+            Debug.LogError($"Stage {CurrentStage.stageName} has no target objects!");
+            yield break;
+        }
+
+        // Check if stagePanels is valid
+        if (currentStageIndex >= stagePanels.Count || stagePanels[currentStageIndex] == null)
+        {
+            Debug.LogError($"Stage panel for index {currentStageIndex} is missing!");
+            yield break;
+        }
+
         foreach (string targetObjectName in CurrentStage.targetObjectNames)
         {
             Debug.Log($"Searching for {targetObjectName} in {stagePanels[currentStageIndex].name}");
 
-            GameObject targetObject = stagePanels[currentStageIndex].transform.Find(targetObjectName)?.gameObject;
-
-            if (targetObject == null)
+            Transform targetTransform = stagePanels[currentStageIndex].transform.Find(targetObjectName);
+            if (targetTransform == null)
             {
                 Debug.LogWarning($"Target object {targetObjectName} not found in {stagePanels[currentStageIndex].name}.");
                 continue;
             }
 
+            GameObject targetObject = targetTransform.gameObject;
             Image image = targetObject.GetComponent<Image>();
+
             if (image == null)
             {
                 Debug.LogWarning($"No Image component found on {targetObjectName} in {stagePanels[currentStageIndex].name}.");
@@ -110,6 +192,50 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         // Enable interaction after the robot turns black
         isInteractionAllowed = true;
         Debug.Log("Interaction allowed.");
+
+        // Debug before enabling the timer
+        Debug.Log("Attempting to start the game timer...");
+        StartGameTimer();
+
+        yield return null;
+    }
+
+
+
+    private void StartGameTimer()
+    {
+        gameTimeRemaining = CurrentStage.stageTimeLimit;
+
+        if (gameTimerUI == null)
+        {
+            Debug.LogError("gameTimerUI is NULL! Make sure it is assigned in the Inspector.");
+            return;
+        }
+
+        gameTimerUI.SetActive(true); // Show the full game timer UI
+        Debug.Log("Game Timer UI is now active.");
+
+        TextMeshProUGUI gameTimerText = gameTimerUI.GetComponentInChildren<TextMeshProUGUI>();
+        if (gameTimerText == null)
+        {
+            Debug.LogError("Game Timer UI is missing a TextMeshProUGUI component.");
+            return;
+        }
+
+        StartCoroutine(UpdateGameTimer(gameTimerText));
+    }
+
+    private IEnumerator UpdateGameTimer(TextMeshProUGUI gameTimerText)
+    {
+        while (gameTimeRemaining > 0)
+        {
+            gameTimerText.text = $"Time Left: {Mathf.Ceil(gameTimeRemaining)}s";
+            yield return new WaitForSeconds(1f);
+            gameTimeRemaining -= 1f;
+        }
+
+        gameTimerUI.SetActive(false); // Hide the entire game timer UI when time runs out
+        GameOver();
     }
 
 
@@ -203,4 +329,54 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     {
         return isInteractionAllowed;
     }
+    private void GameOver()
+    {
+        Debug.Log("Time's up! Game Over.");
+
+        gameTimerUI.SetActive(false);
+        countdownTimerUI.SetActive(false);
+        isInteractionAllowed = false;
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true); // Show the game over options
+        }
+    }
+    public void RestartStage()
+    {
+        Debug.Log($"Restarting Stage {currentStageIndex}...");
+
+        // Hide the game over panel
+        gameOverPanel.SetActive(false);
+
+        // Reset all parts to their original positions for the current stage
+        if (stageOriginalPositions.ContainsKey(currentStageIndex))
+        {
+            foreach (var part in stageOriginalPositions[currentStageIndex])
+            {
+                part.Key.transform.position = part.Value;
+            }
+        }
+        else
+        {
+            Debug.LogError($"No original positions found for Stage {currentStageIndex}!");
+        }
+
+        // Reset game state variables
+        correctPartsPlaced = 0;
+        placedParts.Clear();
+        penalizedParts.Clear();
+        isInteractionAllowed = false;
+
+        // Restart the stage
+        StartStage();
+    }
+
+
+    public void ReturnToMap()
+    {
+        Debug.Log("Returning to map...");
+        SceneManager.LoadScene("MapScene"); // Make sure the scene name matches your map scene
+    }
+
 }

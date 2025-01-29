@@ -15,5 +15,6 @@ MonoBehaviour:
   stageName: stage 3
   totalParts: 8
   pointsForCompletion: 10
+  stageTimeLimit: 20
   targetObjectNames:
   - robot 3
