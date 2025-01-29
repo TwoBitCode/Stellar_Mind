@@ -20,6 +20,13 @@ public class AsteroidChallenge
     public int maxAsteroids = 20;
     [TextArea(2, 5)]
     public string instructionsHebrew; // Hebrew instructions for this challenge
+    public int minCorrectAsteroids; // Minimum correct placements
+    //public int pointsForCorrectDrop = 10; // Points for correct placement
+    public int scorePenalty = 5; // Points deducted for incorrect placement
+    public int bonusScore = 5; // Bonus points for sorting above the minimum
+    public float timeLimit;
+    public int completionScore;
+
 
 
     [Tooltip("List of drop zone names to activate for this challenge")]

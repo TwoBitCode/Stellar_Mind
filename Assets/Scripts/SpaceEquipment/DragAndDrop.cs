@@ -15,6 +15,13 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // Check if interaction is allowed
+        if (!EquipmentRecoveryGameManager.Instance.IsInteractionAllowed())
+        {
+            Debug.Log("Dragging is not allowed yet!");
+            return;
+        }
+
         canvasGroup.blocksRaycasts = false;
 
         // Calculate the offset between the mouse position and the object's position
@@ -35,6 +42,10 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
+        // Prevent dragging if interaction is not allowed
+        if (!EquipmentRecoveryGameManager.Instance.IsInteractionAllowed())
+            return;
+
         // Update the object's position based on the drag
         Vector2 localPointerPosition;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -50,6 +61,10 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        // Check if interaction is allowed before handling drop logic
+        if (!EquipmentRecoveryGameManager.Instance.IsInteractionAllowed())
+            return;
+
         Debug.Log($"{gameObject.name} dropped!");
         canvasGroup.blocksRaycasts = true; // Re-enable raycasts after dragging
     }

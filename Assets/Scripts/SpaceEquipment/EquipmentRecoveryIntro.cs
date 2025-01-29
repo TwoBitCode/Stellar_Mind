@@ -70,23 +70,22 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         }
     }
 
-    public void OnStartButtonClicked()
+    private void OnStartButtonClicked()
     {
-        // Disable the button to prevent multiple clicks
-        startButton.interactable = false;
+        // Cancel any existing Invokes
+        CancelInvoke();
 
-        // Hide the button entirely
+        // Proceed with starting the intro
+        startButton.interactable = false;
         startButton.gameObject.SetActive(false);
 
-        // Start displaying dialogue and play the robot shaking animation
         ShowNextDialogueLine();
-        PlayShakeSoundLoop(); // Play the shake sound
+        PlayShakeSoundLoop();
         robotAnimator.SetTrigger("Shake");
 
-        // Schedule actions: Show parts, slide them out, display transition dialogue, and transition
         Invoke(nameof(HideFullRobotAndShowParts), partsScatterDelay);
         Invoke(nameof(SlidePartsOut), partsScatterDelay);
-        Invoke(nameof(PlayExplodeSound), partsScatterDelay); // Play the explode sound
+        Invoke(nameof(PlayExplodeSound), partsScatterDelay);
         Invoke(nameof(DisplayTransitionDialogue), partsScatterDelay + scatterDuration);
         Invoke(nameof(TransitionToWorkspace), partsScatterDelay + scatterDuration + transitionDelay);
     }
@@ -175,8 +174,13 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         part.localPosition = targetPosition; // Ensure the part reaches the final position
     }
 
+    private bool transitionStarted = false;
+
     private void TransitionToWorkspace()
     {
+        if (transitionStarted) return; // Prevent multiple transitions
+        transitionStarted = true;
+
         // Stop all sounds immediately before transitioning
         StopAllSounds();
 
@@ -185,4 +189,5 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         // Start the workspace instructions
         EquipmentRecoveryUIManager.Instance?.StartWorkspaceInstructions();
     }
+
 }

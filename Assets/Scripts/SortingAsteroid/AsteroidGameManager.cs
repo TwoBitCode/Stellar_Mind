@@ -1,5 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 public class AsteroidGameManager : MonoBehaviour
@@ -15,6 +18,7 @@ public class AsteroidGameManager : MonoBehaviour
     [SerializeField] private AsteroidGameUIManager uiManager;
     private DoorManager doorManager;
     private RectTransform canvasRect; // Reference to the canvas RectTransform
+    private AsteroidChallenge currentChallenge;
 
     [Header("Challenge Manager")]
     [SerializeField] private AsteroidChallengeManager asteroidChallengeManager;
@@ -29,30 +33,42 @@ public class AsteroidGameManager : MonoBehaviour
     private float spawnTimer;
     private List<GameObject> activeAsteroids = new List<GameObject>(); // Track spawned asteroids
     [SerializeField] private List<GameObject> allDropZones; // Drag all drop zones here in the Inspector
-
+    private int correctAsteroids = 0;
+    private int remainingTime;
+    // private bool isChallengeFailed = false;
     [Header("Game Components")]
-    [SerializeField] private GameTimer gameTimer;
     [SerializeField] private AsteroidsGameIntroductionManager introductionManager;
     private bool isIntroductionComplete = false;
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
+    private int correctAsteroidCount = 0;
+    private int totalAsteroidCount = 0;
+    private bool isChallengeActive = false;
+    private OverallScoreManager overallScoreManager;
+
 
     private void Start()
     {
+        // Initialization
         if (endPanel != null) endPanel.SetActive(false);
+
+        overallScoreManager = OverallScoreManager.Instance;
+        if (overallScoreManager == null)
+        {
+            Debug.LogError("OverallScoreManager instance is missing in the scene!");
+        }
 
         if (introductionManager != null)
         {
-            // Play the introduction sequence
             introductionManager.PlayIntroduction(OnIntroductionComplete);
         }
         else
         {
-            // Skip introduction and start the game
             Debug.LogWarning("Introduction Manager is missing. Starting challenges directly.");
             StartChallenges();
         }
     }
+
     private void OnIntroductionComplete()
     {
         isIntroductionComplete = true;
@@ -62,7 +78,7 @@ public class AsteroidGameManager : MonoBehaviour
 
     private void StartChallenges()
     {
-        gameTimer.OnTimerEnd += EndChallenge;
+        timerManager.OnTimerEnd += EndChallenge;
         InitializeChallenge();
 
     }
@@ -83,7 +99,8 @@ public class AsteroidGameManager : MonoBehaviour
     private void InitializeChallenge()
     {
         ClearAsteroids();
-        var currentChallenge = asteroidChallengeManager.CurrentChallenge;
+
+        currentChallenge = asteroidChallengeManager.CurrentChallenge; // Get the current challenge
 
         if (currentChallenge == null)
         {
@@ -94,15 +111,21 @@ public class AsteroidGameManager : MonoBehaviour
         spawnDelay = currentChallenge.spawnDelay;
         spawnInterval = currentChallenge.spawnInterval;
         maxAsteroids = currentChallenge.maxAsteroids;
-        currentAsteroidCount = 0;
 
-        // Assign drop zones and update instructions
+        // Reset counts and states
+        currentAsteroidCount = 0;
+        correctAsteroidCount = 0;
+        totalAsteroidCount = 0;
+        isGameActive = false;
+
         AssignDropZoneTypes();
         SetupDropZones(currentChallenge.dropZones);
 
         string instructions = GenerateInstructions();
-        uiManager.ShowInstructions(instructions, StartGame);
+        uiManager.ShowInstructions(instructions, StartGame); // Only starts the game when the button is pressed
     }
+
+
     private string GenerateInstructions()
     {
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
@@ -145,69 +168,38 @@ public class AsteroidGameManager : MonoBehaviour
     {
         var currentChallenge = asteroidChallengeManager.CurrentChallenge;
 
-        if (currentChallenge == null || currentChallenge.dropZones == null)
+        if (currentChallenge == null || currentChallenge.dropZoneAssignments == null)
         {
             Debug.LogError("Invalid challenge setup!");
             return;
         }
 
-        // Ensure dropZoneAssignments is initialized
-        if (currentChallenge.dropZoneAssignments == null)
-        {
-            currentChallenge.dropZoneAssignments = new List<DropZoneAssignment>();
-        }
-
-        currentChallenge.dropZoneAssignments.Clear();
-
-        // Handle mixed conditions
-        if (currentChallenge.mixedConditions != null && currentChallenge.mixedConditions.Count > 0)
-        {
-            for (int i = 0; i < currentChallenge.mixedConditions.Count && i < currentChallenge.dropZones.Count; i++)
-            {
-                var condition = currentChallenge.mixedConditions[i];
-                currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
-                {
-                    dropZoneName = currentChallenge.dropZones[i],
-                    assignedType = $"{condition.size} {condition.color}" // E.g., "Small Red"
-                });
-            }
-        }
-        else if (currentChallenge.sortingRule is ISortingRule rule)
-        {
-            // Handle regular sorting rules
-            foreach (var dropZoneName in currentChallenge.dropZones)
-            {
-                var assignedType = rule.GetRandomType();
-                currentChallenge.dropZoneAssignments.Add(new DropZoneAssignment
-                {
-                    dropZoneName = dropZoneName,
-                    assignedType = assignedType
-                });
-            }
-        }
-        else
-        {
-            Debug.LogError("No valid sorting rule or mixed conditions found for the challenge.");
-        }
-
-        // Log assignments for debugging
-        foreach (var assignment in currentChallenge.dropZoneAssignments)
-        {
-            Debug.Log($"Drop Zone '{assignment.dropZoneName}' assigned to type '{assignment.assignedType}'");
-        }
+        // Do nothing. Keep the manually assigned drop zones in Unity
+        Debug.Log("Using predefined drop zone assignments. No randomization applied.");
     }
-
 
 
 
 
     private void StartGame()
     {
+        if (currentChallenge == null)
+        {
+            Debug.LogError("No challenge available to start!");
+            return;
+        }
+
         isGameActive = true;
         spawnTimer = 0f;
+        uiManager.ShowTimerText();
+
+        // Set the timer duration based on the current challenge
+        timerManager.SetDuration(currentChallenge.timeLimit);
         timerManager.StartTimer();
-        Debug.Log("Game started!");
+
+        Debug.Log($"Game started! Timer set to {currentChallenge.timeLimit} seconds.");
     }
+
 
     // Adjusted SpawnAsteroid method based on your earlier version
     private void SpawnAsteroid()
@@ -332,26 +324,21 @@ public class AsteroidGameManager : MonoBehaviour
 
     public void EndChallenge()
     {
-        isGameActive = false; // Stop the game
+        isGameActive = false;
         Debug.Log("Timer ended! Challenge is over.");
 
-        // Clear all remaining asteroids
         ClearAsteroids();
 
-        // Advance to the next challenge
-        asteroidChallengeManager.AdvanceToNextChallenge();
-
-        if (!asteroidChallengeManager.HasMoreChallenges)
+        if (correctAsteroidCount >= currentChallenge.minCorrectAsteroids)
         {
-            Debug.Log("No more challenges. Showing the end panel.");
-            ShowEndPanel(); // Show the end panel if all challenges are completed
+            CompleteChallenge();
         }
         else
         {
-            Debug.Log($"Moving to the next challenge: {asteroidChallengeManager.CurrentChallenge.challengeName}");
-            InitializeChallenge(); // Start the next challenge, including showing instructions
+            FailChallenge();
         }
     }
+
 
 
 
@@ -402,4 +389,130 @@ public class AsteroidGameManager : MonoBehaviour
         }
     }
 
+    private void CompleteChallenge()
+    {
+        isChallengeActive = false;
+        Debug.Log("Challenge completed successfully!");
+
+        if (correctAsteroidCount >= currentChallenge.minCorrectAsteroids)
+        {
+            // Base points for completing the challenge
+            int basePoints = currentChallenge.completionScore;
+            OverallScoreManager.Instance?.AddScore(basePoints);
+
+            // Bonus points for extra asteroids
+            int bonusAsteroids = correctAsteroidCount - currentChallenge.minCorrectAsteroids;
+            int bonusPoints = bonusAsteroids * currentChallenge.bonusScore;
+            OverallScoreManager.Instance?.AddScore(bonusPoints);
+
+            Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}");
+
+            // Show the success panel with a dynamic message
+            uiManager.ShowSuccessPanel($"Challenge completed!\nBase Points: {basePoints}\nBonus Points: {bonusPoints}");
+
+            // Start coroutine to wait a few seconds and then move to the next stage
+            StartCoroutine(ProceedToNextChallenge());
+        }
+        else
+        {
+            FailChallenge();
+        }
+    }
+
+
+    private void FailChallenge()
+    {
+        isChallengeActive = false;
+        Debug.Log("Challenge failed. Showing failure panel.");
+
+        uiManager.ShowFailurePanel(
+            "Challenge failed. Try again or return to the menu.",
+            RestartChallenge,  // Option to retry
+            ReturnToMainMenu   // Option to go back to main menu
+        );
+    }
+
+
+
+    private void RestartChallenge()
+    {
+        Debug.Log("Restarting challenge...");
+
+        // If we want to forgive penalty points, refund half of them
+        int refundPoints = (currentChallenge.scorePenalty * totalAsteroidCount) / 2;
+        OverallScoreManager.Instance?.AddScore(refundPoints);
+        Debug.Log($"Refunding {refundPoints} points for retrying.");
+
+        // Reset challenge state
+        correctAsteroidCount = 0;
+        totalAsteroidCount = 0;
+        isChallengeActive = true;
+
+        // Restart challenge
+        InitializeChallenge();
+    }
+
+
+    private void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
+
+    public void OnAsteroidSorted(bool isCorrect)
+    {
+        if (currentChallenge == null) return;
+
+        totalAsteroidCount++;
+
+        if (isCorrect)
+        {
+            correctAsteroidCount++;
+        }
+        else
+        {
+            // Deduct penalty for incorrect drop
+            int penaltyPoints = currentChallenge.scorePenalty;
+            OverallScoreManager.Instance?.AddScore(-penaltyPoints);
+            Debug.Log($"Penalty applied: -{penaltyPoints}");
+        }
+
+        if (totalAsteroidCount >= currentChallenge.maxAsteroids)
+        {
+            if (correctAsteroidCount >= currentChallenge.minCorrectAsteroids)
+            {
+                CompleteChallenge();
+            }
+            else
+            {
+                FailChallenge();
+            }
+        }
+    }
+    private IEnumerator ProceedToNextChallenge()
+    {
+        // Optional: Add a delay before moving to the next challenge
+        yield return new WaitForSeconds(3f); // Wait for 3 seconds (or adjust as needed)
+
+        asteroidChallengeManager.AdvanceToNextChallenge();
+
+        if (asteroidChallengeManager.HasMoreChallenges)
+        {
+            Debug.Log($"Moving to the next challenge: {asteroidChallengeManager.CurrentChallenge.challengeName}");
+
+            // Reset UI and prepare the next challenge
+            uiManager.HideAllUI();
+            InitializeChallenge(); // Show instructions and reset the challenge
+        }
+        else
+        {
+            Debug.Log("No more challenges. Showing the end panel.");
+            ShowEndPanel(); // Show the final completion screen
+        }
+    }
+
+
+
+
 }
+

@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageName: stage 3
   totalParts: 8
-  pointsForCompletion: 10
+  pointsForCompletion: 100
+  stageTimeLimit: 25
+  targetObjectNames:
+  - robot 3
+  bonusTimeThreshold: 6
+  bonusPoints: 10

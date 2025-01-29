@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [System.Serializable]
 public class Stage
@@ -11,6 +12,8 @@ public class Stage
     public int timeLimit;
     public int scoreReward;
     public string instructionText;
+    public int sortingTimeLimit;
+    public int bonusTimeLimit;
 
 }
 
@@ -31,7 +34,7 @@ public class GameManager : MonoBehaviour
     private int currentStageIndex = 0;
 
     [SerializeField] private TubesGameIntroductionManager introductionManager; // Introduction manager
- 
+    [SerializeField] private GameObject errorPanel;
     private void Start()
     {
         ValidateSetup();
@@ -80,19 +83,16 @@ public class GameManager : MonoBehaviour
     {
         Stage currentStage = stages[currentStageIndex];
         Debug.Log($"Starting Stage {currentStageIndex + 1}");
-
-        // Clear previous elements
+        uiManager.ChangeTimerBackgroundColor(Color.yellow);
         gridManager.ClearElements();
         stackManager.ClearElements();
 
-        // Generate grid elements based on the current stage
         gridManager.GenerateGridElements(currentStage.numTubes);
         stackManager.GenerateStackElements(currentStage.numTubes);
 
-        // Show "Check Answer" button
         uiManager.ShowCheckButton();
 
-        // Start the timer and then shuffle the elements
+       
         StartCoroutine(CountdownAndSetupStage(currentStage));
     }
 
@@ -100,13 +100,12 @@ public class GameManager : MonoBehaviour
     {
         int remainingTime = stage.timeLimit;
 
-        // Show the timer background
         if (countdownBackground != null)
         {
             countdownBackground.SetActive(true);
+       
         }
 
-        // Timer starts here
         while (remainingTime > 0)
         {
             uiManager.UpdateCountdownText($"{remainingTime}s");
@@ -114,20 +113,19 @@ public class GameManager : MonoBehaviour
             remainingTime--;
         }
 
-        // Clear the timer display and hide the background
         uiManager.UpdateCountdownText("");
-        if (countdownBackground != null)
-        {
-            countdownBackground.SetActive(false);
-        }
+        //if (countdownBackground != null)
+        //{
+        //    //countdownBackground.SetActive(false);
+        //}
 
-        // Shuffle the grid and finalize setup
         gridManager.ShuffleGridElements();
         stackManager.MoveElementsToStack(gridManager.GridElements);
-        Debug.Log("Stage setup completed. Player can now start.");
 
-        // Show "Check Result" button only after the timer
-        uiManager.ShowCheckButton();
+
+        uiManager.ChangeTimerBackgroundColor(Color.red);
+
+        StartCoroutine(StartSortingTimer(stage));
     }
 
 
@@ -165,26 +163,27 @@ public class GameManager : MonoBehaviour
     // Check the player's answer
     private void CheckAnswer()
     {
-        Debug.Log("Checking if the grid is in the correct order...");
+        StopAllCoroutines(); 
 
         Stage currentStage = stages[currentStageIndex];
         bool isCorrect = currentStage.isReverseOrder ? CheckReverseOrder() : CheckOriginalOrder();
 
         if (isCorrect)
         {
-            Debug.Log($"Stage {currentStageIndex + 1} completed successfully.");
-            OverallScoreManager.Instance.AddScore(currentStage.scoreReward);
-            uiManager.UpdateResultText("יפה מאוד"); // Feedback for success
-            uiManager.HideCheckButton(); // Hides the button on success
+            int remainingTime = Mathf.Max(0, currentStage.sortingTimeLimit - currentStage.bonusTimeLimit);
+            int score = CalculateScore(remainingTime, currentStage);
+            OverallScoreManager.Instance.AddScore(score);
+
+            uiManager.UpdateResultText("יפה מאוד");
+            uiManager.HideCheckButton();
             StartCoroutine(HandleFeedbackDelay(true));
         }
         else
         {
-            Debug.Log("Incorrect order. Restarting stage with new colors...");
-            uiManager.UpdateResultText("לא נורא..נסה שוב"); // Feedback for failure
-            StartCoroutine(HandleFeedbackDelay(false));
+            ShowFailurePanel("טעית בסידור המבחנות. נסה שוב!");
         }
     }
+
     private IEnumerator HandleFeedbackDelay(bool isCorrect)
     {
         yield return new WaitForSeconds(feedbackDuration);
@@ -193,38 +192,30 @@ public class GameManager : MonoBehaviour
         {
             ProgressToNextStage(); // Move to the next stage
         }
-        else
-        {
-            StartCoroutine(RestartStageWithNewColors()); // Restart the stage
-        }
+ 
     }
 
     private void ProgressToNextStage()
     {
-        // Clear feedback before moving to the next stage
-        uiManager.ResetUI();
+        uiManager.ResetUI(); 
 
         currentStageIndex++;
         if (currentStageIndex < stages.Count)
         {
+            
+            uiManager.ChangeTimerBackgroundColor(Color.yellow);
+
             ShowStageIntroduction(currentStageIndex);
         }
         else
         {
             Debug.Log("All stages completed!");
-
-            //// Mark this mini-game as completed in the DoorManager
-            //if (doorManager != null)
-            //{
-            //    doorManager.MarkGameAsCompleted(0); // Replace 2 with the correct index for this mini-game
-            //}
-
-            // Show the completion panel when all stages are done
             uiManager.HideCheckButton();
             uiManager.HideInstructionPanel();
             uiManager.ShowCompletionPanel();
         }
     }
+
 
 
     private bool CheckOriginalOrder()
@@ -265,74 +256,55 @@ public class GameManager : MonoBehaviour
     }
     public void OnStartStageButtonClicked()
     {
-        uiManager.HideInstructionPanel(); // Hide the instruction panel
-        StartStage(); // Begin the first stage
+        uiManager.HideInstructionPanel(); 
+        StartStage(); 
     }
-    private void RegenerateColors()
+
+    private IEnumerator StartSortingTimer(Stage stage)
     {
-        Debug.Log("Regenerating colors for the current stage...");
+        int remainingTime = stage.sortingTimeLimit;
 
-        // Shuffle and regenerate grid elements
-        gridManager.ClearElements();
-        gridManager.GenerateGridElements(stages[currentStageIndex].numTubes);
-
-        // Update the stack with the new grid setup
-        stackManager.ClearElements();
-        stackManager.GenerateStackElements(stages[currentStageIndex].numTubes);
-
-        Debug.Log("Colors regenerated successfully.");
-    }
-    private IEnumerator RestartStageWithNewColors()
-    {
-        Stage currentStage = stages[currentStageIndex];
-
-        Debug.Log("Restarting the current stage with new colors...");
-
-        // Clear feedback and UI
-        uiManager.UpdateResultText(""); // Clear feedback
-        uiManager.UpdateCountdownText(""); // Clear countdown text
-
-        // Show the timer background
-        if (countdownBackground != null)
-        {
-            countdownBackground.SetActive(true);
-        }
-
-        // Clear and regenerate elements
-        gridManager.ClearElements();
-        stackManager.ClearElements();
-        gridManager.GenerateGridElements(currentStage.numTubes);
-        stackManager.GenerateStackElements(currentStage.numTubes);
-
-        Debug.Log("Colors regenerated. Waiting for them to stabilize...");
-
-        // Add a small delay for colors to stabilize
-        yield return new WaitForSeconds(0.5f); // Adjust the duration if needed
-
-        Debug.Log("Starting countdown...");
-
-        // Countdown before moving elements to stack
-        int remainingTime = currentStage.timeLimit;
         while (remainingTime > 0)
         {
-            uiManager.UpdateCountdownText($"{remainingTime}s");
+            uiManager.UpdateSortingTimer($"{remainingTime}s"); // עדכון התצוגה של הזמן
             yield return new WaitForSeconds(1f);
             remainingTime--;
         }
 
-        // Clear the timer display and hide the background
-        uiManager.UpdateCountdownText("");
-        if (countdownBackground != null)
-        {
-            countdownBackground.SetActive(false);
-        }
-
-        // Shuffle and move elements to stack
-        gridManager.ShuffleGridElements();
-        stackManager.MoveElementsToStack(gridManager.GridElements);
-
-        Debug.Log("Stage restarted with reshuffled elements. Player can try again.");
+        uiManager.UpdateSortingTimer(""); 
+        ShowFailurePanel("הזמן לסידור המבחנות נגמר. נסה שוב!");
     }
+    private int CalculateScore(int remainingTime, Stage stage)
+    {
+        if (remainingTime >= stage.bonusTimeLimit)
+        {
+            return stage.scoreReward + 25; 
+        }
+        return stage.scoreReward; 
+    }
+    private void ShowFailurePanel(string message)
+    {
+        uiManager.ShowFailurePanel(
+            message,
+            () => RestartStage(), 
+            ReturnToMainMenu      
+        );
+    }
+
+
+    private void ReturnToMainMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RestartStage()
+    {
+        Debug.Log("Restarting the current stage...");
+        uiManager.HideFailurePanel();
+        StartStage();
+    }
+
+
 
 
 
