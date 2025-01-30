@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class CableConnectionManager : MonoBehaviour
 {
@@ -48,6 +49,7 @@ public class CableConnectionManager : MonoBehaviour
     [Header("Game Over Panel")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
+    [SerializeField] private Button returnToMapButton; //
 
     [Header("Stage Complete Panel")]
     [SerializeField] private GameObject stageCompletePanel;
@@ -58,8 +60,10 @@ public class CableConnectionManager : MonoBehaviour
 
     [Header("End Panel")]
     [SerializeField] private GameObject endPanel;
-    //private DoorManager doorManager;
+    [SerializeField] private Button returnToMapButtonE; // New reference for returning to the map
 
+
+    private int gameIndex = 1; // Set the correct game index
 
     void Start()
     {
@@ -69,8 +73,33 @@ public class CableConnectionManager : MonoBehaviour
         if (endPanel != null) endPanel.SetActive(false);
 
         timerUI.SetActive(false);
+
+        // Load last played stage from GameProgressManager for the current game index
+        int savedStage = 0;
+
+        if (GameProgressManager.Instance != null)
+        {
+            var playerProgress = GameProgressManager.Instance.playerProgress;
+
+            if (playerProgress.gamesProgress.ContainsKey(gameIndex))
+            {
+                savedStage = playerProgress.lastPlayedStage;
+                Debug.Log($"Resuming from last played stage {savedStage} in Game {gameIndex}");
+            }
+            else
+            {
+                Debug.LogWarning($"No saved progress found for Game {gameIndex}. Starting from stage 0.");
+            }
+        }
+        else
+        {
+            Debug.LogError("GameProgressManager instance is missing! Defaulting to stage 0.");
+        }
+
+        currentStage = savedStage;
         LoadStage(currentStage);
     }
+
 
     public void LoadStage(int stageIndex)
     {
@@ -82,34 +111,53 @@ public class CableConnectionManager : MonoBehaviour
 
         currentStage = stageIndex;
         CableConnectionStage stage = stages[currentStage];
+        // **Turn off all other stages' panels before enabling the current stage**
+        foreach (var s in stages)
+        {
+            if (s.connectedPanel != null) s.connectedPanel.SetActive(false);
+            if (s.disconnectedPanel != null) s.disconnectedPanel.SetActive(false);
+            if (s.dialoguePanel != null) s.dialoguePanel.gameObject.SetActive(false);
+        }
 
-        if (stage.connectedPanel != null) stage.connectedPanel.SetActive(true); // Start with connected panel hidden
-        if (stage.disconnectedPanel != null) stage.disconnectedPanel.SetActive(false); // Show disconnected panel first
+        // Ensure connected panel is shown first
+        if (stage.connectedPanel != null) stage.connectedPanel.SetActive(true);
+        if (stage.disconnectedPanel != null) stage.disconnectedPanel.SetActive(false);
 
         stageTimeRemaining = stage.stageTimeLimit;
         isStageTimerRunning = false;
 
-        if (stageIndex == 0 && stage.dialoguePanel != null)
+        // Ensure the Dialogue Panel is turned off properly when returning mid-stage
+        if (stage.dialoguePanel != null)
         {
-            // Show the dialogue panel and wait for completion
-            stage.dialoguePanel.gameObject.SetActive(true);
-            stage.dialoguePanel.StartDialogue(() =>
+            if (GameProgressManager.Instance.playerProgress.lastPlayedStage > 0)
             {
+                Debug.Log("Returning mid-stage, ensuring dialogue panel is disabled.");
                 stage.dialoguePanel.gameObject.SetActive(false);
+                //Canvas dialogueCanvas = stage.dialoguePanel.GetComponentInParent<Canvas>();
+                //if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(false);
+            }
+        }
 
-                // Hide the entire dialogue canvas if it exists
+        // Only show dialogue at the very first stage
+        if (currentStage == 0 && GameProgressManager.Instance.playerProgress.lastPlayedStage == 0)
+        {
+            if (stage.dialoguePanel != null)
+            {
+                stage.dialoguePanel.gameObject.SetActive(true);
                 Canvas dialogueCanvas = stage.dialoguePanel.GetComponentInParent<Canvas>();
-                if (dialogueCanvas != null)
-                {
-                    dialogueCanvas.gameObject.SetActive(false);
-                }
+                if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(true);
 
-                // Show the Start button
-                if (startButton != null) startButton.SetActive(true);
-            });
+                stage.dialoguePanel.StartDialogue(() =>
+                {
+                    stage.dialoguePanel.gameObject.SetActive(false);
+                   // if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(false);
+                    StartMemoryCountdown(); // Start countdown after dialogue
+                });
+            }
         }
         else
         {
+            Debug.Log("Skipping dialogue, going straight to memory countdown.");
             StartMemoryCountdown();
         }
     }
@@ -176,7 +224,7 @@ public class CableConnectionManager : MonoBehaviour
 
     private void OnCountdownEnd()
     {
-        Debug.Log("Memory countdown ended! Switching to connected panel.");
+        Debug.Log("Memory countdown ended! Transitioning to disconnected panel with spark effect.");
 
         CableConnectionStage stage = stages[currentStage];
 
@@ -192,7 +240,7 @@ public class CableConnectionManager : MonoBehaviour
             timerText.color = Color.red; // Change to red when the stage timer starts
         }
 
-        // Trigger spark effect and panel transition
+        // **Trigger spark effect and transition to disconnected panel**
         if (panelTransitionHandler != null)
         {
             panelTransitionHandler.ShowConnectedPanel(
@@ -201,11 +249,25 @@ public class CableConnectionManager : MonoBehaviour
                 sparkEffectHandler,
                 () =>
                 {
-                    StartStageTimer(); // Ensure stage timer starts after transition
+                    // **Now hide the connected panel after the transition**
+                    if (stage.connectedPanel != null)
+                    {
+                        stage.connectedPanel.SetActive(false);
+                    }
+
+                    // **Ensure the disconnected panel is active**
+                    if (stage.disconnectedPanel != null)
+                    {
+                        stage.disconnectedPanel.SetActive(true);
+                    }
+
+                    // Start the stage timer after transition completes
+                    StartStageTimer();
                 }
             );
         }
     }
+
 
 
 
@@ -253,16 +315,30 @@ public class CableConnectionManager : MonoBehaviour
             gameOverPanel.SetActive(true);
         }
 
+        // Handle Restart Button
         if (restartButton != null)
         {
             restartButton.onClick.RemoveAllListeners();
             restartButton.onClick.AddListener(() =>
             {
+                Debug.Log("Restarting current stage...");
                 gameOverPanel.SetActive(false);
                 RestartStage();
             });
         }
+
+        // Handle Return to Map Button
+        if (returnToMapButton != null)
+        {
+            returnToMapButton.onClick.RemoveAllListeners();
+            returnToMapButton.onClick.AddListener(() =>
+            {
+                Debug.Log("Returning to game map...");
+                ReturnToMap();
+            });
+        }
     }
+
 
     public void RestartStage()
     {
@@ -386,6 +462,8 @@ public class CableConnectionManager : MonoBehaviour
         return null;
     }
 
+
+
     private void ShowStageCompletePanel()
     {
         Debug.Log("Stage completed! Hiding timer.");
@@ -403,17 +481,62 @@ public class CableConnectionManager : MonoBehaviour
         if (currentStageData.connectedPanel != null) currentStageData.connectedPanel.SetActive(false);
         if (currentStageData.disconnectedPanel != null) currentStageData.disconnectedPanel.SetActive(false);
 
-        // Check if this is the last stage
-        if (currentStage >= stages.Length - 1)
+        // Update Progress
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+
+        if (playerProgress.gamesProgress.ContainsKey(gameIndex))
         {
-            Debug.Log("Final stage completed! Showing finish game panel.");
-            if (endPanel != null)
+            GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+
+            if (gameProgress.stages.ContainsKey(currentStage))
             {
-                endPanel.SetActive(true); // Show the finish game panel
+                gameProgress.stages[currentStage].isCompleted = true;
+                Debug.Log($"Stage {currentStage} in Game {gameIndex} marked as completed.");
+            }
+
+            // Check if the whole game is now completed
+            if (gameProgress.CheckIfCompleted())
+            {
+                Debug.Log($"Game {gameIndex} is now fully completed!");
+
+                // Mark game as completed
+                gameProgress.isCompleted = true;
+
+                // Save final overall score when the game is completed
+                playerProgress.totalScore = OverallScoreManager.Instance.OverallScore;
+                Debug.Log($"Final Score for Game {gameIndex}: {playerProgress.totalScore}");
             }
         }
         else
         {
+            Debug.LogError($"Game {gameIndex} not found in progress manager!");
+        }
+
+        GameProgressManager.Instance.SaveProgress(); // Save updated progress
+
+        // Check if this is the last stage
+        if (currentStage >= stages.Length - 1)
+        {
+            Debug.Log("Final stage completed! Showing end panel.");
+            if (endPanel != null)
+            {
+                endPanel.SetActive(true); // Show the finish game panel
+
+                // Ensure the Return to Map button works
+                if (returnToMapButtonE != null)
+                {
+                    returnToMapButtonE.onClick.RemoveAllListeners();
+                    returnToMapButtonE.onClick.AddListener(() =>
+                    {
+                        Debug.Log("Returning to the map after completing the game.");
+                        ReturnToMap();
+                    });
+                }
+            }
+        }
+        else
+        {
+            // Show stage complete panel for regular stage completion
             stageCompletePanel.SetActive(true);
             if (stageCompleteText != null)
             {
@@ -436,6 +559,7 @@ public class CableConnectionManager : MonoBehaviour
 
 
 
+
     private void ShowFeedback(string message, Color color)
     {
         if (feedbackText != null)
@@ -453,6 +577,17 @@ public class CableConnectionManager : MonoBehaviour
         {
             feedbackText.gameObject.SetActive(false);
         }
+    }
+    public void ReturnToMap()
+    {
+        if (GameProgressManager.Instance != null)
+        {
+            GameProgressManager.Instance.SaveProgress();
+        }
+
+        Debug.Log("Returning to game selection map.");
+
+        SceneManager.LoadScene("GameMapScene-V"); // Make sure the scene name is correct
     }
 
 }
