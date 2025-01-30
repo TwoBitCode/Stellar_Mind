@@ -119,15 +119,15 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &96037434 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1756351841414995408, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
-  m_PrefabInstance: {fileID: 3711265324138147583}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &96037435 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 225156695783350552, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
   m_PrefabInstance: {fileID: 3711265324138147583}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &129051738 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6086718492683233927, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
+  m_PrefabInstance: {fileID: 6654384367977133129}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &162552664
 GameObject:
@@ -158,6 +158,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3df33a6d0dd8448ab98abe5b4c3f3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerProgress:
+    playerName: 
+    selectedCharacter: 
+    totalScore: 0
+    lastPlayedGame: 0
+    lastPlayedStage: 0
+    gamesProgressList:
+    - gameIndex: 0
+      progress:
+        isCompleted: 0
+        stagesList:
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+    - gameIndex: 1
+      progress:
+        isCompleted: 0
+        stagesList:
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+    - gameIndex: 2
+      progress:
+        isCompleted: 0
+        stagesList:
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+    - gameIndex: 3
+      progress:
+        isCompleted: 0
+        stagesList:
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
+        - stageIndex: 0
+          progress:
+            isCompleted: 0
+            score: 0
 --- !u!4 &162552666
 Transform:
   m_ObjectHideFlags: 0
@@ -205,25 +276,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   doorText: {fileID: 314992275}
   doors:
-  - {fileID: 221132705}
-  - {fileID: 719347701}
-  - {fileID: 1758065692}
-  - {fileID: 96037434}
+  - {fileID: 807230095}
+  - {fileID: 129051738}
+  - {fileID: 1139212173}
+  - {fileID: 1593822563}
   sceneNames:
   - TubesGame
   - WiresConnection
-  - SortingAsteroid
   - SpaceEquipmentRecoveryMission
+  - SortingAsteroid
   gameNames:
-  - "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05E1\u05D3\u05E8 \u05DE\u05D1\u05D7\u05E0\u05D5\u05EA!"
-  - "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05EA\u05E7\u05DF \u05D0\u05EA \u05DE\u05E2\u05E8\u05DB\u05EA
-    \u05D4\u05D7\u05E9\u05DE\u05DC!"
-  - "\u05D1\u05D5\u05D0\u05D5 \u05DC\u05DE\u05D9\u05D9\u05DF \u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD!"
-  - "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05EA\u05E7\u05DF \u05D0\u05EA \u05D4\u05E8\u05D5\u05D1\u05D5\u05D8
-    \u05E9\u05DC\u05E0\u05D5!"
-  hoverSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
-  clickSound: {fileID: 8300000, guid: eda0a1f5d2f57f34a9b66d1323c890cd, type: 3}
-  completedGameSprite: {fileID: 0}
+  - "\u05DE\u05D1\u05D7\u05E0\u05D5\u05EA"
+  - "\u05EA\u05D9\u05E7\u05D5\u05DF \u05D7\u05D5\u05D8\u05D9\u05DD"
+  - "\u05E8\u05D5\u05D1\u05D5\u05D8"
+  - "\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD"
+  hoverSound: {fileID: 8300000, guid: eda0a1f5d2f57f34a9b66d1323c890cd, type: 3}
+  clickSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  completedGameSprite: {fileID: 3780386862279306512, guid: 52d61e267146cde43b02dfff9a45fa32, type: 3}
 --- !u!4 &220993060
 Transform:
   m_ObjectHideFlags: 0
@@ -336,11 +405,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &221132705 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2452019872289789922, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
-  m_PrefabInstance: {fileID: 8894344009974835141}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &221132706 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2130769891330608597, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
@@ -684,15 +748,15 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!1 &719347701 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6086718492683233927, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
-  m_PrefabInstance: {fileID: 6654384367977133129}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &719347702 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8077279422732694176, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
   m_PrefabInstance: {fileID: 6654384367977133129}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &807230095 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2452019872289789922, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
+  m_PrefabInstance: {fileID: 8894344009974835141}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &836562765
 GameObject:
@@ -783,8 +847,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterImage: {fileID: 836562767}
-  girlSprite: {fileID: -1770148972926715990, guid: eca463ba9ecf5d14aa073ad703e1fd3a, type: 3}
-  boySprite: {fileID: -2999197143697619629, guid: 94242bd1a2f12b64b9dde77d06c20cf0, type: 3}
+  girlSprite: {fileID: -2490435330190388652, guid: 59427282d3e4d0c4fbb75e606db88af3, type: 3}
+  boySprite: {fileID: -4217850909309984287, guid: 2542980eaabcf104ca197f870fd065d0, type: 3}
 --- !u!1 &880087763
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,10 +1157,10 @@ RectTransform:
   m_Children:
   - {fileID: 930546937}
   - {fileID: 836562766}
-  - {fileID: 719347702}
   - {fileID: 221132706}
-  - {fileID: 1758065693}
+  - {fileID: 719347702}
   - {fileID: 96037435}
+  - {fileID: 1758065693}
   - {fileID: 568920144}
   - {fileID: 1456121703}
   - {fileID: 1213684707}
@@ -1107,6 +1171,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1139212173 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1756351841414995408, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
+  m_PrefabInstance: {fileID: 3711265324138147583}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1213684704
 GameObject:
   m_ObjectHideFlags: 0
@@ -1337,7 +1406,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1758065692 stripped
+--- !u!1 &1593822563 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5936706888870804346, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
   m_PrefabInstance: {fileID: 3745271406883440451}
@@ -1536,22 +1605,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpaceEquipmentDoor
       objectReference: {fileID: 0}
-    - target: {fileID: 3856974990034739047, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
+    - target: {fileID: 6927184493079040663, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 220993059}
-    - target: {fileID: 3856974990034739047, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
+    - target: {fileID: 6927184493079040663, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
       propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 220993059}
-    - target: {fileID: 3856974990034739047, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
+    - target: {fileID: 6927184493079040663, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
       propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 220993059}
-    - target: {fileID: 7109662915271985900, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 2539011662115911238, guid: 7f738ce842fba7640bac6a7aea2a535b, type: 3}
+    - target: {fileID: 6927184493079040663, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6927184493079040663, guid: 76db071c8b2cb4e4c866b81db2a0aab2, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1565,10 +1638,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1055212850}
     m_Modifications:
-    - target: {fileID: 3843086687618073868, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 2539011662115911238, guid: 7f738ce842fba7640bac6a7aea2a535b, type: 3}
     - target: {fileID: 4514178738317384984, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1586,12 +1655,12 @@ PrefabInstance:
       value: ShowGameName
       objectReference: {fileID: 0}
     - target: {fileID: 4514178738317384984, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
-      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ResetDoorText
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4514178738317384984, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
-      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadScene
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5936706888870804346, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
       propertyPath: m_Name
@@ -1628,18 +1697,6 @@ PrefabInstance:
     - target: {fileID: 7116573351474408390, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
       propertyPath: m_SizeDelta.y
       value: 76.82
-      objectReference: {fileID: 0}
-    - target: {fileID: 7116573351474408390, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.0919
-      objectReference: {fileID: 0}
-    - target: {fileID: 7116573351474408390, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.0919
-      objectReference: {fileID: 0}
-    - target: {fileID: 7116573351474408390, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.0919
       objectReference: {fileID: 0}
     - target: {fileID: 7116573351474408390, guid: 475643c77bc1e4a45829f28d93b30705, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1702,10 +1759,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1055212850}
     m_Modifications:
-    - target: {fileID: 5497256779627290161, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 2539011662115911238, guid: 7f738ce842fba7640bac6a7aea2a535b, type: 3}
     - target: {fileID: 6086718492683233927, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
       propertyPath: m_Name
       value: ElectricalSystemDoor
@@ -1803,16 +1856,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 220993059}
     - target: {fileID: 8613067547677208795, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ShowGameName
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8613067547677208795, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
-      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ResetDoorText
-      objectReference: {fileID: 0}
-    - target: {fileID: 8613067547677208795, guid: e792f4e479ef95e40a5a149433a0fcbb, type: 3}
-      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadScene
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1827,10 +1876,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1055212850}
     m_Modifications:
-    - target: {fileID: 987973174297115992, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 2539011662115911238, guid: 7f738ce842fba7640bac6a7aea2a535b, type: 3}
     - target: {fileID: 2130769891330608597, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1916,6 +1961,14 @@ PrefabInstance:
       value: SortingTubesDoor
       objectReference: {fileID: 0}
     - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 220993059}
@@ -1928,16 +1981,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 220993059}
     - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
-      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ShowGameName
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
-      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ResetDoorText
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
-      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadScene
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616181085023240697, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: DoorManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

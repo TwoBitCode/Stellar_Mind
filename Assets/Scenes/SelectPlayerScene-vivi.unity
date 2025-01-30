@@ -204,7 +204,6 @@ GameObject:
   m_Component:
   - component: {fileID: 259851533}
   - component: {fileID: 259851534}
-  - component: {fileID: 259851536}
   - component: {fileID: 259851538}
   - component: {fileID: 259851537}
   m_Layer: 0
@@ -326,21 +325,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &259851536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 259851530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62a335485e814794e8080ac9b2f3c9c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nextSceneName: GameMapScene-V
-  audioSource: {fileID: 259851534}
-  clickSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
 --- !u!82 &259851537
 AudioSource:
   m_ObjectHideFlags: 0
@@ -450,7 +434,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ea12d2a777db5c429a61c00a065f09c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneTransitionManager: {fileID: 259851536}
   boyButton: {fileID: 265804995}
   girlButton: {fileID: 863907967}
   dialogueText: {fileID: 340918760}
@@ -1316,6 +1299,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3df33a6d0dd8448ab98abe5b4c3f3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerProgress:
+    playerName: 
+    selectedCharacter: 
+    totalScore: 0
+    lastPlayedGame: 0
+    lastPlayedStage: 0
+    gamesProgressList: []
 --- !u!4 &868766009
 Transform:
   m_ObjectHideFlags: 0

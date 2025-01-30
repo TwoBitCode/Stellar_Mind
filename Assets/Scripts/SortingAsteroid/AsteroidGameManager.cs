@@ -16,7 +16,7 @@ public class AsteroidGameManager : MonoBehaviour
     [Header("Game Components")]
     [SerializeField] private GameTimer timerManager;
     [SerializeField] private AsteroidGameUIManager uiManager;
-    private DoorManager doorManager;
+    //private DoorManager doorManager;
     private RectTransform canvasRect; // Reference to the canvas RectTransform
     private AsteroidChallenge currentChallenge;
 

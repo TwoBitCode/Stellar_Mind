@@ -14,14 +14,22 @@ public class CharacterDisplayManager : MonoBehaviour
 
     private void LoadCharacterSprite()
     {
-        string selectedCharacter = GameProgressManager.Instance.GetPlayerProgress().selectedCharacter;
+        // בדיקה אם יש גישה למנהל ההתקדמות
+        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
+        {
+            Debug.LogError(" GameProgressManager or playerProgress is missing! Cannot load character.");
+            return;
+        }
+
+        string selectedCharacter = GameProgressManager.Instance.playerProgress.selectedCharacter;
 
         if (string.IsNullOrEmpty(selectedCharacter))
         {
             Debug.LogError("No character selection found! Defaulting to Boy.");
-            selectedCharacter = "Boy"; // Default character
+            selectedCharacter = "Boy"; // דמות ברירת מחדל
         }
 
+        // טוען את התמונה לפי הדמות שנבחרה
         if (selectedCharacter == "Girl")
         {
             characterImage.sprite = girlSprite;
@@ -33,6 +41,4 @@ public class CharacterDisplayManager : MonoBehaviour
 
         Debug.Log($"Character Loaded: {selectedCharacter}");
     }
-
-
 }

@@ -4,7 +4,7 @@ public class OverallScoreManager : MonoBehaviour
 {
     public static OverallScoreManager Instance { get; private set; } // Singleton instance
     private int overallScore; // Encapsulated overall score
-    //private int targetScore;  // Target score loaded from PlayerDataManager
+
 
     void Awake()
     {
@@ -13,17 +13,18 @@ public class OverallScoreManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // טוען את הניקוד השמור מתוך `GameProgressManager`
-            overallScore = GameProgressManager.Instance.GetPlayerProgress().totalScore;
-
-            Debug.Log($"Loaded overallScore: {overallScore}");
+            // Load the overall score from PlayerProgress
+            if (GameProgressManager.Instance != null && GameProgressManager.Instance.playerProgress != null)
+            {
+                overallScore = GameProgressManager.Instance.playerProgress.totalScore;
+                Debug.Log($"Loaded Overall Score from GameProgress: {overallScore}");
+            }
         }
         else
         {
             Destroy(gameObject);
         }
     }
-
 
 
     // Property to access the overall score
@@ -39,11 +40,16 @@ public class OverallScoreManager : MonoBehaviour
     public void AddScore(int score)
     {
         overallScore += score;
-        GameProgressManager.Instance.GetPlayerProgress().totalScore = overallScore;
-        GameProgressManager.Instance.SaveProgress();
 
-        Debug.Log($"Added {score} to OverallScore. New OverallScore: {overallScore}. Progress saved.");
+        if (GameProgressManager.Instance != null && GameProgressManager.Instance.playerProgress != null)
+        {
+            GameProgressManager.Instance.playerProgress.totalScore = overallScore; // Store in PlayerProgress
+            GameProgressManager.Instance.SaveProgress(); // Save after updating
+        }
+
+        Debug.Log($"Added {score} to Overall Score. New Overall Score: {overallScore}. Progress saved.");
     }
+
 
 
     // Method to reset the overall score

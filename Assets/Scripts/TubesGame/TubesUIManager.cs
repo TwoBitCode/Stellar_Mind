@@ -21,6 +21,8 @@ public class TubesUIManager : MonoBehaviour
 
     [Header("Completion Panel")]
     [SerializeField] private GameObject completionPanel;
+    [SerializeField] private Button completionReturnToMapButton; // New button for completion panel
+
     [Header("Timer Background")]
     [SerializeField] private Image timerBackground;
 
@@ -30,13 +32,45 @@ public class TubesUIManager : MonoBehaviour
     private void Start()
     {
         mainMenuButton.onClick.RemoveAllListeners(); // Ensure no duplicate listeners
-        mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
+       // mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
     }
 
     public void ShowCompletionPanel()
     {
         completionPanel.SetActive(true);
+
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+
+        if (playerProgress != null && playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+
+            if (gameProgress.CheckIfCompleted()) // Check if all stages are done
+            {
+                gameProgress.isCompleted = true; // Mark the game as fully completed
+
+                // Save the final overall score when game is completed
+                playerProgress.totalScore = OverallScoreManager.Instance.OverallScore;
+                GameProgressManager.Instance.SaveProgress();
+
+                Debug.Log($"Game {gameIndex} is now marked as completed! Final Total Score: {playerProgress.totalScore}");
+
+                //  Assign the correct return action to the new completion panel button
+                completionReturnToMapButton.onClick.RemoveAllListeners();
+                completionReturnToMapButton.onClick.AddListener(() =>
+                {
+                    Debug.Log("Returning to map from Completion Panel...");
+
+                    GameProgressManager.Instance.SaveProgress(); // Save progress before leaving
+                    ReturnToMap(); // Call the function to return to the map
+                });
+
+                completionReturnToMapButton.gameObject.SetActive(true); // Make sure it's visible
+            }
+        }
     }
+
+
 
     public void HideCompletionPanel()
     {
@@ -123,13 +157,17 @@ public class TubesUIManager : MonoBehaviour
     {
         if (GameProgressManager.Instance != null)
         {
-            // Save progress at the GameProgressManager level
             GameProgressManager.Instance.SaveProgress();
         }
 
         Debug.Log("Returning to game selection map.");
-        SceneManager.LoadScene("GameMapScene-V"); // Update with your actual map scene name
+
+        // Reset the game state completely to ensure fresh load
+        GameManager.Instance.RestartGame();
+
+        SceneManager.LoadScene("GameMapScene-V");
     }
+
 
     public void ShowFailurePanel(string text, System.Action retryAction)
     {
@@ -141,9 +179,15 @@ public class TubesUIManager : MonoBehaviour
             mainMenuButton.onClick.RemoveAllListeners();
 
             retryButton.onClick.AddListener(() => retryAction.Invoke());
-            mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
+            mainMenuButton.onClick.AddListener(() =>
+            {
+                GameProgressManager.Instance.SaveProgress(); // Ensure progress is saved before exit
+                ReturnToMap();
+            });
         }
     }
+
+
 
 
 

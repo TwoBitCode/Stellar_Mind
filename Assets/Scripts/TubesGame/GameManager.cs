@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GridManager gridManager;
     [SerializeField] private StackManager stackManager;
     [SerializeField] private TubesUIManager uiManager;
-    private DoorManager doorManager;
+    //private DoorManager doorManager;
 
     private int currentStageIndex = 0;
 
@@ -41,25 +41,27 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         ValidateSetup();
+        var playerProgress = GameProgressManager.Instance.playerProgress;
 
-        // Retrieve the last played game and stage from GameProgressManager
-        gameIndex = GameProgressManager.Instance.GetPlayerProgress().lastPlayedGame;
-        currentStageIndex = GameProgressManager.Instance.GetPlayerProgress().lastPlayedStage;
+        // Load last played stage and game
+        gameIndex = playerProgress.lastPlayedGame;
+        currentStageIndex = playerProgress.lastPlayedStage;
 
-        Debug.Log($"Loading game {gameIndex}, resuming from stage {currentStageIndex}");
+        Debug.Log($"Resuming Game {gameIndex}, Stage {currentStageIndex}");
 
-        if (gameIndex < 0 || currentStageIndex < 0)
+        // Check if we are returning from map and NOT restarting
+        if (SceneManager.GetActiveScene().name == "GameMapScene-V")
         {
-            // If no previous progress, start from Stage 0
-            gameIndex = 1; // Default to Tubes Game
-            currentStageIndex = 0;
-            Debug.Log("No previous progress found, starting from Stage 0.");
+            Debug.Log("Returning to Game Map, resetting GameManager.");
+            Destroy(gameObject);  // This prevents GameManager from carrying over
+            return;
         }
 
-        // Skip intro if returning to a later stage
+        // If resuming, skip intro and go straight to instructions
         if (currentStageIndex > 0)
         {
-            ShowStageIntroduction(currentStageIndex); // Immediately start the correct stage
+            introductionManager.SkipIntroduction();
+            ShowStageIntroduction(currentStageIndex);
         }
         else
         {
@@ -69,6 +71,8 @@ public class GameManager : MonoBehaviour
             });
         }
     }
+
+
 
 
 
@@ -84,24 +88,6 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-
-
-    // Helper function to find the last completed stage
-    private int GetLastCompletedStage(int gameIndex)
-    {
-        var gameProgress = GameProgressManager.Instance.GetPlayerProgress().gamesProgress[gameIndex];
-
-        for (int i = 0; i < gameProgress.stages.Count; i++)
-        {
-            if (!gameProgress.stages[i].isCompleted)
-                return i; // Return first unfinished stage
-        }
-        return gameProgress.stages.Count; // All completed, return last index
-    }
-
-
-
 
     private void ValidateSetup()
     {
@@ -242,30 +228,51 @@ public class GameManager : MonoBehaviour
         }
  
     }
-
     private void ProgressToNextStage()
     {
         uiManager.ResetUI();
+        var playerProgress = GameProgressManager.Instance.playerProgress;
 
-        // Mark current stage as completed in GameProgressManager
-        int gameIndex = 1; // This is the Tubes Game (change based on your system)
-        GameProgressManager.Instance.CompleteStage(gameIndex, currentStageIndex, CalculateScore(0, stages[currentStageIndex]));
+        // Mark current stage as completed
+        if (playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+
+            if (gameProgress.stages.ContainsKey(currentStageIndex))
+            {
+                gameProgress.stages[currentStageIndex].isCompleted = true;
+                Debug.Log($"Stage {currentStageIndex} in Game {gameIndex} marked as completed.");
+            }
+            else
+            {
+                Debug.LogError($"Stage {currentStageIndex} not found in game {gameIndex}!");
+            }
+        }
+        else
+        {
+            Debug.LogError($"Game {gameIndex} not found in progress manager!");
+        }
 
         currentStageIndex++;
 
+        // If there are more stages, continue
         if (currentStageIndex < stages.Count)
         {
+            Debug.Log($"Moving to next stage: {currentStageIndex}");
             uiManager.ChangeTimerBackgroundColor(Color.yellow);
             ShowStageIntroduction(currentStageIndex);
         }
         else
         {
-            Debug.Log("All stages completed!");
+            Debug.Log($"All stages completed for Game {gameIndex}!");
             uiManager.HideCheckButton();
             uiManager.HideInstructionPanel();
             uiManager.ShowCompletionPanel();
         }
+
+        GameProgressManager.Instance.SaveProgress(); // Ensure the progress is saved
     }
+
 
 
 
@@ -337,31 +344,35 @@ public class GameManager : MonoBehaviour
     {
         uiManager.ShowFailurePanel(message, () => RestartStage());
     }
-
-
-
-
     public void ReturnToMainMenu()
     {
-        int gameIndex = 1; // Update based on actual game index
-
-        if (GameProgressManager.Instance.GetPlayerProgress().gamesProgress.ContainsKey(gameIndex))
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (playerProgress != null)
         {
-            GameProgressManager.Instance.GetPlayerProgress().lastPlayedGame = gameIndex;
-            GameProgressManager.Instance.GetPlayerProgress().lastPlayedStage = currentStageIndex;
-
+            playerProgress.lastPlayedGame = gameIndex;
+            playerProgress.lastPlayedStage = currentStageIndex;
             GameProgressManager.Instance.SaveProgress();
-            Debug.Log($"Saving progress before returning to map. Last played game: {gameIndex}, Last played stage: {currentStageIndex}");
         }
-        else
-        {
-            Debug.LogError($"Game index {gameIndex} not found in progress manager!");
-        }
+
+        Debug.Log("Returning to Game Map...");
+
+        // Reset the game state properly before switching scenes
+        ResetGameState();
+
+        // Destroy this GameManager so it does not persist across scenes
+        Destroy(gameObject);
 
         SceneManager.LoadScene("GameMapScene-V");
     }
 
 
+    private void ResetGameState()
+    {
+        currentStageIndex = 0;  // Ensure stage starts from zero on next return
+       // gameIndex = -1;  // Reset game index to prevent reloading issues
+
+        Debug.Log("Game state reset before exiting.");
+    }
 
 
 

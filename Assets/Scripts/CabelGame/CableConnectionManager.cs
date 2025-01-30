@@ -58,7 +58,7 @@ public class CableConnectionManager : MonoBehaviour
 
     [Header("End Panel")]
     [SerializeField] private GameObject endPanel;
-    private DoorManager doorManager;
+    //private DoorManager doorManager;
 
 
     void Start()

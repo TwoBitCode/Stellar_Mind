@@ -1,27 +1,55 @@
 using UnityEngine;
 using System.IO;
+using System.Collections.Generic;
+using System.Collections;
 
 public class GameProgressManager : MonoBehaviour
 {
-    public static GameProgressManager Instance { get; private set; }
-    private PlayerProgress playerProgress;
     private string saveFilePath;
-
+    public PlayerProgress playerProgress;
+    public static GameProgressManager Instance { get; private set; }
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); 
-            saveFilePath = Application.persistentDataPath + "/playerProgress.json";
-            LoadProgress();
+            DontDestroyOnLoad(gameObject);
+            saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
+
+            StartCoroutine(LoadProgressCoroutine());
         }
         else
         {
-            Destroy(gameObject); 
+            Destroy(gameObject);
         }
     }
 
+    private IEnumerator LoadProgressCoroutine()
+    {
+        yield return null; // מחכים פריים אחד כדי שכל האובייקטים יטענו
+
+        LoadProgress();
+
+        yield return new WaitForSeconds(0.1f); // מחכים 0.1 שניות
+        Debug.Log("Finished loading progress, now ready to use data.");
+    }
+
+
+
+    public void SaveProgress()
+    {
+        if (playerProgress == null)
+        {
+            Debug.LogError("Cannot save progress because playerProgress is null!");
+            return;
+        }
+
+        playerProgress.ConvertDictionaryToList();
+
+        string json = JsonUtility.ToJson(playerProgress, true);
+        File.WriteAllText(saveFilePath, json);
+        Debug.Log("Game progress successfully saved: " + json);
+    }
     public void LoadProgress()
     {
         if (File.Exists(saveFilePath))
@@ -29,126 +57,63 @@ public class GameProgressManager : MonoBehaviour
             string json = File.ReadAllText(saveFilePath);
             playerProgress = JsonUtility.FromJson<PlayerProgress>(json);
 
-            if (playerProgress == null || string.IsNullOrEmpty(playerProgress.playerName))
+            if (playerProgress == null)
             {
-                Debug.LogWarning("Invalid or empty player progress. Resetting...");
+                Debug.LogError("Failed to load progress! Creating new save.");
                 playerProgress = new PlayerProgress("", "");
-                SaveProgress(); // Save new progress immediately
+                SaveProgress();
+                return;
             }
-            else
+
+            // ודא שהמילון gamesProgress מאותחל
+            if (playerProgress.gamesProgress == null)
             {
-                Debug.Log($"Loaded player progress: {JsonUtility.ToJson(playerProgress)}");
+                Debug.LogWarning("gamesProgress was null after loading! Initializing.");
+                playerProgress.gamesProgress = new Dictionary<int, GameProgress>();
             }
+
+            // ודא שהרשימה gamesProgressList לא ריקה
+            if (playerProgress.gamesProgressList == null || playerProgress.gamesProgressList.Count == 0)
+            {
+                Debug.LogWarning("gamesProgressList is empty! Initializing.");
+                playerProgress.gamesProgressList = new List<SerializableGameProgress>();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    playerProgress.gamesProgressList.Add(new SerializableGameProgress { gameIndex = i, progress = new GameProgress() });
+                }
+            }
+
+            // המרת הרשימה חזרה למילון כדי שהמשחק יוכל לעבוד עם הנתונים
+            playerProgress.ConvertListToDictionary();
+
+            Debug.Log("Game progress loaded successfully.");
         }
         else
         {
-            Debug.LogWarning("No save file found. Creating new player progress.");
+            Debug.LogWarning("No save file found. Creating new progress.");
             playerProgress = new PlayerProgress("", "");
             SaveProgress();
         }
-
-        // Ensure progress is initialized to prevent errors
-        playerProgress.EnsureGameProgressInitialized();
     }
 
-
-
-
-
-
-
-    public PlayerProgress GetPlayerProgress()
+    public void SetLastPlayedGame(int gameIndex, int stageIndex)
     {
-        return playerProgress;
-    }
-    public void InitializePlayer(string playerName, string character)
-    {
-        if (playerProgress == null)
-        {
-            playerProgress = new PlayerProgress(playerName, character);
-        }
-        else
-        {
-            playerProgress.playerName = playerName;
-            playerProgress.selectedCharacter = character;
-        }
-
-        Debug.Log($"Saving player name: {playerProgress.playerName}, Character: {playerProgress.selectedCharacter}");
+        playerProgress.lastPlayedGame = gameIndex;
+        playerProgress.lastPlayedStage = stageIndex;
         SaveProgress();
+        Debug.Log($"Last played game set to {gameIndex}, stage {stageIndex}");
     }
 
-    public void SaveProgress()
+    public int GetLastPlayedGame()
     {
-        if (playerProgress == null)
-        {
-            Debug.LogError("Trying to save progress, but playerProgress is null!");
-            return;
-        }
-
-        // Ensure `gamesProgress` is initialized before saving
-        playerProgress.EnsureGameProgressInitialized();
-
-        string json = JsonUtility.ToJson(playerProgress);
-        File.WriteAllText(saveFilePath, json);
-        Debug.Log($"Game progress saved: {json}");
+        return playerProgress.lastPlayedGame;
     }
 
-
-    public void ResetProgress()
+    public int GetLastPlayedStage()
     {
-        playerProgress = new PlayerProgress("", ""); 
-        SaveProgress();
-        Debug.Log("Game progress reset! Restarting selection.");
+        return playerProgress.lastPlayedStage;
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            ResetProgress();
-            Debug.Log("Progress reset! Press Play again to restart from the beginning.");
-        }
-    }
-    public void CompleteStage(int gameIndex, int stageIndex, int score)
-    {
-        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
-        {
-            Debug.LogError($"Game index {gameIndex} not found in progress tracking!");
-            return;
-        }
-
-        // Mark the stage as completed and update the score
-        playerProgress.gamesProgress[gameIndex].stages[stageIndex].isCompleted = true;
-        playerProgress.gamesProgress[gameIndex].stages[stageIndex].score = score;
-
-        Debug.Log($"Stage {stageIndex} in Game {gameIndex} completed with {score} points.");
-
-        // Check if all stages are completed
-        if (playerProgress.gamesProgress[gameIndex].CheckIfCompleted())
-        {
-            Debug.Log($"Game {gameIndex} is now fully completed!");
-        }
-
-        SaveProgress(); // Save the updated progress
-    }
-    public void SaveLastPlayedStage(int gameIndex, int stageIndex)
-    {
-        if (playerProgress != null)
-        {
-            playerProgress.lastPlayedGame = gameIndex;
-            playerProgress.lastPlayedStage = stageIndex;
-            SaveProgress(); // Save the updated progress
-            Debug.Log($"Saved progress: Game {gameIndex}, Stage {stageIndex}");
-        }
-        else
-        {
-            Debug.LogError("Player progress is null! Cannot save stage.");
-        }
-    }
-
-
-
-
 
 
 }

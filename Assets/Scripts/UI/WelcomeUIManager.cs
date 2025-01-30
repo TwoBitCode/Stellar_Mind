@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class WelcomeUIManager : MonoBehaviour
 {
@@ -7,25 +8,20 @@ public class WelcomeUIManager : MonoBehaviour
     [SerializeField] private TMP_InputField playerNameInput;
     [SerializeField] private TextMeshProUGUI welcomeMessage;
     [SerializeField] private GameObject startButton;
-    [SerializeField] private SceneTransitionManager sceneTransitionManager;
 
     private void Start()
     {
-        string savedName = GameProgressManager.Instance.GetPlayerProgress().playerName;
-
-        if (!string.IsNullOrEmpty(savedName))
+        // לבדוק אם יש שם שמור ולהציג אותו
+        if (GameProgressManager.Instance.playerProgress != null && !string.IsNullOrEmpty(GameProgressManager.Instance.playerProgress.playerName))
         {
-            Debug.Log($"Loaded existing player name: {savedName}");
-            playerNameInput.text = savedName;
-            startButton.SetActive(true);
+            playerNameInput.text = GameProgressManager.Instance.playerProgress.playerName;
+            startButton.SetActive(true); // אם יש שם שמור, כפתור ההתחלה כבר פעיל
         }
         else
         {
-            Debug.Log("No valid name found. Waiting for player input.");
-            startButton.SetActive(false); // מונע מהשחקן להתחיל בלי שם
+            startButton.SetActive(false); // אם אין שם, הכפתור יופיע רק אחרי הקלדה
         }
     }
-
 
     public void OnNameInputChanged()
     {
@@ -41,19 +37,13 @@ public class WelcomeUIManager : MonoBehaviour
             return;
         }
 
-        // שמירת שם השחקן
-        GameProgressManager.Instance.InitializePlayer(playerNameInput.text, "");
+        // שמירת שם השחקן ב-PlayerProgress
+        GameProgressManager.Instance.playerProgress.playerName = playerNameInput.text.Trim();
         GameProgressManager.Instance.SaveProgress();
 
-        Debug.Log($"Player name saved: {GameProgressManager.Instance.GetPlayerProgress().playerName}");
+        Debug.Log($"Player name saved: {GameProgressManager.Instance.playerProgress.playerName}");
 
-        // מעבר לסצנה הבאה
-        sceneTransitionManager.LoadNextScene();
+        // מעבר לבחירת דמות
+        SceneManager.LoadScene("LioAndMayaScene");
     }
-
-
-
-
-
-
 }

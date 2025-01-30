@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CharacterSelectionManager : MonoBehaviour
 {
@@ -8,15 +9,14 @@ public class CharacterSelectionManager : MonoBehaviour
 
     public static CharacterSelectionManager Instance { get; private set; }
 
-    [SerializeField] private SceneTransitionManager sceneTransitionManager;
-    [SerializeField] private GameObject boyButton; // Button for boy astronaut
-    [SerializeField] private GameObject girlButton; // Button for girl astronaut
-    [SerializeField] private TMP_Text dialogueText; // Text for dialogue
-    [SerializeField] private GameObject dialogueBubble; // Bubble for the dialogue text
-    [SerializeField] private AudioSource audioSource; // AudioSource for dialogue
-    [SerializeField] private AudioClip crashDialogue; // Audio clip for the crash dialogue
-    [TextArea(3, 5)] public string crashDialogueText; // Editable text for dialogue in Inspector
-    [SerializeField] private float timeBetweenLines = 2f; // Time to wait between lines
+    [SerializeField] private GameObject boyButton;
+    [SerializeField] private GameObject girlButton;
+    [SerializeField] private TMP_Text dialogueText;
+    [SerializeField] private GameObject dialogueBubble;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip crashDialogue;
+    [TextArea(3, 5)] public string crashDialogueText;
+    [SerializeField] private float timeBetweenLines = 2f;
 
     private void Awake()
     {
@@ -35,11 +35,10 @@ public class CharacterSelectionManager : MonoBehaviour
 
     private void Start()
     {
-        string savedCharacter = GameProgressManager.Instance.GetPlayerProgress().selectedCharacter;
-
-        if (!string.IsNullOrEmpty(savedCharacter) && (savedCharacter == "Boy" || savedCharacter == "Girl"))
+        // לבדוק אם כבר נבחרה דמות
+        if (!string.IsNullOrEmpty(GameProgressManager.Instance.playerProgress.selectedCharacter))
         {
-            Debug.Log($"Character already selected: {savedCharacter}. Skipping selection.");
+            Debug.Log($"Character already selected: {GameProgressManager.Instance.playerProgress.selectedCharacter}. Skipping selection.");
             TransitionToGame();
             return;
         }
@@ -50,7 +49,6 @@ public class CharacterSelectionManager : MonoBehaviour
         dialogueBubble.SetActive(true);
         StartCoroutine(PlayCrashDialogue());
     }
-
 
     private IEnumerator PlayCrashDialogue()
     {
@@ -75,29 +73,22 @@ public class CharacterSelectionManager : MonoBehaviour
 
     public void SelectGirlAstronaut()
     {
-        GameProgressManager.Instance.GetPlayerProgress().selectedCharacter = "Girl";
+        GameProgressManager.Instance.playerProgress.selectedCharacter = "Girl";
         GameProgressManager.Instance.SaveProgress();
-        Debug.Log("Girl Astronaut selected.");
+        Debug.Log(" Girl Astronaut selected!");
         TransitionToGame();
     }
 
     public void SelectBoyAstronaut()
     {
-        GameProgressManager.Instance.GetPlayerProgress().selectedCharacter = "Boy";
+        GameProgressManager.Instance.playerProgress.selectedCharacter = "Boy";
         GameProgressManager.Instance.SaveProgress();
-        Debug.Log("Boy Astronaut selected.");
+        Debug.Log(" Boy Astronaut selected!");
         TransitionToGame();
     }
 
     private void TransitionToGame()
     {
-        if (sceneTransitionManager != null)
-        {
-            sceneTransitionManager.LoadNextScene();
-        }
-        else
-        {
-            Debug.LogError("SceneTransitionManager is not assigned to CharacterSelectionManager!");
-        }
+        SceneManager.LoadScene("GameMapScene-V"); // משנה לסצנה הבאה
     }
 }
