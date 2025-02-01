@@ -27,16 +27,43 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
         Debug.Log("PlayIntroduction called!"); // Debug check
 
         int currentGameIndex = 3; // Assuming this is the 4th game (0-based index)
-        if (GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].hasStarted)
+
+        // Ensure GameProgressManager is loaded
+        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
         {
-            Debug.Log("Skipping introduction because the game has already started.");
-            onIntroductionComplete?.Invoke(); // Go straight to the game
+            Debug.LogError("GameProgressManager is not initialized!");
             return;
         }
 
-        // Mark this game as started
-        GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].hasStarted = true;
-        GameProgressManager.Instance.SaveProgress();
+        var gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
+
+        // If the game has never started before, we force the introduction
+        if (!gameProgress.hasStarted)
+        {
+            Debug.Log("First time playing this game. Playing introduction...");
+            gameProgress.hasStarted = true;
+            GameProgressManager.Instance.SaveProgress();
+        }
+        else
+        {
+            // Check if any stage has been completed
+            bool anyStageCompleted = false;
+            foreach (var stage in gameProgress.stages)
+            {
+                if (stage.Value.isCompleted)
+                {
+                    anyStageCompleted = true;
+                    break;
+                }
+            }
+
+            if (anyStageCompleted)
+            {
+                Debug.Log("Skipping introduction because at least one stage is completed.");
+                onIntroductionComplete?.Invoke(); // Go straight to the game
+                return;
+            }
+        }
 
         onComplete = onIntroductionComplete; // Store callback
         startButton.SetActive(false); // Hide Start button initially
@@ -45,7 +72,6 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
         TriggerFallingAsteroids();
         StartCoroutine(PlayDialogueSequence());
     }
-
 
 
     private IEnumerator PlayDialogueSequence()

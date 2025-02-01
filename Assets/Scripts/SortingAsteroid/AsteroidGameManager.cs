@@ -90,7 +90,7 @@ public class AsteroidGameManager : MonoBehaviour
         }
 
         // Always play intro for Stage 0
-        if (lastUnfinishedStage == 0)
+        if (lastUnfinishedStage == 2)
         {
             Debug.Log("Stage 0 detected. Playing introduction...");
             if (introductionManager != null)

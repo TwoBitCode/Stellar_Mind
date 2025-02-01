@@ -2,7 +2,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -15,6 +14,7 @@ public class DoorManager : MonoBehaviour
     [SerializeField] private AudioClip hoverSound;
     [SerializeField] private AudioClip clickSound;
     [SerializeField] private Sprite completedGameSprite;
+    [SerializeField] private string defaultDoorText;
 
     private AudioSource audioSource;
 
@@ -31,14 +31,16 @@ public class DoorManager : MonoBehaviour
             yield break;
         }
 
-       //GameProgressManager.Instance.LoadProgress();
-
         yield return null;
+
+        if (doorText != null)
+        {
+            doorText.text = defaultDoorText; 
+        }
 
         Debug.Log("Finished loading progress, now initializing doors...");
         InitializeDoors();
     }
-
 
     private void InitializeDoors()
     {
@@ -62,38 +64,24 @@ public class DoorManager : MonoBehaviour
                 playerProgress.gamesProgress[i] = new GameProgress();
             }
 
-            AttachEventTriggers(doors[i], i);
+            bool isCompleted = playerProgress.gamesProgress[i].CheckIfCompleted();
 
-            if (playerProgress.gamesProgress[i].CheckIfCompleted())
+            if (isCompleted)
             {
                 SetDoorAsCompleted(doors[i]);
-                //doors[i].GetComponent<Button>().interactable = false; // Lock the door
             }
+
+            AttachEventTriggers(doors[i], i, isCompleted);
         }
 
         GameProgressManager.Instance.SaveProgress();
-    }
-
-    private int GetLastCompletedStage(int gameIndex)
-    {
-        var playerProgress = GameProgressManager.Instance.playerProgress;
-        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
-            return 0;
-
-        var gameProgress = playerProgress.gamesProgress[gameIndex];
-        for (int i = 0; i < gameProgress.stages.Count; i++)
-        {
-            if (!gameProgress.stages[i].isCompleted)
-                return i;
-        }
-        return gameProgress.stages.Count;
     }
 
     private void SetDoorAsCompleted(GameObject door)
     {
         if (door.TryGetComponent(out UnityEngine.UI.Image image) && completedGameSprite != null)
         {
-            image.sprite = completedGameSprite;
+            image.sprite = completedGameSprite; 
         }
         else
         {
@@ -101,7 +89,7 @@ public class DoorManager : MonoBehaviour
         }
     }
 
-    private void AttachEventTriggers(GameObject door, int gameIndex)
+    private void AttachEventTriggers(GameObject door, int gameIndex, bool isCompleted)
     {
         if (!door.TryGetComponent(out EventTrigger trigger))
         {
@@ -110,9 +98,13 @@ public class DoorManager : MonoBehaviour
 
         trigger.triggers.Clear();
 
-        AddEventTrigger(trigger, EventTriggerType.PointerEnter, (data) => ShowGameName(gameIndex));
+        AddEventTrigger(trigger, EventTriggerType.PointerEnter, (data) => ShowGameName(gameIndex, isCompleted));
         AddEventTrigger(trigger, EventTriggerType.PointerExit, (data) => ResetDoorText());
-        AddEventTrigger(trigger, EventTriggerType.PointerClick, (data) => LoadScene(gameIndex));
+
+        if (!isCompleted)
+        {
+            AddEventTrigger(trigger, EventTriggerType.PointerClick, (data) => LoadScene(gameIndex));
+        }
     }
 
     private void AddEventTrigger(EventTrigger trigger, EventTriggerType eventType, UnityEngine.Events.UnityAction<BaseEventData> action)
@@ -122,11 +114,19 @@ public class DoorManager : MonoBehaviour
         trigger.triggers.Add(entry);
     }
 
-    public void ShowGameName(int doorIndex)
+    public void ShowGameName(int doorIndex, bool isCompleted)
     {
-        if (doorText != null && doorIndex >= 0 && doorIndex < gameNames.Length)
+        if (doorText != null)
         {
-            doorText.text = gameNames[doorIndex];
+            if (isCompleted)
+            {
+                doorText.text = "כל הכבוד! השלמת את המשחק!";
+            }
+            else if (doorIndex >= 0 && doorIndex < gameNames.Length)
+            {
+                doorText.text = gameNames[doorIndex];
+            }
+
             PlaySound(hoverSound);
         }
     }
@@ -135,7 +135,7 @@ public class DoorManager : MonoBehaviour
     {
         if (doorText != null)
         {
-            doorText.text = "";
+            doorText.text = defaultDoorText;
         }
     }
 
@@ -157,16 +157,28 @@ public class DoorManager : MonoBehaviour
 
         Debug.Log($"Loading {sceneNames[doorIndex]}, resuming from Stage {playerProgress.lastPlayedStage} in Game {doorIndex}");
 
-        // **Ensure we destroy managers BEFORE loading the new scene**
         DestroyMiniGameManagers();
 
         SceneManager.LoadScene(sceneNames[doorIndex]);
     }
 
+    private int GetLastCompletedStage(int gameIndex)
+    {
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
+            return 0;
+
+        var gameProgress = playerProgress.gamesProgress[gameIndex];
+        for (int i = 0; i < gameProgress.stages.Count; i++)
+        {
+            if (!gameProgress.stages[i].isCompleted)
+                return i;
+        }
+        return gameProgress.stages.Count;
+    }
 
     private void DestroyMiniGameManagers()
     {
-        // List of objects that should NOT persist
         string[] persistentManagers = { "MemoryGameManager", "AudioFeedbackManager", "EquipmentRecoveryGameManager", "EquipmentRecoveryUIManager" };
 
         foreach (string managerName in persistentManagers)
@@ -182,8 +194,6 @@ public class DoorManager : MonoBehaviour
             }
         }
     }
-
-
 
     private void PlaySound(AudioClip clip)
     {

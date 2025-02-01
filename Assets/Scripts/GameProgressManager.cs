@@ -65,14 +65,21 @@ public class GameProgressManager : MonoBehaviour
                 return;
             }
 
-            // ודא שהמילון gamesProgress מאותחל
+            // Ensure playerName is initialized if missing
+            if (string.IsNullOrEmpty(playerProgress.playerName))
+            {
+                playerProgress.playerName = "Player";  // Set a default name if empty
+                Debug.LogWarning("playerName was empty! Resetting to default.");
+            }
+
+            // Ensure gamesProgress is initialized
             if (playerProgress.gamesProgress == null)
             {
                 Debug.LogWarning("gamesProgress was null after loading! Initializing.");
                 playerProgress.gamesProgress = new Dictionary<int, GameProgress>();
             }
 
-            // ודא שהרשימה gamesProgressList לא ריקה
+            // Ensure gamesProgressList is initialized
             if (playerProgress.gamesProgressList == null || playerProgress.gamesProgressList.Count == 0)
             {
                 Debug.LogWarning("gamesProgressList is empty! Initializing.");
@@ -84,18 +91,19 @@ public class GameProgressManager : MonoBehaviour
                 }
             }
 
-            // המרת הרשימה חזרה למילון כדי שהמשחק יוכל לעבוד עם הנתונים
+            // Convert the list back into a dictionary for use in-game
             playerProgress.ConvertListToDictionary();
 
-            Debug.Log("Game progress loaded successfully.");
+            Debug.Log($"Game progress loaded successfully. Player Name: {playerProgress.playerName}");
         }
         else
         {
             Debug.LogWarning("No save file found. Creating new progress.");
-            playerProgress = new PlayerProgress("", "");
+            playerProgress = new PlayerProgress("", "");  // Initialize with an empty name
             SaveProgress();
         }
     }
+
 
     public void SetLastPlayedGame(int gameIndex, int stageIndex)
     {
