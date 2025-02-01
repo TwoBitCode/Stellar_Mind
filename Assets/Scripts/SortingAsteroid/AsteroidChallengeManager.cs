@@ -4,7 +4,7 @@ using UnityEngine;
 public class AsteroidChallengeManager : MonoBehaviour
 {
     [Header("Asteroid Challenges")]
-    [SerializeField] // Ensures the field is serialized and visible in the Inspector
+    [SerializeField]
     private List<AsteroidChallenge> asteroidChallenges = new List<AsteroidChallenge>();
 
     private int currentChallengeIndex = 0;
@@ -13,7 +13,7 @@ public class AsteroidChallengeManager : MonoBehaviour
     {
         get
         {
-            if (currentChallengeIndex < asteroidChallenges.Count)
+            if (currentChallengeIndex >= 0 && currentChallengeIndex < asteroidChallenges.Count)
             {
                 return asteroidChallenges[currentChallengeIndex];
             }
@@ -27,11 +27,49 @@ public class AsteroidChallengeManager : MonoBehaviour
 
     public void AdvanceToNextChallenge()
     {
-        currentChallengeIndex++;
-
-        if (!HasMoreChallenges)
+        if (HasMoreChallenges)
+        {
+            currentChallengeIndex++;
+            Debug.Log($"Advancing to challenge {currentChallengeIndex}");
+        }
+        else
         {
             Debug.Log("All asteroid challenges completed!");
         }
     }
+
+    /// <summary>
+    /// Sets the current challenge index to resume from a specific stage.
+    /// </summary>
+    public void SetCurrentChallengeIndex(int index)
+    {
+        if (index >= 0 && index < asteroidChallenges.Count)
+        {
+            currentChallengeIndex = index;
+            Debug.Log($"Resuming challenge at index {currentChallengeIndex}");
+        }
+        else
+        {
+            Debug.LogError($"Invalid challenge index: {index}. Cannot resume.");
+        }
+    }
+
+    /// <summary>
+    /// Resets the challenge index to the beginning.
+    /// </summary>
+    public void ResetChallenges()
+    {
+        currentChallengeIndex = 0;
+        Debug.Log("Challenges have been reset.");
+    }
+
+    /// <summary>
+    /// Exposes the list of challenges.
+    /// </summary>
+    public List<AsteroidChallenge> Challenges => asteroidChallenges;
+    public int GetChallengeCount()
+    {
+        return asteroidChallenges.Count;
+    }
+
 }

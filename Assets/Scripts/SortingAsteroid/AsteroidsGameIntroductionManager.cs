@@ -24,6 +24,20 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
 
     public void PlayIntroduction(Action onIntroductionComplete)
     {
+        Debug.Log("PlayIntroduction called!"); // Debug check
+
+        int currentGameIndex = 3; // Assuming this is the 4th game (0-based index)
+        if (GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].hasStarted)
+        {
+            Debug.Log("Skipping introduction because the game has already started.");
+            onIntroductionComplete?.Invoke(); // Go straight to the game
+            return;
+        }
+
+        // Mark this game as started
+        GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].hasStarted = true;
+        GameProgressManager.Instance.SaveProgress();
+
         onComplete = onIntroductionComplete; // Store callback
         startButton.SetActive(false); // Hide Start button initially
 
@@ -31,6 +45,8 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
         TriggerFallingAsteroids();
         StartCoroutine(PlayDialogueSequence());
     }
+
+
 
     private IEnumerator PlayDialogueSequence()
     {
@@ -48,12 +64,14 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
     private IEnumerator TypeDialogue(string line)
     {
         dialogueText.text = ""; // Clear text
-        foreach (char letter in line.ToCharArray())
+        foreach (char letter in line)
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed); // Typing effect
+            yield return new WaitForSeconds(typingSpeed); // Wait to simulate typing
         }
+        yield return null; // Ensure coroutine completes
     }
+
 
     private void TriggerFallingAsteroids()
     {
@@ -129,4 +147,31 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
 
         onComplete?.Invoke(); // Notify GameManager to show stage instructions
     }
+    public void HideIntroduction()
+    {
+        Debug.Log("Hiding Introduction UI...");
+
+        isSpawningAsteroids = false; // Stop spawning asteroids
+
+        if (asteroidFallSound != null && asteroidFallSound.isPlaying)
+        {
+            asteroidFallSound.Stop(); // Stop asteroid sound
+        }
+
+        if (panel != null)
+        {
+            panel.gameObject.SetActive(false); // Hide the intro panel
+        }
+
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false); // Hide the dialogue panel
+        }
+
+        if (startButton != null)
+        {
+            startButton.SetActive(false); // Hide the Start button
+        }
+    }
+
 }

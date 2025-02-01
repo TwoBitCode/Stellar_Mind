@@ -112,6 +112,8 @@ public class GameProgress
     public bool isCompleted;
     public Dictionary<int, StageProgress> stages;
     public List<SerializableStageProgress> stagesList;
+    public bool hasStarted; // NEW: Track if this mini-game has started
+
 
     public GameProgress()
     {
