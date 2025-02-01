@@ -18,7 +18,7 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // Check if interaction is allowed
         if (!EquipmentRecoveryGameManager.Instance.IsInteractionAllowed())
         {
-            Debug.Log("Dragging is not allowed yet!");
+           // Debug.Log("Dragging is not allowed yet!");
             return;
         }
 
@@ -36,7 +36,7 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (AudioFeedbackManager.Instance != null)
         {
             AudioFeedbackManager.Instance.PlayDragStartSound();
-            Debug.Log("Playing drag start sound.");
+            //Debug.Log("Playing drag start sound.");
         }
     }
 
@@ -65,7 +65,7 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (!EquipmentRecoveryGameManager.Instance.IsInteractionAllowed())
             return;
 
-        Debug.Log($"{gameObject.name} dropped!");
+       // Debug.Log($"{gameObject.name} dropped!");
         canvasGroup.blocksRaycasts = true; // Re-enable raycasts after dragging
     }
 }

@@ -153,28 +153,32 @@ public class DoorManager : MonoBehaviour
         playerProgress.lastPlayedGame = doorIndex;
         playerProgress.lastPlayedStage = GetLastCompletedStage(doorIndex);
 
-        GameProgressManager.Instance.SaveProgress(); //
+        GameProgressManager.Instance.SaveProgress();
 
         Debug.Log($"Loading {sceneNames[doorIndex]}, resuming from Stage {playerProgress.lastPlayedStage} in Game {doorIndex}");
 
-        // **Destroy any persistent game managers before switching scenes**
+        // **Ensure we destroy managers BEFORE loading the new scene**
         DestroyMiniGameManagers();
 
         SceneManager.LoadScene(sceneNames[doorIndex]);
     }
 
+
     private void DestroyMiniGameManagers()
     {
         // List of objects that should NOT persist
-        string[] persistentManagers = {"MemoryGameManager" };
+        string[] persistentManagers = { "MemoryGameManager", "AudioFeedbackManager", "EquipmentRecoveryGameManager", "EquipmentRecoveryUIManager" };
 
         foreach (string managerName in persistentManagers)
         {
-            GameObject existingManager = GameObject.Find(managerName);
-            if (existingManager != null)
+            GameObject[] existingManagers = Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            foreach (GameObject manager in existingManagers)
             {
-                Debug.Log($"Destroying {managerName} before switching scenes.");
-                Destroy(existingManager);
+                if (manager.name == managerName)
+                {
+                    Debug.Log($"Destroying {managerName} before switching scenes.");
+                    Destroy(manager);
+                }
             }
         }
     }

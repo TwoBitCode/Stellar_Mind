@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class EquipmentRecoveryUIManager : MonoBehaviour
 {
@@ -87,20 +88,13 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
 
     }
 
-
     private void Awake()
     {
-        // Ensure only one instance of EquipmentRecoveryUIManager exists
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Keep this manager across scenes if needed
-        }
-        else
-        {
-            Destroy(gameObject); // Destroy duplicate instances
-        }
+        Instance = this; // Assign Instance without `DontDestroyOnLoad`
+        Debug.Log("EquipmentRecoveryUIManager started!");
     }
+
+
 
     // Displays feedback text with the specified message and color
     public void ShowFeedback(string message, Color color)

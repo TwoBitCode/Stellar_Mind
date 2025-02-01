@@ -9,7 +9,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 {
     public static EquipmentRecoveryGameManager Instance;
 
-    [Header("Stage Settings")]
+    [Header("Stage Settings")] 
     public List<EquipmentRecoveryStage> stages;
     public List<GameObject> stagePanels;
 
@@ -34,15 +34,8 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     public bool isInteractionAllowed = false; // Prevent dragging until allowed
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this; // Assign Instance without `DontDestroyOnLoad`
+        Debug.Log("EquipmentRecoveryGameManager started!");
     }
 
     private EquipmentRecoveryStage CurrentStage => stages[currentStageIndex];
@@ -63,62 +56,95 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             return;
         }
 
-        if (currentStageIndex >= stages.Count)
+        int currentGameIndex = GetCurrentGameIndex();
+        if (currentGameIndex == -1) return; // Prevent errors if game index is invalid
+
+        int firstUnfinishedStage = GetFirstUnfinishedStage(currentGameIndex);
+
+        currentStageIndex = firstUnfinishedStage;
+        SaveOriginalPositions();
+
+        Debug.Log($" Resuming at First Unfinished Stage {currentStageIndex}");
+
+        // **Deactivate all panels first**
+        foreach (var panel in stagePanels)
         {
-            Debug.LogError($"Invalid stage index: {currentStageIndex}. Stages count: {stages.Count}");
-            return;
+            panel.SetActive(false);
         }
 
-        Debug.Log($"Activating Stage {currentStageIndex}: {stages[currentStageIndex].stageName}");
+        // **Activate the correct panel**
+        if (currentStageIndex >= 0 && currentStageIndex < stagePanels.Count)
+        {
+            stagePanels[currentStageIndex].SetActive(true);
+            Debug.Log($"Activated Panel: {stagePanels[currentStageIndex].name}");
+        }
+        else
+        {
+            Debug.LogError($" Invalid stage index: {currentStageIndex}. No panel to activate.");
+        }
 
-        // Reset logic for the new stage
+        // **Reset variables**
         correctPartsPlaced = 0;
         placedParts.Clear();
         penalizedParts.Clear();
         isInteractionAllowed = false;
+        isGameActive = false;
+        gameTimerUI.SetActive(false);
+        countdownTimerUI.SetActive(false);
 
-        // Activate the correct panel
-        for (int i = 0; i < stagePanels.Count; i++)
+        // **Reset object positions**
+        if (stageOriginalPositions.ContainsKey(currentStageIndex))
         {
-            stagePanels[i].SetActive(i == currentStageIndex);
-        }
-
-        // Store original positions for each stage
-        if (!stageOriginalPositions.ContainsKey(currentStageIndex))
-        {
-            stageOriginalPositions[currentStageIndex] = new Dictionary<GameObject, Vector3>();
-
-            foreach (Transform part in stagePanels[currentStageIndex].transform)
+            foreach (var part in stageOriginalPositions[currentStageIndex])
             {
-                if (!stageOriginalPositions[currentStageIndex].ContainsKey(part.gameObject))
-                {
-                    stageOriginalPositions[currentStageIndex][part.gameObject] = part.position;
-                }
+                part.Key.transform.position = part.Value;
             }
         }
 
-        // Ensure timers are fully hidden at the start
-        countdownTimerUI.SetActive(false);
-        gameTimerUI.SetActive(false);
+        Debug.Log($"Starting Stage {currentStageIndex}: {stages[currentStageIndex].stageName}");
 
-        Debug.Log($"Stage {currentStageIndex} ({CurrentStage.stageName}) has a time limit of {CurrentStage.stageTimeLimit} seconds.");
-
+        // **Start the pre-game countdown and memory phase**
         StartCoroutine(PreGameCountdown());
     }
 
 
+    private void SaveOriginalPositions()
+    {
+        if (!stageOriginalPositions.ContainsKey(currentStageIndex))
+        {
+            stageOriginalPositions[currentStageIndex] = new Dictionary<GameObject, Vector3>();
+        }
+        else
+        {
+            // **Clear and re-save positions to avoid duplication**
+            stageOriginalPositions[currentStageIndex].Clear();
+        }
+
+        foreach (Transform part in stagePanels[currentStageIndex].transform)
+        {
+            stageOriginalPositions[currentStageIndex][part.gameObject] = part.position;
+        }
+
+        Debug.Log($"Saved original positions for Stage {currentStageIndex}.");
+    }
+
+
+
+
     private IEnumerator PreGameCountdown()
     {
-        float countdown = initialCountdownTime;
+        Debug.Log("Starting memory phase countdown...");
+
         countdownTimerUI.SetActive(true); // Show the full countdown UI
 
         TextMeshProUGUI countdownText = countdownTimerUI.GetComponentInChildren<TextMeshProUGUI>();
         if (countdownText == null)
         {
-            Debug.LogError("Countdown Timer UI is missing a TextMeshProUGUI component.");
+            Debug.LogError(" Countdown Timer UI is missing a TextMeshProUGUI component.");
             yield break;
         }
 
+        float countdown = initialCountdownTime;
         while (countdown > 0)
         {
             countdownText.text = $"{Mathf.Ceil(countdown)}";
@@ -127,12 +153,14 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         }
 
         countdownTimerUI.SetActive(false); // Hide the entire countdown UI
-        StartCoroutine(DelayedTurnBlack());
+        StartCoroutine(DelayedTurnBlack()); // Proceed to turn black
     }
 
 
 
-    private IEnumerator DelayedTurnBlack()
+
+
+    public IEnumerator DelayedTurnBlack()
     {
         Debug.Log("Turning images black...");
 
@@ -196,30 +224,22 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
     private void StartGameTimer()
     {
-        // Reset the time for the new stage
+        Debug.Log("Starting game timer...");
+
         gameTimeRemaining = CurrentStage.stageTimeLimit;
+        isGameActive = true;
 
-        if (gameTimerUI == null)
-        {
-            Debug.LogError("gameTimerUI is NULL! Make sure it is assigned in the Inspector.");
-            return;
-        }
-
-        gameTimerUI.SetActive(true); // Ensure the timer UI is visible
-        Debug.Log("Game Timer UI is now active.");
-
-        // Find the correct TextMeshProUGUI component
+        gameTimerUI.SetActive(true);
         TextMeshProUGUI gameTimerText = gameTimerUI.GetComponentInChildren<TextMeshProUGUI>();
+
         if (gameTimerText == null)
         {
             Debug.LogError("Game Timer UI is missing a TextMeshProUGUI component.");
             return;
         }
 
-        // Ensure the first frame updates correctly
         gameTimerText.text = $"Time Left: {Mathf.Ceil(gameTimeRemaining)}s";
 
-        StopAllCoroutines(); // Stop any previous timer coroutine
         StartCoroutine(UpdateGameTimer(gameTimerText));
     }
 
@@ -246,23 +266,28 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         }
     }
 
-
     public void PartPlacedCorrectly(GameObject part)
     {
-        if (placedParts.Contains(part)) return; // Skip if the part is already placed correctly
+        if (placedParts.Contains(part)) return;
 
         placedParts.Add(part);
-        penalizedParts.Remove(part); // Clear penalty tracking on correct placement
+        penalizedParts.Remove(part);
         correctPartsPlaced++;
 
         Debug.Log($"Correct parts placed: {correctPartsPlaced}/{CurrentStage.totalParts}");
 
-        // Check if the stage is complete
         if (correctPartsPlaced >= CurrentStage.totalParts)
         {
+            StopAllCoroutines(); // Stop all running coroutines (stops timer)
+            gameTimerUI.SetActive(false);
+            isGameActive = false;
+            Debug.Log("All parts placed. Timer stopped!");
+
             StageComplete();
         }
     }
+
+
 
     private IEnumerator DelayedStageComplete()
     {
@@ -300,44 +325,60 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     {
         Debug.Log($"Stage {CurrentStage.stageName} complete!");
 
-        // Stop the game timer to prevent it from reaching zero
+        // **Stop game timer**
         StopAllCoroutines();
-        gameTimerUI.SetActive(false); // Hide the timer UI
+        gameTimerUI.SetActive(false);
 
-        isGameActive = false; // Prevent further interactions
-        isInteractionAllowed = false; // Disable player input
+        isGameActive = false;
+        isInteractionAllowed = false;
 
         int totalPointsEarned = CurrentStage.pointsForCompletion;
         int bonusEarned = 0;
 
-        // Check if the player earns a bonus
         if (gameTimeRemaining >= CurrentStage.bonusTimeThreshold)
         {
             bonusEarned = CurrentStage.bonusPoints;
-            Debug.Log($"Bonus achieved! {bonusEarned} points awarded.");
+            Debug.Log($" Bonus achieved! {bonusEarned} points awarded.");
         }
 
-        // Add the score
-        OverallScoreManager.Instance?.AddScore(totalPointsEarned + bonusEarned);
+        int stageScore = totalPointsEarned + bonusEarned;
+        OverallScoreManager.Instance?.AddScore(stageScore);
 
-        if (currentStageIndex + 1 < stages.Count)
+        Debug.Log($"Player earned {stageScore} points in this stage!");
+
+        int currentGameIndex = GetCurrentGameIndex();
+        int currentStage = currentStageIndex;
+
+        // **Explicitly mark the last stage as completed**
+        GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].stages[currentStage].isCompleted = true;
+        GameProgressManager.Instance.SaveProgress();
+        Debug.Log($"Final stage {currentStage} marked as completed!");
+
+        // **Check if all stages are completed**
+        if (GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].CheckIfCompleted())
         {
-            // Not the last stage - Show reward panel
-            if (EquipmentRecoveryUIManager.Instance != null)
-            {
-                EquipmentRecoveryUIManager.Instance.ShowRewardPanel(totalPointsEarned, bonusEarned);
-            }
-        }
-        else
-        {
-            // Last stage - Show Level Complete panel with final rewards
-            if (EquipmentRecoveryUIManager.Instance != null)
-            {
-                EquipmentRecoveryUIManager.Instance.ShowLevelCompletePanel(totalPointsEarned, bonusEarned);
-            }
+            Debug.Log("All stages completed! Marking the entire mini-game as completed...");
+
+            // **Mark the entire mini-game as completed**
+            GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].isCompleted = true;
+            GameProgressManager.Instance.SaveProgress();
+
+            // **Show the Level Complete panel**
+            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(totalPointsEarned, bonusEarned);
+
+            Debug.Log("Mini-game completed! Level Complete Panel displayed.");
+            return; // **Exit here to prevent continuing to another stage**
         }
 
+        // **If not the last stage, show the reward panel**
+        if (currentStageIndex < stages.Count - 1)
+        {
+            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(totalPointsEarned, bonusEarned);
+        }
     }
+
+
+
 
 
 
@@ -389,16 +430,32 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     }
     public void RestartStage()
     {
-        Debug.Log($"Restarting Stage {currentStageIndex}...");
+        Debug.Log($" Restarting Stage {currentStageIndex}...");
 
         if (EquipmentRecoveryUIManager.Instance != null)
         {
             EquipmentRecoveryUIManager.Instance.HideGameOverPanel();
         }
 
-        StopAllCoroutines(); // Stop any running timers
+        StopAllCoroutines(); // Stop any running timers or coroutines
 
-        // Reset all parts to their original positions for the current stage
+        // **Ensure the correct panel is active**
+        foreach (var panel in stagePanels)
+        {
+            panel.SetActive(false);
+        }
+
+        if (currentStageIndex >= 0 && currentStageIndex < stagePanels.Count)
+        {
+            stagePanels[currentStageIndex].SetActive(true);
+            Debug.Log($"Activated Panel: {stagePanels[currentStageIndex].name}");
+        }
+        else
+        {
+            Debug.LogError($" Invalid stage index: {currentStageIndex}. No panel to activate.");
+        }
+        RestoreRobotImage();
+        // **Reset all parts to their original positions**
         if (stageOriginalPositions.ContainsKey(currentStageIndex))
         {
             foreach (var part in stageOriginalPositions[currentStageIndex])
@@ -408,48 +465,189 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"No original positions found for Stage {currentStageIndex}!");
+            Debug.LogError($"No original positions found for Stage {currentStageIndex}! Objects cannot reset.");
         }
 
-        // Reset game state variables
+        // **Reset game state variables**
         correctPartsPlaced = 0;
         placedParts.Clear();
         penalizedParts.Clear();
         isInteractionAllowed = false;
         isGameActive = false;
+        gameTimerUI.SetActive(false);
+        countdownTimerUI.SetActive(false);
+
+        Debug.Log($" Restarting memory phase for Stage {currentStageIndex}...");
+        StartCoroutine(PreGameCountdown());
+    }
+    private void RestoreRobotImage()
+    {
+        if (CurrentStage == null || CurrentStage.targetObjectNames == null) return;
+
+        foreach (string targetObjectName in CurrentStage.targetObjectNames)
+        {
+            Transform targetTransform = stagePanels[currentStageIndex].transform.Find(targetObjectName);
+            if (targetTransform != null)
+            {
+                Image image = targetTransform.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.color = Color.white; // Reset to white
+                    Debug.Log($"Reset {targetObjectName} to white.");
+                }
+            }
+        }
+    }
+
+
+
+
+    public void ReturnToMap()
+{
+    Debug.Log("Returning to map...");
+
+    int currentGameIndex = GetCurrentGameIndex();
+    if (currentGameIndex == -1) return;
+
+    int firstUnfinishedStage = GetFirstUnfinishedStage(currentGameIndex);
+
+    Debug.Log($"Saving first unfinished stage: {firstUnfinishedStage} for game {currentGameIndex}");
+
+    // **Save the correct unfinished stage**
+    GameProgressManager.Instance.SetLastPlayedGame(currentGameIndex, firstUnfinishedStage);
+    GameProgressManager.Instance.SaveProgress();
+
+    // **Deactivate all panels before leaving**
+    foreach (var panel in stagePanels)
+    {
+        panel.SetActive(false);
+    }
+
+    SceneManager.LoadScene("GameMapScene-V");
+}
+
+
+
+
+    public void NextStage()
+    {
+        Debug.Log("Proceeding to next stage...");
+
+        // **Hide the reward panel before switching**
+        if (EquipmentRecoveryUIManager.Instance != null)
+        {
+            EquipmentRecoveryUIManager.Instance.HideRewardPanel();
+        }
+
+        int currentGameIndex = GetCurrentGameIndex();
+        int currentStage = currentStageIndex;
+
+        // *Mark the current stage as completed only now, after clicking Continue**
+        GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].stages[currentStage].isCompleted = true;
+        GameProgressManager.Instance.SaveProgress();
+        Debug.Log($"Stage {currentStage} marked as completed!");
+
+        // **Check if this is the LAST stage**
+        if (currentStageIndex >= stages.Count - 1)
+        {
+            Debug.Log("Final stage completed! Marking the entire mini-game as completed...");
+
+            // **Mark the entire mini-game as completed**
+            GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].isCompleted = true;
+            GameProgressManager.Instance.SaveProgress();
+
+            // **Show the Level Complete panel**
+            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(
+                CurrentStage.pointsForCompletion,
+                CurrentStage.bonusPoints
+            );
+
+            Debug.Log(" Mini-game completed! Level Complete Panel displayed.");
+            return; // **Exit here, no more stages**
+        }
+
+        // **Move to the next stage**
+        currentStageIndex++;
+
+        Debug.Log($"Starting Stage {currentStageIndex}: {stages[currentStageIndex].stageName}");
+
+        // **Deactivate all panels first**
+        foreach (var panel in stagePanels)
+        {
+            panel.SetActive(false);
+        }
+
+        // **Activate only the new stage panel**
+        if (currentStageIndex >= 0 && currentStageIndex < stagePanels.Count)
+        {
+            stagePanels[currentStageIndex].SetActive(true);
+            Debug.Log($"Activated Panel: {stagePanels[currentStageIndex].name}");
+        }
+        else
+        {
+            Debug.LogError($"Invalid stage index: {currentStageIndex}. No panel to activate.");
+        }
 
         StartStage();
     }
 
 
 
-    public void ReturnToMap()
-    {
-        Debug.Log("Returning to map...");
-        SceneManager.LoadScene("MapScene"); // Make sure the scene name matches your map scene
-    }
-    public void NextStage()
-    {
-        Debug.Log("Proceeding to next stage...");
 
-        // Hide the reward panel before switching
-        if (EquipmentRecoveryUIManager.Instance != null)
+    private int GetCurrentGameIndex()
+    {
+        // Adjust this based on how mini-games are indexed in GameProgressManager
+        return 2; // Assuming Equipment Recovery is the third mini-game (0-based index)
+    }
+    private int GetFirstUnfinishedStage(int gameIndex)
+    {
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (gameIndex < 0 || !playerProgress.gamesProgress.ContainsKey(gameIndex))
         {
-            EquipmentRecoveryUIManager.Instance.HideRewardPanel();
+            Debug.LogError($"Invalid game index {gameIndex} in GameProgressManager.");
+            return 0; // Default to stage 0 if something goes wrong
         }
 
-        currentStageIndex++;
+        var gameProgress = playerProgress.gamesProgress[gameIndex];
 
-        if (currentStageIndex < stages.Count)
+        for (int i = 0; i < gameProgress.stages.Count; i++)
         {
-            Debug.Log($"Starting Stage {currentStageIndex}: {stages[currentStageIndex].stageName}");
-            StartStage(); // Start the next stage
+            if (!gameProgress.stages[i].isCompleted)
+            {
+                Debug.Log($"Returning first unfinished stage: {i}");
+                return i; // Sirst unfinished stage
+            }
+        }
+
+        Debug.Log("All stages completed. Returning the last stage.");
+        return gameProgress.stages.Count - 1; // If all stages are complete, return the last stage
+    }
+
+
+    public void ActivateStagePanel(int stageIndex)
+    {
+        Debug.Log($"Activating stage panel for stage {stageIndex}");
+
+        // **Ensure all panels are disabled first**
+        foreach (var panel in stagePanels)
+        {
+            panel.SetActive(false);
+        }
+
+        // **Activate only the correct panel**
+        if (stageIndex >= 0 && stageIndex < stagePanels.Count)
+        {
+            stagePanels[stageIndex].SetActive(true);
+            Debug.Log($"Activated Panel: {stagePanels[stageIndex].name}");
         }
         else
         {
-            Debug.Log("No more stages remaining. Mini-game complete!");
-            MiniGameComplete(); // If no more stages, finish the mini-game
+            Debug.LogError($" Invalid stage index: {stageIndex}. No panel to activate.");
         }
+
+        // **Start the correct stage after activation**
+        currentStageIndex = stageIndex;
+        StartStage();
     }
 
 
