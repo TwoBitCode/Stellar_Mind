@@ -423,18 +423,18 @@ public class AsteroidGameManager : MonoBehaviour
         {
             endPanel.SetActive(true); // Show game completion panel
 
-            TextMeshProUGUI endText = endPanel.GetComponentInChildren<TextMeshProUGUI>();
-            if (endText != null)
-            {
-                endText.text = "Great job! You have completed all asteroid challenges!";
-            }
+            //TextMeshProUGUI endText = endPanel.GetComponentInChildren<TextMeshProUGUI>();
+            //if (endText != null)
+            //{
+            //    endText.text = "Great job! You have completed all asteroid challenges!";
+            //}
 
             Button returnButton = endPanel.GetComponentInChildren<Button>();
             if (returnButton != null)
             {
                 returnButton.onClick.RemoveAllListeners();
                 returnButton.onClick.AddListener(ReturnToMainMenu);
-                returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return to Map";
+               //returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return to Map";
             }
         }
 
@@ -496,8 +496,9 @@ public class AsteroidGameManager : MonoBehaviour
 
             Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}");
 
-            // Show the success panel with a dynamic message
-            uiManager.ShowSuccessPanel($"Challenge completed!\nBase Points: {basePoints}\nBonus Points: {bonusPoints}");
+            uiManager.ShowSuccessPanel("האתגר הושלם!\nנקודות בסיס: " + basePoints + "\nנקודות בונוס: " + bonusPoints);
+
+
             // Update player progress when a challenge is completed
             int currentGameIndex = 3; // Assuming this is the 4th mini-game (0-based index)
             GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
@@ -535,10 +536,11 @@ public class AsteroidGameManager : MonoBehaviour
         Debug.Log("Challenge failed. Showing failure panel.");
 
         uiManager.ShowFailurePanel(
-            "Challenge failed. Try again or return to the menu.",
-            RestartChallenge,  // Option to retry
-            ReturnToMainMenu   // Option to go back to main menu
+            "לא הצלחנו במשימה, אבל בוא ננסה שוב!",
+            RestartChallenge,  // אפשרות לנסות שוב
+            ReturnToMainMenu   // אפשרות לחזור לתפריט הראשי
         );
+
     }
 
 

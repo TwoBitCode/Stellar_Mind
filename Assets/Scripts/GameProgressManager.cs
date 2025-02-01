@@ -26,11 +26,11 @@ public class GameProgressManager : MonoBehaviour
 
     private IEnumerator LoadProgressCoroutine()
     {
-        yield return null; // מחכים פריים אחד כדי שכל האובייקטים יטענו
+        yield return null;
 
         LoadProgress();
 
-        yield return new WaitForSeconds(0.1f); // מחכים 0.1 שניות
+        yield return new WaitForSeconds(0.1f); 
         Debug.Log("Finished loading progress, now ready to use data.");
     }
 
