@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class EquipmentRecoveryIntro : MonoBehaviour
 {
@@ -40,20 +41,34 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
     private void Start()
     {
-        // Ensure the start button is wired to its click event
-        startButton.onClick.AddListener(OnStartButtonClicked);
+        int lastPlayedStage = GameProgressManager.Instance?.GetLastPlayedStage() ?? 0;
 
-        // Ensure only the intro panel is active at the start
-        introPanel.SetActive(true);
-        workspacePanel.SetActive(false);
+        if (lastPlayedStage > 0)
+        {
+            // **Skip the intro and activate the correct stage panel**
+            Debug.Log($"Skipping intro, starting at stage {lastPlayedStage}");
 
-        // Hide robot parts at the start
-        robotPartsParent.SetActive(false);
+            introPanel.SetActive(false);
+            workspacePanel.SetActive(true);
 
-        // Play the shake sound as ambient sound at the start
-        PlayShakeSoundLoop();
-        InitializeDialogue();
+            // **Ensure we activate the correct panel for last played stage**
+            EquipmentRecoveryGameManager.Instance?.ActivateStagePanel(lastPlayedStage);
+
+            StartCoroutine(ShowRobotBeforeTurningBlack());
+        }
+        else
+        {
+            // **Normal intro flow for first-time play**
+            startButton.onClick.AddListener(OnStartButtonClicked);
+            introPanel.SetActive(true);
+            workspacePanel.SetActive(false);
+            robotPartsParent.SetActive(false);
+            PlayShakeSoundLoop();
+            InitializeDialogue();
+        }
     }
+
+
 
     private void InitializeDialogue()
     {
@@ -189,5 +204,18 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         // Start the workspace instructions
         EquipmentRecoveryUIManager.Instance?.StartWorkspaceInstructions();
     }
+    private IEnumerator ShowRobotBeforeTurningBlack()
+    {
+        Debug.Log("Showing the robot for memory phase before turning black...");
+
+        fullRobot.SetActive(true);
+        robotPartsParent.SetActive(false);
+
+        yield return new WaitForSeconds(5f); // Keep the robot visible for 5 seconds
+
+        Debug.Log("Turning the robot black now.");
+        EquipmentRecoveryGameManager.Instance?.StartCoroutine(EquipmentRecoveryGameManager.Instance.DelayedTurnBlack());
+    }
+
 
 }

@@ -14,28 +14,31 @@ public class CharacterDisplayManager : MonoBehaviour
 
     private void LoadCharacterSprite()
     {
-        // Set default PlayerPrefs if missing
-        if (!PlayerPrefs.HasKey("SelectedCharacter"))
+        // בדיקה אם יש גישה למנהל ההתקדמות
+        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
         {
-            PlayerPrefs.SetString("SelectedCharacter", "Boy"); // Default to "Boy"
+            Debug.LogError(" GameProgressManager or playerProgress is missing! Cannot load character.");
+            return;
         }
 
-        string selectedCharacter = PlayerPrefs.GetString("SelectedCharacter");
+        string selectedCharacter = GameProgressManager.Instance.playerProgress.selectedCharacter;
 
+        if (string.IsNullOrEmpty(selectedCharacter))
+        {
+            Debug.LogError("No character selection found! Defaulting to Boy.");
+            selectedCharacter = "Boy"; // דמות ברירת מחדל
+        }
+
+        // טוען את התמונה לפי הדמות שנבחרה
         if (selectedCharacter == "Girl")
         {
             characterImage.sprite = girlSprite;
         }
-        else if (selectedCharacter == "Boy")
-        {
-            characterImage.sprite = boySprite;
-        }
         else
         {
-            Debug.LogError("Invalid character selection or missing PlayerPrefs key.");
+            characterImage.sprite = boySprite;
         }
 
         Debug.Log($"Character Loaded: {selectedCharacter}");
     }
-
 }

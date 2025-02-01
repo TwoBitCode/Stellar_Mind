@@ -48,22 +48,22 @@ public class SortingDraggableItem : DraggableItem
             {
                 // Mixed challenge: visuals are based on assigned size and color
                 GetComponent<Image>().color = AssignedColor;
-                Debug.Log($"Asteroid visuals applied for Mixed Challenge: {AssignedType}");
+               // Debug.Log($"Asteroid visuals applied for Mixed Challenge: {AssignedType}");
             }
             else if (currentChallenge.sortingRule is ISortingRule rule)
             {
                 // Regular challenge: Apply sorting rule visuals
                 rule.ApplyVisuals(gameObject);
-                Debug.Log($"Asteroid visuals applied for Regular Challenge: {AssignedType}");
+               // Debug.Log($"Asteroid visuals applied for Regular Challenge: {AssignedType}");
             }
             else
             {
-                Debug.LogError("No valid sorting rule or mixed conditions found!");
+               // Debug.LogError("No valid sorting rule or mixed conditions found!");
             }
         }
         else
         {
-            Debug.LogError("No current challenge available!");
+            //Debug.LogError("No current challenge available!");
         }
     }
     public override void OnBeginDrag(PointerEventData eventData)
@@ -77,7 +77,7 @@ public class SortingDraggableItem : DraggableItem
     {
         if (IsDistractor)
         {
-            Debug.Log("Distractor asteroid ignored!");
+            //Debug.Log("Distractor asteroid ignored!");
             Destroy(gameObject, destroyDelay); // Distractors disappear after being dropped
             return;
         }
@@ -87,7 +87,7 @@ public class SortingDraggableItem : DraggableItem
         var currentChallenge = gameManager?.ChallengeManager?.CurrentChallenge;
         if (currentChallenge == null)
         {
-            Debug.LogError("No current challenge available!");
+            //Debug.LogError("No current challenge available!");
             return;
         }
 
@@ -106,7 +106,7 @@ public class SortingDraggableItem : DraggableItem
 
                     if (matchingCondition != null)
                     {
-                        Debug.Log($"Correct placement for Mixed Condition: {matchingCondition.dropZoneName}");
+                        //Debug.Log($"Correct placement for Mixed Condition: {matchingCondition.dropZoneName}");
                         HandleCorrectPlacement();
                         return;
                     }
@@ -116,7 +116,7 @@ public class SortingDraggableItem : DraggableItem
                     // Regular Challenge: Check only the assigned type
                     if (assignment.assignedType == AssignedType)
                     {
-                        Debug.Log($"Correct placement in {assignment.dropZoneName} for AssignedType: {AssignedType}");
+                        //Debug.Log($"Correct placement in {assignment.dropZoneName} for AssignedType: {AssignedType}");
                         HandleCorrectPlacement();
                         return;
                     }
@@ -124,7 +124,7 @@ public class SortingDraggableItem : DraggableItem
             }
         }
 
-        Debug.Log($"Incorrect placement for AssignedType: {AssignedType}");
+      //  Debug.Log($"Incorrect placement for AssignedType: {AssignedType}");
         HandleIncorrectPlacement();
     }
 
@@ -136,12 +136,12 @@ public class SortingDraggableItem : DraggableItem
         RectTransform area = GameObject.Find(dropZoneName)?.GetComponent<RectTransform>();
         if (area == null)
         {
-            Debug.LogError($"Drop area '{dropZoneName}' not found!");
+            //Debug.LogError($"Drop area '{dropZoneName}' not found!");
             return false;
         }
 
         bool isOver = RectTransformUtility.RectangleContainsScreenPoint(area, Input.mousePosition, Camera.main);
-        Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
+       // Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
         return isOver;
     }
 

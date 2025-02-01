@@ -21,13 +21,46 @@ public class TubesGameIntroductionManager : MonoBehaviour
 
     public void PlayIntroduction(Action onIntroductionComplete)
     {
-        onComplete = onIntroductionComplete; // Store callback
-        startButton.SetActive(false); // Hide Start button initially
+        onComplete = onIntroductionComplete;
 
-        // Start flying tubes and dialogue
+        // If returning from the map, SKIP INTRO
+        if (GameProgressManager.Instance.playerProgress.lastPlayedStage > 0)
+        {
+            Debug.Log("Skipping introduction because player is returning.");
+            SkipIntroduction();
+            return;
+        }
+
+        // Otherwise, play the introduction normally
+        startButton.SetActive(false);
         TriggerFlyingTubes();
         StartCoroutine(PlayDialogueSequence());
     }
+
+
+    public void SkipIntroduction()
+    {
+        Debug.Log("Skipping introduction UI.");
+
+        // Hide all intro UI elements
+        if (panel != null) panel.gameObject.SetActive(false);
+        if (dialoguePanel != null) dialoguePanel.SetActive(false); // Hide dialogue panel
+        if (startButton != null) startButton.SetActive(false); // Hide the start button
+
+        // Ensure `DialoguePanelIntro` is also hidden if it exists
+        GameObject dialogueIntroPanel = GameObject.Find("DialoguePanelIntro");
+        if (dialogueIntroPanel != null) dialogueIntroPanel.SetActive(false);
+
+        // Stop any intro sounds
+        if (flyingSound != null && flyingSound.isPlaying)
+        {
+            flyingSound.Stop();
+        }
+
+        // Notify GameManager to start the stage immediately
+        onComplete?.Invoke();
+    }
+
 
     private IEnumerator PlayDialogueSequence()
     {

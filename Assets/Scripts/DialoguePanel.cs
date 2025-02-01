@@ -27,13 +27,34 @@ public class DialoguePanel : MonoBehaviour
         {
             Debug.LogWarning("Typing AudioSource is not assigned.");
         }
+
+        // Check if we are resuming a later stage, and disable dialogue panel immediately!
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (playerProgress != null && playerProgress.lastPlayedStage > 0)
+        {
+            Debug.Log("Returning to a later stage, hiding dialogue panel.");
+            gameObject.SetActive(false); //  Ensure the panel is turned off when returning
+        }
     }
+
 
     public void StartDialogue(Action onComplete)
     {
         onDialogueComplete = onComplete;
         currentDialogueIndex = 0;
-        gameObject.SetActive(true);
+
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true); // Ensure the dialogue panel is active before starting
+        }
+
+        Canvas dialogueCanvas = GetComponentInParent<Canvas>();
+        if (dialogueCanvas != null && !dialogueCanvas.gameObject.activeSelf)
+        {
+            dialogueCanvas.gameObject.SetActive(true); // Ensure the dialogue canvas is active
+        }
+
+        Debug.Log("Starting dialogue sequence.");
         DisplayNextDialogue();
     }
 
@@ -94,7 +115,14 @@ public class DialoguePanel : MonoBehaviour
     {
         if (typingAudioSource != null && typingSound != null)
         {
+            if (!typingAudioSource.gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning("Typing AudioSource is disabled, enabling now.");
+                typingAudioSource.gameObject.SetActive(true); // Ensure the AudioSource is active
+            }
+
             typingAudioSource.PlayOneShot(typingSound);
         }
     }
+
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2c328bcd62d7a458ecb6edb8aea6ab, type: 3}
   m_Name: NewEquipmentRecoveryStage 2
   m_EditorClassIdentifier: 
-  stageName: stage 3
+  stageName: stage 2
   totalParts: 8
   pointsForCompletion: 100
   stageTimeLimit: 25

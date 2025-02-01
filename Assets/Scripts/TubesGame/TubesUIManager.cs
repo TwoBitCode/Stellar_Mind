@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TubesUIManager : MonoBehaviour
 {
@@ -15,18 +16,61 @@ public class TubesUIManager : MonoBehaviour
     [Header("Failure Panel")]
     [SerializeField] private GameObject failurePanel;
     [SerializeField] private TextMeshProUGUI failureText;
-    [SerializeField] private Button retryButton; 
-    [SerializeField] private Button mainMenuButton; 
+    [SerializeField] private Button retryButton;
+    [SerializeField] private Button mainMenuButton;
 
     [Header("Completion Panel")]
     [SerializeField] private GameObject completionPanel;
+    [SerializeField] private Button completionReturnToMapButton; // New button for completion panel
+
     [Header("Timer Background")]
     [SerializeField] private Image timerBackground;
+
+
+    private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)
+
+    private void Start()
+    {
+        mainMenuButton.onClick.RemoveAllListeners(); // Ensure no duplicate listeners
+       // mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
+    }
 
     public void ShowCompletionPanel()
     {
         completionPanel.SetActive(true);
+
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+
+        if (playerProgress != null && playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+
+            if (gameProgress.CheckIfCompleted()) // Check if all stages are done
+            {
+                gameProgress.isCompleted = true; // Mark the game as fully completed
+
+                // Save the final overall score when game is completed
+                playerProgress.totalScore = OverallScoreManager.Instance.OverallScore;
+                GameProgressManager.Instance.SaveProgress();
+
+                Debug.Log($"Game {gameIndex} is now marked as completed! Final Total Score: {playerProgress.totalScore}");
+
+                //  Assign the correct return action to the new completion panel button
+                completionReturnToMapButton.onClick.RemoveAllListeners();
+                completionReturnToMapButton.onClick.AddListener(() =>
+                {
+                    Debug.Log("Returning to map from Completion Panel...");
+
+                    GameProgressManager.Instance.SaveProgress(); // Save progress before leaving
+                    ReturnToMap(); // Call the function to return to the map
+                });
+
+                completionReturnToMapButton.gameObject.SetActive(true); // Make sure it's visible
+            }
+        }
     }
+
+
 
     public void HideCompletionPanel()
     {
@@ -50,7 +94,7 @@ public class TubesUIManager : MonoBehaviour
     {
         if (sortingTimerText != null)
         {
-            sortingTimerText.text = text; 
+            sortingTimerText.text = text;
         }
     }
 
@@ -78,20 +122,6 @@ public class TubesUIManager : MonoBehaviour
     public void HideCheckButton()
     {
         checkAnswerButton.gameObject.SetActive(false);
-    }
-
-    public void ShowFailurePanel(string text, System.Action retryAction, System.Action mainMenuAction)
-    {
-        if (failurePanel != null)
-        {
-            failurePanel.SetActive(true);
-            failureText.text = text;
-            retryButton.onClick.RemoveAllListeners();
-            mainMenuButton.onClick.RemoveAllListeners();
-
-            retryButton.onClick.AddListener(() => retryAction.Invoke());
-            mainMenuButton.onClick.AddListener(() => mainMenuAction.Invoke());
-        }
     }
 
     public void HideFailurePanel()
@@ -123,5 +153,43 @@ public class TubesUIManager : MonoBehaviour
             Debug.LogWarning("Timer background image is not assigned in the TubesUIManager.");
         }
     }
+    public void ReturnToMap()
+    {
+        if (GameProgressManager.Instance != null)
+        {
+            GameProgressManager.Instance.SaveProgress();
+        }
+
+        Debug.Log("Returning to game selection map.");
+
+        // Reset the game state completely to ensure fresh load
+        GameManager.Instance.RestartGame();
+
+        SceneManager.LoadScene("GameMapScene-V");
+    }
+
+
+    public void ShowFailurePanel(string text, System.Action retryAction)
+    {
+        if (failurePanel != null)
+        {
+            failurePanel.SetActive(true);
+            failureText.text = text;
+            retryButton.onClick.RemoveAllListeners();
+            mainMenuButton.onClick.RemoveAllListeners();
+
+            retryButton.onClick.AddListener(() => retryAction.Invoke());
+            mainMenuButton.onClick.AddListener(() =>
+            {
+                GameProgressManager.Instance.SaveProgress(); // Ensure progress is saved before exit
+                ReturnToMap();
+            });
+        }
+    }
+
+
+
+
+
 }
 

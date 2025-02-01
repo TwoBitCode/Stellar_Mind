@@ -2,28 +2,20 @@ using UnityEngine;
 
 public class AudioFeedbackManager : MonoBehaviour
 {
-    public static AudioFeedbackManager Instance;
+    public static AudioFeedbackManager Instance; // Restore Instance
 
     public AudioClip correctSound;
     public AudioClip incorrectSound;
-    public AudioClip dragStartSound; // Add this for drag sounds
+    public AudioClip dragStartSound;
 
     private AudioSource audioSource;
 
     private void Awake()
     {
-        // Singleton pattern to ensure only one instance of this manager exists
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Persist across scenes
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this; // Assign Instance
+        Debug.Log("AudioFeedbackManager started!");
 
-        // Ensure there is an AudioSource attached
+        // Ensure AudioSource is assigned
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -48,13 +40,13 @@ public class AudioFeedbackManager : MonoBehaviour
 
     private void PlaySound(AudioClip clip)
     {
-        if (clip != null)
+        if (clip != null && audioSource != null)
         {
             audioSource.PlayOneShot(clip);
         }
         else
         {
-            Debug.LogWarning("AudioClip is not assigned in AudioFeedbackManager.");
+            Debug.LogWarning("AudioClip is not assigned or AudioSource is missing in AudioFeedbackManager.");
         }
     }
 }

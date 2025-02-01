@@ -24,6 +24,47 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
 
     public void PlayIntroduction(Action onIntroductionComplete)
     {
+        Debug.Log("PlayIntroduction called!"); // Debug check
+
+        int currentGameIndex = 3; // Assuming this is the 4th game (0-based index)
+
+        // Ensure GameProgressManager is loaded
+        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
+        {
+            Debug.LogError("GameProgressManager is not initialized!");
+            return;
+        }
+
+        var gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
+
+        // If the game has never started before, we force the introduction
+        if (!gameProgress.hasStarted)
+        {
+            Debug.Log("First time playing this game. Playing introduction...");
+            gameProgress.hasStarted = true;
+            GameProgressManager.Instance.SaveProgress();
+        }
+        else
+        {
+            // Check if any stage has been completed
+            bool anyStageCompleted = false;
+            foreach (var stage in gameProgress.stages)
+            {
+                if (stage.Value.isCompleted)
+                {
+                    anyStageCompleted = true;
+                    break;
+                }
+            }
+
+            if (anyStageCompleted)
+            {
+                Debug.Log("Skipping introduction because at least one stage is completed.");
+                onIntroductionComplete?.Invoke(); // Go straight to the game
+                return;
+            }
+        }
+
         onComplete = onIntroductionComplete; // Store callback
         startButton.SetActive(false); // Hide Start button initially
 
@@ -31,6 +72,7 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
         TriggerFallingAsteroids();
         StartCoroutine(PlayDialogueSequence());
     }
+
 
     private IEnumerator PlayDialogueSequence()
     {
@@ -48,12 +90,14 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
     private IEnumerator TypeDialogue(string line)
     {
         dialogueText.text = ""; // Clear text
-        foreach (char letter in line.ToCharArray())
+        foreach (char letter in line)
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed); // Typing effect
+            yield return new WaitForSeconds(typingSpeed); // Wait to simulate typing
         }
+        yield return null; // Ensure coroutine completes
     }
+
 
     private void TriggerFallingAsteroids()
     {
@@ -129,4 +173,31 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
 
         onComplete?.Invoke(); // Notify GameManager to show stage instructions
     }
+    public void HideIntroduction()
+    {
+        Debug.Log("Hiding Introduction UI...");
+
+        isSpawningAsteroids = false; // Stop spawning asteroids
+
+        if (asteroidFallSound != null && asteroidFallSound.isPlaying)
+        {
+            asteroidFallSound.Stop(); // Stop asteroid sound
+        }
+
+        if (panel != null)
+        {
+            panel.gameObject.SetActive(false); // Hide the intro panel
+        }
+
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false); // Hide the dialogue panel
+        }
+
+        if (startButton != null)
+        {
+            startButton.SetActive(false); // Hide the Start button
+        }
+    }
+
 }

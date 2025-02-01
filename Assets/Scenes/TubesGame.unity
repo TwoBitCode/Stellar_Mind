@@ -1205,8 +1205,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: GameSelectionScene
-  audioSource: {fileID: 0}
-  clickSound: {fileID: 0}
 --- !u!1 &432697480
 GameObject:
   m_ObjectHideFlags: 0
@@ -3647,7 +3645,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1403147091}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SceneTransitionManager, Assembly-CSharp
         m_MethodName: LoadScene
         m_Mode: 5
@@ -3830,6 +3828,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1152755811}
   m_CullTransparentMesh: 1
+--- !u!1 &1229709943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1229709945}
+  - component: {fileID: 1229709944}
+  m_Layer: 0
+  m_Name: GameProgressManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1229709944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229709943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3df33a6d0dd8448ab98abe5b4c3f3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerProgress:
+    playerName: 
+    selectedCharacter: 
+    totalScore: 0
+    lastPlayedGame: 0
+    lastPlayedStage: 0
+    gamesProgressList: []
+--- !u!4 &1229709945
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229709943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.49679947, y: 0.76142794, z: 2169.1924}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1312667778
 GameObject:
   m_ObjectHideFlags: 0
@@ -3870,6 +3919,7 @@ MonoBehaviour:
   retryButton: {fileID: 364499613}
   mainMenuButton: {fileID: 2091880086}
   completionPanel: {fileID: 1790118225}
+  completionReturnToMapButton: {fileID: 1131108845}
   timerBackground: {fileID: 1631505948}
 --- !u!4 &1312667780
 Transform:
@@ -3946,7 +3996,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1403147092}
-  - component: {fileID: 1403147091}
   m_Layer: 0
   m_Name: SceneTransitionManager
   m_TagString: Untagged
@@ -3954,21 +4003,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1403147091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403147090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62a335485e814794e8080ac9b2f3c9c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nextSceneName: GameSelectionScene
-  audioSource: {fileID: 0}
-  clickSound: {fileID: 0}
 --- !u!4 &1403147092
 Transform:
   m_ObjectHideFlags: 0
@@ -4490,7 +4524,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -9.998779, y: -0.0010375977}
+  m_AnchoredPosition: {x: -9.999207, y: -0.0010375977}
   m_SizeDelta: {x: 20, y: -0.0020142}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1567704804
@@ -6422,3 +6456,4 @@ SceneRoots:
   - {fileID: 1429511194}
   - {fileID: 1698781644}
   - {fileID: 1403147092}
+  - {fileID: 1229709945}

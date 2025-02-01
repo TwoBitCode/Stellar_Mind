@@ -2,39 +2,52 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections;
+using UnityEngine.UI;
 
 public class DoorManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI doorText; // Text displayed for the door
-    [SerializeField] private GameObject[] doors; // Array of door GameObjects
-    [SerializeField] private string[] sceneNames; // Scene names corresponding to doors
-    [SerializeField] private string[] gameNames; // Game names for display on hover
-    [SerializeField] private AudioClip hoverSound; // Sound when hovering on a door
-    [SerializeField] private AudioClip clickSound; // Sound when clicking a door
+    [SerializeField] private TextMeshProUGUI doorText;
+    [SerializeField] private GameObject[] doors;
+    [SerializeField] private string[] sceneNames;
+    [SerializeField] private string[] gameNames;
+    [SerializeField] private AudioClip hoverSound;
+    [SerializeField] private AudioClip clickSound;
+    [SerializeField] private Sprite completedGameSprite;
+    [SerializeField] private string defaultDoorText;
 
-    private AudioSource audioSource; // Audio source component
+    private AudioSource audioSource;
 
     private void Awake()
     {
-        // Ensure AudioSource is attached
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
+        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
+        if (GameProgressManager.Instance == null)
+        {
+            Debug.LogError("GameProgressManager is missing! Cannot initialize doors.");
+            yield break;
+        }
+
+        yield return null;
+
+        if (doorText != null)
+        {
+            doorText.text = defaultDoorText; 
+        }
+
+        Debug.Log("Finished loading progress, now initializing doors...");
         InitializeDoors();
     }
 
     private void InitializeDoors()
     {
-        // Check for setup issues
-        if (doors == null || sceneNames == null || doors.Length != sceneNames.Length)
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (playerProgress == null || playerProgress.gamesProgress == null)
         {
-            Debug.LogError("Mismatch between doors and sceneNames arrays. Ensure both are properly assigned.");
+            Debug.LogError("PlayerProgress or gamesProgress is null! Cannot initialize doors.");
             return;
         }
 
@@ -42,77 +55,143 @@ public class DoorManager : MonoBehaviour
         {
             if (doors[i] == null)
             {
-                Debug.LogError($"Door at index {i} is missing!");
+                Debug.LogError($"Door {i} is missing in the scene!");
                 continue;
             }
 
-            // Attach event triggers to the door
-            AttachEventTriggers(doors[i], i);
+            if (!playerProgress.gamesProgress.ContainsKey(i))
+            {
+                playerProgress.gamesProgress[i] = new GameProgress();
+            }
+
+            bool isCompleted = playerProgress.gamesProgress[i].CheckIfCompleted();
+
+            if (isCompleted)
+            {
+                SetDoorAsCompleted(doors[i]);
+            }
+
+            AttachEventTriggers(doors[i], i, isCompleted);
+        }
+
+        GameProgressManager.Instance.SaveProgress();
+    }
+
+    private void SetDoorAsCompleted(GameObject door)
+    {
+        if (door.TryGetComponent(out UnityEngine.UI.Image image) && completedGameSprite != null)
+        {
+            image.sprite = completedGameSprite; 
+        }
+        else
+        {
+            Debug.LogError($"Failed to update door sprite! Missing Image component on {door.name}");
         }
     }
 
-    private void AttachEventTriggers(GameObject door, int doorIndex)
+    private void AttachEventTriggers(GameObject door, int gameIndex, bool isCompleted)
     {
-        EventTrigger trigger = door.GetComponent<EventTrigger>();
-        if (trigger == null)
+        if (!door.TryGetComponent(out EventTrigger trigger))
         {
             trigger = door.AddComponent<EventTrigger>();
         }
 
         trigger.triggers.Clear();
 
-        // Add PointerEnter event
-        EventTrigger.Entry pointerEnter = new EventTrigger.Entry
-        {
-            eventID = EventTriggerType.PointerEnter
-        };
-        pointerEnter.callback.AddListener((data) => ShowGameName(doorIndex));
-        trigger.triggers.Add(pointerEnter);
+        AddEventTrigger(trigger, EventTriggerType.PointerEnter, (data) => ShowGameName(gameIndex, isCompleted));
+        AddEventTrigger(trigger, EventTriggerType.PointerExit, (data) => ResetDoorText());
 
-        // Add PointerExit event
-        EventTrigger.Entry pointerExit = new EventTrigger.Entry
+        if (!isCompleted)
         {
-            eventID = EventTriggerType.PointerExit
-        };
-        pointerExit.callback.AddListener((data) => ResetDoorText());
-        trigger.triggers.Add(pointerExit);
-
-        // Add PointerClick event
-        EventTrigger.Entry pointerClick = new EventTrigger.Entry
-        {
-            eventID = EventTriggerType.PointerClick
-        };
-        pointerClick.callback.AddListener((data) => LoadScene(sceneNames[doorIndex]));
-        trigger.triggers.Add(pointerClick);
+            AddEventTrigger(trigger, EventTriggerType.PointerClick, (data) => LoadScene(gameIndex));
+        }
     }
 
-    private void ShowGameName(int doorIndex)
+    private void AddEventTrigger(EventTrigger trigger, EventTriggerType eventType, UnityEngine.Events.UnityAction<BaseEventData> action)
     {
-        if (doorText != null && doorIndex >= 0 && doorIndex < gameNames.Length)
+        EventTrigger.Entry entry = new EventTrigger.Entry { eventID = eventType };
+        entry.callback.AddListener(action);
+        trigger.triggers.Add(entry);
+    }
+
+    public void ShowGameName(int doorIndex, bool isCompleted)
+    {
+        if (doorText != null)
         {
-            doorText.text = gameNames[doorIndex];
+            if (isCompleted)
+            {
+                doorText.text = "כל הכבוד! השלמת את המשחק!";
+            }
+            else if (doorIndex >= 0 && doorIndex < gameNames.Length)
+            {
+                doorText.text = gameNames[doorIndex];
+            }
+
             PlaySound(hoverSound);
         }
     }
 
-    private void ResetDoorText()
+    public void ResetDoorText()
     {
         if (doorText != null)
         {
-            doorText.text = "";
+            doorText.text = defaultDoorText;
         }
     }
 
-    private void LoadScene(string sceneName)
+    public void LoadScene(int doorIndex)
     {
-        if (!string.IsNullOrEmpty(sceneName))
+        if (doorIndex < 0 || doorIndex >= sceneNames.Length || string.IsNullOrEmpty(sceneNames[doorIndex]))
         {
-            PlaySound(clickSound);
-            SceneManager.LoadScene(sceneName);
+            Debug.LogError("Invalid scene index or missing scene name!");
+            return;
         }
-        else
+
+        PlaySound(clickSound);
+
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        playerProgress.lastPlayedGame = doorIndex;
+        playerProgress.lastPlayedStage = GetLastCompletedStage(doorIndex);
+
+        GameProgressManager.Instance.SaveProgress();
+
+        Debug.Log($"Loading {sceneNames[doorIndex]}, resuming from Stage {playerProgress.lastPlayedStage} in Game {doorIndex}");
+
+        DestroyMiniGameManagers();
+
+        SceneManager.LoadScene(sceneNames[doorIndex]);
+    }
+
+    private int GetLastCompletedStage(int gameIndex)
+    {
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
+            return 0;
+
+        var gameProgress = playerProgress.gamesProgress[gameIndex];
+        for (int i = 0; i < gameProgress.stages.Count; i++)
         {
-            Debug.LogError("Scene name is not assigned!");
+            if (!gameProgress.stages[i].isCompleted)
+                return i;
+        }
+        return gameProgress.stages.Count;
+    }
+
+    private void DestroyMiniGameManagers()
+    {
+        string[] persistentManagers = { "MemoryGameManager", "AudioFeedbackManager", "EquipmentRecoveryGameManager", "EquipmentRecoveryUIManager" };
+
+        foreach (string managerName in persistentManagers)
+        {
+            GameObject[] existingManagers = Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            foreach (GameObject manager in existingManagers)
+            {
+                if (manager.name == managerName)
+                {
+                    Debug.Log($"Destroying {managerName} before switching scenes.");
+                    Destroy(manager);
+                }
+            }
         }
     }
 
