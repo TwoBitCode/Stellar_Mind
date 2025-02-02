@@ -37,6 +37,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject errorPanel;
     private int gameIndex; // Store the game index
     public static GameManager Instance { get; private set; }
+
+
+    private bool isInteractionAllowed = false; // Initially false
+
+    public bool IsInteractionAllowed => isInteractionAllowed; // Public getter
+
+    public void SetInteractionAllowed(bool allowed)
+    {
+        isInteractionAllowed = allowed;
+        Debug.Log($"Interaction Allowed: {isInteractionAllowed}");
+    }
     private void Start()
     {
         ValidateSetup();
@@ -133,6 +144,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator CountdownAndSetupStage(Stage stage)
     {
         int remainingTime = stage.timeLimit;
+        isInteractionAllowed = false; // Disable interaction during memory countdown
 
         if (countdownBackground != null)
         {
@@ -148,18 +160,19 @@ public class GameManager : MonoBehaviour
 
         uiManager.UpdateCountdownText("");
 
-
+        // Memory timer is done; shuffle and move elements to stack
         gridManager.ShuffleGridElements();
         stackManager.MoveElementsToStack(gridManager.GridElements);
 
         uiManager.ChangeTimerBackgroundColor(Color.red);
 
+        yield return new WaitForSeconds(1f); // Ensure elements finish moving before allowing interaction
+
+        isInteractionAllowed = true; // Now allow interaction
 
         uiManager.ShowCheckButton();
-
         StartCoroutine(StartSortingTimer(stage));
     }
-
 
 
     private IEnumerator ShuffleAndDisplayStage(Stage stage)

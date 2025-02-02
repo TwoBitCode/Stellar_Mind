@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class SortingDraggableItem : DraggableItem
+public class SortingDraggableItem : DraggableItem, IDragHandler
 {
     public string AssignedType { get; set; } // Dynamically assigned type
     public float AssignedSize { get; set; } // Dynamically assigned size
@@ -70,9 +70,17 @@ public class SortingDraggableItem : DraggableItem
     {
         base.OnBeginDrag(eventData);
 
+        // Ensure the Image component is enabled
+        Image img = GetComponent<Image>();
+        if (img != null)
+        {
+            img.enabled = true;
+        }
+
         // Play grab sound globally
         GlobalAsteroidSoundManager.Instance?.PlayGrabSound();
     }
+
     public override void OnEndDrag(PointerEventData eventData)
     {
         if (IsDistractor)
@@ -181,6 +189,27 @@ public class SortingDraggableItem : DraggableItem
 
         Destroy(gameObject, destroyDelay);
     }
+    public override void OnDrag(PointerEventData eventData)
+    {
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        Canvas canvas = GetComponentInParent<Canvas>();
+
+        if (rectTransform != null && canvas != null)
+        {
+            Vector2 localPoint;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvas.transform as RectTransform,
+                eventData.position,
+                canvas.worldCamera,
+                out localPoint);
+
+            rectTransform.localPosition = localPoint; // Move inside UI
+        }
+
+        Debug.Log($"Asteroid {gameObject.name} is moving to: {rectTransform.localPosition}");
+    }
+
+
 
 
 }
