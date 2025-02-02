@@ -454,13 +454,23 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         {
             Debug.LogError($" Invalid stage index: {currentStageIndex}. No panel to activate.");
         }
+
         RestoreRobotImage();
-        // **Reset all parts to their original positions**
+
+        // **Reset all parts to their original positions and enable BLOCKRAYCASTS**
         if (stageOriginalPositions.ContainsKey(currentStageIndex))
         {
             foreach (var part in stageOriginalPositions[currentStageIndex])
             {
                 part.Key.transform.position = part.Value;
+
+                // **Enable BLOCKRAYCASTS if CanvasGroup exists**
+                CanvasGroup canvasGroup = part.Key.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.blocksRaycasts = true;
+                    Debug.Log($"{part.Key.name} - BLOCKRAYCASTS enabled.");
+                }
             }
         }
         else
@@ -480,6 +490,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         Debug.Log($" Restarting memory phase for Stage {currentStageIndex}...");
         StartCoroutine(PreGameCountdown());
     }
+
     private void RestoreRobotImage()
     {
         if (CurrentStage == null || CurrentStage.targetObjectNames == null) return;
