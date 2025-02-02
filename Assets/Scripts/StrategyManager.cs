@@ -60,5 +60,12 @@ public class StrategyManager : MonoBehaviour
             strategyPanel.SetActive(false);
         }
     }
+    public void ShowStrategyPanel()
+    {
+        if (strategyPanel != null)
+        {
+            strategyPanel.SetActive(true);
+        }
+    }
 
 }

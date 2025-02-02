@@ -50,6 +50,7 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
     [SerializeField] private Button returnToMapButton; //
+    [SerializeField] private Button strategyButton;
 
     [Header("Stage Complete Panel")]
     [SerializeField] private GameObject stageCompletePanel;
@@ -67,6 +68,8 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI endBaseScoreText; // NEW: Base score display
     [SerializeField] private TextMeshProUGUI endBonusScoreText; // NEW: Bonus score display
 
+    [Header("Strategy Panel")]
+    [SerializeField] private StrategyManager strategyManager; 
 
     private int gameIndex = 1; // Set the correct game index
 
@@ -337,6 +340,16 @@ public class CableConnectionManager : MonoBehaviour
             {
                 Debug.Log("Returning to game map...");
                 ReturnToMap();
+            });
+        }
+        if (strategyButton != null)
+        {
+            strategyButton.onClick.AddListener(() =>
+            {
+                if (strategyManager != null)
+                {
+                    strategyManager.ShowNextStrategy();
+                }
             });
         }
     }

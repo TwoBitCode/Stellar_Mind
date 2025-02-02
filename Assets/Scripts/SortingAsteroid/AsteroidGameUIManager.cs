@@ -25,8 +25,9 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI failureMessageText;
     [SerializeField] private Button retryButton;
     [SerializeField] private Button menuButton;
+    [SerializeField] private Button strategyButton;
 
-
+    [SerializeField] private StrategyManager strategyManager;
     public void ShowInstructions(string instructions, System.Action onStartGame)
     {
         if (instructionsPanel == null || instructionsText == null)
@@ -135,7 +136,7 @@ public class AsteroidGameUIManager : MonoBehaviour
             }
 
             Button[] buttons = failurePanel.GetComponentsInChildren<Button>();
-            if (buttons.Length >= 2)
+            if (buttons.Length >= 3) // וידוא שיש מספיק כפתורים בפאנל
             {
                 // Retry button
                 buttons[0].onClick.RemoveAllListeners();
@@ -152,6 +153,20 @@ public class AsteroidGameUIManager : MonoBehaviour
                     failurePanel.SetActive(false); // Hide the failure panel
                     returnToMenu?.Invoke(); // Call the return-to-menu action
                 });
+
+                // Strategy button - כפתור להצגת פאנל האסטרטגיות
+                buttons[2].onClick.RemoveAllListeners();
+                buttons[2].onClick.AddListener(() =>
+                {
+                    if (strategyManager != null)
+                    {
+                        strategyManager.ShowNextStrategy(); // מציג את פאנל האסטרטגיות
+                    }
+                });
+            }
+            else
+            {
+                Debug.LogWarning("Not enough buttons assigned in the failure panel!");
             }
         }
         else

@@ -27,11 +27,14 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     public GameObject gameOverPanel; // Panel that appears when time runs out
     public UnityEngine.UI.Button restartButton;
     public UnityEngine.UI.Button returnToMapButton;
+    public UnityEngine.UI.Button strategyButton;
     [Header("Level Complete UI")]
     public GameObject levelCompletePanel;
     public TextMeshProUGUI levelCompleteBaseScoreText; // NEW: Base points display
     public TextMeshProUGUI levelCompleteBonusScoreText; // NEW: Bonus points display
     public UnityEngine.UI.Button levelCompleteButton;
+    [Header("Strategy Panel")]
+    public StrategyManager strategyManager; 
 
     private int currentInstructionIndex = 0;
     private void Start()
@@ -68,8 +71,18 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
                 EquipmentRecoveryGameManager.Instance?.ReturnToMap();
             });
         }
-    }
 
+        if (strategyButton != null)
+        {
+            strategyButton.onClick.AddListener(() =>
+            {
+                if (strategyManager != null)
+                {
+                    strategyManager.ShowNextStrategy(); 
+                }
+            });
+        }
+    }
 
     private void Awake()
     {

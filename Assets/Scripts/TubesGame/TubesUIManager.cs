@@ -18,6 +18,7 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI failureText;
     [SerializeField] private Button retryButton;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private Button strategyButton;
 
     [Header("Completion Panel")]
     [SerializeField] private GameObject completionPanel;
@@ -33,15 +34,25 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI bonusScoreText;
     [SerializeField] private Button nextStageButton;
 
+    [Header("Strategy Panel")]
+    [SerializeField] private StrategyManager strategyManager; 
+
 
     private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)
 
     private void Start()
     {
-        mainMenuButton.onClick.RemoveAllListeners(); // Ensure no duplicate listeners
-       // mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
-    }
+        mainMenuButton.onClick.RemoveAllListeners();
+        strategyButton.onClick.RemoveAllListeners();
 
+        strategyButton.onClick.AddListener(() =>
+        {
+            if (strategyManager != null)
+            {
+                strategyManager.ShowNextStrategy();
+            }
+        });
+    }
     public void ShowCompletionPanel(int baseScore, int bonusScore)
     {
         completionPanel.SetActive(true);
@@ -187,12 +198,11 @@ public class TubesUIManager : MonoBehaviour
             retryButton.onClick.AddListener(() => retryAction.Invoke());
             mainMenuButton.onClick.AddListener(() =>
             {
-                GameProgressManager.Instance.SaveProgress(); // Ensure progress is saved before exit
+                GameProgressManager.Instance.SaveProgress();
                 ReturnToMap();
             });
         }
     }
-
     public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
     {
         if (stageSuccessPanel != null)
