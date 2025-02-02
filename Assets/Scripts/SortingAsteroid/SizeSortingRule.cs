@@ -22,7 +22,7 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
             return type;
         }
 
-        Debug.LogError("SortingDraggableItem component missing on the asteroid!");
+      //  Debug.LogError("SortingDraggableItem component missing on the asteroid!");
         return null;
     }
 
@@ -34,17 +34,17 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
             if (draggable.AssignedType == "Small")
             {
                 item.transform.localScale = smallSize;
-                Debug.Log($"Asteroid scaled to small size: {smallSize}");
+              //  Debug.Log($"Asteroid scaled to small size: {smallSize}");
             }
             else if (draggable.AssignedType == "Large")
             {
                 item.transform.localScale = largeSize;
-                Debug.Log($"Asteroid scaled to large size: {largeSize}");
+               // Debug.Log($"Asteroid scaled to large size: {largeSize}");
             }
         }
         else
         {
-            Debug.LogError("SortingDraggableItem component missing on the asteroid!");
+            //Debug.LogError("SortingDraggableItem component missing on the asteroid!");
         }
     }
 
@@ -61,7 +61,7 @@ public class SizeSortingRule : ScriptableObject, ISortingRule
         string nextType = typeQueue.Dequeue();
         typeQueue.Enqueue(nextType);
 
-        Debug.Log($"Selected type: {nextType}");
+     //   Debug.Log($"Selected type: {nextType}");
         return nextType;
     }
 }
