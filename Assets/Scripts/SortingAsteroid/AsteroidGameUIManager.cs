@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,11 +11,21 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
 
     [Header("Panels")]
-    [SerializeField] private GameObject successPanel;
+    [SerializeField] private GameObject stageSuccessPanel;
+    [SerializeField] private TextMeshProUGUI baseScoreText;
+    [SerializeField] private TextMeshProUGUI bonusScoreText;
+    [SerializeField] private Button nextStageButton;
+
+    [SerializeField] private GameObject completionPanel;
+    [SerializeField] private TextMeshProUGUI completionBaseScoreText;
+    [SerializeField] private TextMeshProUGUI completionBonusScoreText;
+    [SerializeField] private Button returnToMapButton;
+
     [SerializeField] private GameObject failurePanel;
     [SerializeField] private TextMeshProUGUI failureMessageText;
     [SerializeField] private Button retryButton;
     [SerializeField] private Button menuButton;
+
 
     public void ShowInstructions(string instructions, System.Action onStartGame)
     {
@@ -55,32 +66,57 @@ public class AsteroidGameUIManager : MonoBehaviour
         }
     }
 
-    public void ShowSuccessPanel(string message)
+    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
     {
-        if (successPanel != null)
+        if (stageSuccessPanel != null)
         {
-            successPanel.SetActive(true);
+            stageSuccessPanel.SetActive(true);
+            baseScoreText.text = $"{baseScore}";
+            bonusScoreText.text = bonusScore > 0 ? $"{bonusScore}" : "0";
 
-            TextMeshProUGUI successText = successPanel.GetComponentInChildren<TextMeshProUGUI>();
-            if (successText != null)
+            nextStageButton.onClick.RemoveAllListeners();
+            nextStageButton.onClick.AddListener(() =>
             {
-                successText.text = message;
-            }
+                StartCoroutine(TransitionToNextStage(onNextStage));
+            });
         }
-        else
+    }
+
+    private IEnumerator TransitionToNextStage(System.Action onNextStage)
+    {
+        // Show instructions immediately to prevent blank screen
+        onNextStage.Invoke();
+
+        // Wait briefly before hiding the success panel to avoid overlap
+        yield return new WaitForSeconds(0.3f);
+
+        stageSuccessPanel.SetActive(false);
+    }
+
+
+    public void ShowCompletionPanel(int baseScore, int bonusScore, System.Action returnToMap)
+    {
+        if (completionPanel != null)
         {
-            Debug.LogWarning("Success panel is not assigned in the UI Manager!");
+            completionPanel.SetActive(true);
+            completionBaseScoreText.text = $"{baseScore}";
+            completionBonusScoreText.text = bonusScore > 0 ? $"{bonusScore}" : "0";
+
+            returnToMapButton.onClick.RemoveAllListeners();
+            returnToMapButton.onClick.AddListener(() =>
+            {
+                completionPanel.SetActive(false);
+                returnToMap.Invoke();
+            });
         }
     }
 
 
-
-
     public void HideSuccessPanel()
     {
-        if (successPanel != null)
+        if (stageSuccessPanel != null)
         {
-            successPanel.SetActive(false);
+            stageSuccessPanel.SetActive(false);
         }
     }
 
@@ -137,9 +173,11 @@ public class AsteroidGameUIManager : MonoBehaviour
     {
         if (instructionsPanel != null) instructionsPanel.SetActive(false);
         if (timerText != null) timerText.gameObject.SetActive(false);
-        if (successPanel != null) successPanel.SetActive(false);
+        if (stageSuccessPanel != null) stageSuccessPanel.SetActive(false);
+        if (completionPanel != null) completionPanel.SetActive(false);
         if (failurePanel != null) failurePanel.SetActive(false);
     }
+
     public void ShowTimerText()
     {
         if (timerText != null)

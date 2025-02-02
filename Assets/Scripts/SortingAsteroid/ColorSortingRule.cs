@@ -27,12 +27,12 @@ public class ColorSortingRule : ScriptableObject, ISortingRule
                 draggable.AssignedType = assignedPair.typeName; // Assign the type name
                 draggable.AssignedColor = assignedPair.color;   // Assign the color
 
-                Debug.Log($"Assigned Type: {assignedPair.typeName}, Assigned Color: {assignedPair.color}");
+                //Debug.Log($"Assigned Type: {assignedPair.typeName}, Assigned Color: {assignedPair.color}");
                 return assignedPair.typeName; // Return the assigned type name
             }
             else
             {
-                Debug.LogWarning("No unassigned types available. Resetting assigned types.");
+                //Debug.LogWarning("No unassigned types available. Resetting assigned types.");
                 ResetAssignedTypes(); // Reset when all types are used
                 return GetCategory(item); // Retry
             }
@@ -52,22 +52,22 @@ public class ColorSortingRule : ScriptableObject, ISortingRule
                 if (typeColorPairs.Exists(pair => pair.color == draggableItem.AssignedColor))
                 {
                     image.color = draggableItem.AssignedColor; // Apply color
-                    Debug.Log($"Asteroid visuals applied. Type: {draggableItem.AssignedType}, Color: {draggableItem.AssignedColor}");
+                   // Debug.Log($"Asteroid visuals applied. Type: {draggableItem.AssignedType}, Color: {draggableItem.AssignedColor}");
                 }
                 else
                 {
-                    Debug.LogWarning("AssignedColor is invalid or not found in typeColorPairs, applying default color.");
+                   // Debug.LogWarning("AssignedColor is invalid or not found in typeColorPairs, applying default color.");
                     image.color = Color.white; // Default fallback
                 }
             }
             else
             {
-                Debug.LogError("SortingDraggableItem component missing on the asteroid!");
+               // Debug.LogError("SortingDraggableItem component missing on the asteroid!");
             }
         }
         else
         {
-            Debug.LogError("Image component missing on the asteroid prefab!");
+            //Debug.LogError("Image component missing on the asteroid prefab!");
         }
     }
 
@@ -80,11 +80,11 @@ public class ColorSortingRule : ScriptableObject, ISortingRule
             var randomPair = unassignedPairs[Random.Range(0, unassignedPairs.Count)];
             assignedTypes.Add(randomPair.typeName); // Mark as assigned
 
-            Debug.Log($"Randomly selected type: {randomPair.typeName}, Color: {randomPair.color}");
+           // Debug.Log($"Randomly selected type: {randomPair.typeName}, Color: {randomPair.color}");
             return randomPair.typeName;
         }
 
-        Debug.LogWarning("No unassigned types available. Resetting assigned types.");
+       // Debug.LogWarning("No unassigned types available. Resetting assigned types.");
         ResetAssignedTypes(); // Reset when all types are used
         return GetRandomType(); // Retry
     }

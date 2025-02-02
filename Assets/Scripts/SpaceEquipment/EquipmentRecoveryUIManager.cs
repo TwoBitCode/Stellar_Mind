@@ -19,34 +19,32 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     public string[] workspaceInstructions; // Instructions for the workspace
     public float textDisplayDuration = 2f; // Duration for each instruction to display
     [Header("Reward UI")]
-    public GameObject rewardPanel; // Panel for stage completion rewards
-    public TextMeshProUGUI rewardText; // Text to display points and bonus
-    public UnityEngine.UI.Button continueButton; // Button to proceed to the next stage
+    public GameObject rewardPanel;
+    public TextMeshProUGUI rewardBaseScoreText; // NEW: Base points display
+    public TextMeshProUGUI rewardBonusScoreText; // NEW: Bonus points display
+    public UnityEngine.UI.Button continueButton;
     [Header("Game Over UI")]
     public GameObject gameOverPanel; // Panel that appears when time runs out
     public UnityEngine.UI.Button restartButton;
     public UnityEngine.UI.Button returnToMapButton;
     [Header("Level Complete UI")]
-    public GameObject levelCompletePanel; // The panel that appears when the final stage is completed
-    public TextMeshProUGUI levelCompleteText; // Text to display final stage points and bonus
-    public UnityEngine.UI.Button levelCompleteButton; // Button to exit or return to the map
+    public GameObject levelCompletePanel;
+    public TextMeshProUGUI levelCompleteBaseScoreText; // NEW: Base points display
+    public TextMeshProUGUI levelCompleteBonusScoreText; // NEW: Bonus points display
+    public UnityEngine.UI.Button levelCompleteButton;
 
     private int currentInstructionIndex = 0;
     private void Start()
     {
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(false); // Hide at start
-        }
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (rewardPanel != null) rewardPanel.SetActive(false);
+        if (levelCompletePanel != null) levelCompletePanel.SetActive(false);
 
         if (restartButton != null)
         {
             restartButton.onClick.AddListener(() =>
             {
-                if (EquipmentRecoveryGameManager.Instance != null)
-                {
-                    EquipmentRecoveryGameManager.Instance.RestartStage();
-                }
+                EquipmentRecoveryGameManager.Instance?.RestartStage();
             });
         }
 
@@ -54,39 +52,24 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
         {
             returnToMapButton.onClick.AddListener(() =>
             {
-                if (EquipmentRecoveryGameManager.Instance != null)
-                {
-                    EquipmentRecoveryGameManager.Instance.ReturnToMap();
-                }
+                EquipmentRecoveryGameManager.Instance?.ReturnToMap();
             });
         }
+
         if (continueButton != null)
         {
             continueButton.onClick.AddListener(() => ProceedToNextStage());
-        }
-        if (levelCompletePanel != null)
-        {
-            levelCompletePanel.SetActive(false); // Ensure it starts hidden
         }
 
         if (levelCompleteButton != null)
         {
             levelCompleteButton.onClick.AddListener(() =>
             {
-                if (EquipmentRecoveryGameManager.Instance != null)
-                {
-                    EquipmentRecoveryGameManager.Instance.ReturnToMap();
-                }
-                else
-                {
-                    Debug.LogError("EquipmentRecoveryGameManager.Instance is NULL!");
-                }
+                EquipmentRecoveryGameManager.Instance?.ReturnToMap();
             });
         }
-
-
-
     }
+
 
     private void Awake()
     {
@@ -184,10 +167,11 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     }
     public void ShowRewardPanel(int stagePoints, int bonusPoints)
     {
-        if (rewardPanel != null && rewardText != null)
+        if (rewardPanel != null)
         {
             rewardPanel.SetActive(true);
-            rewardText.text = $"Stage Points: {stagePoints}\nBonus Points: {bonusPoints}\nTotal Earned: {stagePoints + bonusPoints}";
+            rewardBaseScoreText.text = $"{stagePoints}";
+            rewardBonusScoreText.text = $"{bonusPoints}";
         }
     }
     public void HideRewardPanel()
@@ -230,10 +214,11 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
 
     public void ShowLevelCompletePanel(int stagePoints, int bonusPoints)
     {
-        if (levelCompletePanel != null && levelCompleteText != null)
+        if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
-            levelCompleteText.text = $"Final Stage Points: {stagePoints}\nBonus Points: {bonusPoints}\nTotal Earned: {stagePoints + bonusPoints}";
+            levelCompleteBaseScoreText.text = $"{stagePoints}";
+            levelCompleteBonusScoreText.text = $"{bonusPoints}";
         }
     }
 

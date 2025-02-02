@@ -706,7 +706,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 324.4, y: -11.971}
+  m_AnchoredPosition: {x: 318.9, y: -0.00000095367}
   m_SizeDelta: {x: 262.26, y: 69.85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &568920145
@@ -799,8 +799,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 344.1, y: -151.09}
-  m_SizeDelta: {x: 166.99, y: 208.39}
+  m_AnchoredPosition: {x: 345.8, y: -150.8}
+  m_SizeDelta: {x: 155.06, y: 223.32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &836562767
 MonoBehaviour:
@@ -822,7 +822,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2999197143697619629, guid: 94242bd1a2f12b64b9dde77d06c20cf0, type: 3}
+  m_Sprite: {fileID: -4217850909309984287, guid: 2542980eaabcf104ca197f870fd065d0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1492,7 +1492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -104.000015
+      value: -104.000046
       objectReference: {fileID: 0}
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1509,6 +1509,22 @@ PrefabInstance:
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4206533727187270910, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
+      propertyPath: m_Color.a
+      value: 0.87058824
+      objectReference: {fileID: 0}
+    - target: {fileID: 4206533727187270910, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
+      propertyPath: m_Color.b
+      value: 0.11553029
+      objectReference: {fileID: 0}
+    - target: {fileID: 4206533727187270910, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
+      propertyPath: m_Color.g
+      value: 0.41590908
+      objectReference: {fileID: 0}
+    - target: {fileID: 4206533727187270910, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
+      propertyPath: m_Color.r
+      value: 0.915
       objectReference: {fileID: 0}
     - target: {fileID: 5525014988099447374, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_Name

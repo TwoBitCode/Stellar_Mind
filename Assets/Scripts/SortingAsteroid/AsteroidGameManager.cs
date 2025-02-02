@@ -150,17 +150,16 @@ public class AsteroidGameManager : MonoBehaviour
     {
         ClearAsteroids();
 
-        int currentGameIndex = 3; // Assuming this is the 4th mini-game (0-based index)
+        int currentGameIndex = 3;
         GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
 
-        // Find the first unfinished stage
         int firstUnfinishedStage = -1;
         foreach (var stage in gameProgress.stages)
         {
             if (!stage.Value.isCompleted)
             {
                 firstUnfinishedStage = stage.Key;
-                break; // Stop at the first unfinished stage
+                break;
             }
         }
 
@@ -172,7 +171,7 @@ public class AsteroidGameManager : MonoBehaviour
         }
 
         Debug.Log($"Resuming from challenge {firstUnfinishedStage}");
-        currentChallengeIndex = firstUnfinishedStage;  // Ensure the index is updated
+        currentChallengeIndex = firstUnfinishedStage;
         asteroidChallengeManager.SetCurrentChallengeIndex(currentChallengeIndex);
         currentChallenge = asteroidChallengeManager.CurrentChallenge;
 
@@ -185,7 +184,6 @@ public class AsteroidGameManager : MonoBehaviour
         spawnInterval = currentChallenge.spawnInterval;
         maxAsteroids = currentChallenge.maxAsteroids;
 
-        // Reset counts and states
         currentAsteroidCount = 0;
         correctAsteroidCount = 0;
         totalAsteroidCount = 0;
@@ -194,9 +192,12 @@ public class AsteroidGameManager : MonoBehaviour
         AssignDropZoneTypes();
         SetupDropZones(currentChallenge.dropZones);
 
+        // **Fix:** Generate the correct instructions AFTER setting the challenge
         string instructions = GenerateInstructions();
-        uiManager.ShowInstructions(instructions, StartGame); // Only starts the game when the button is pressed
+        Debug.Log($"Updating instructions: {instructions}");
+        uiManager.ShowInstructions(instructions, StartGame);
     }
+
 
 
 
@@ -423,18 +424,18 @@ public class AsteroidGameManager : MonoBehaviour
         {
             endPanel.SetActive(true); // Show game completion panel
 
-            TextMeshProUGUI endText = endPanel.GetComponentInChildren<TextMeshProUGUI>();
-            if (endText != null)
-            {
-                endText.text = "Great job! You have completed all asteroid challenges!";
-            }
+            //TextMeshProUGUI endText = endPanel.GetComponentInChildren<TextMeshProUGUI>();
+            //if (endText != null)
+            //{
+            //    endText.text = "Great job! You have completed all asteroid challenges!";
+            //}
 
             Button returnButton = endPanel.GetComponentInChildren<Button>();
             if (returnButton != null)
             {
                 returnButton.onClick.RemoveAllListeners();
                 returnButton.onClick.AddListener(ReturnToMainMenu);
-                returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return to Map";
+               //returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return to Map";
             }
         }
 
@@ -480,51 +481,42 @@ public class AsteroidGameManager : MonoBehaviour
 
     private void CompleteChallenge()
     {
-        //isChallengeActive = false;
         Debug.Log("Challenge completed successfully!");
 
-        if (correctAsteroidCount >= currentChallenge.minCorrectAsteroids)
+        int basePoints = currentChallenge.completionScore;
+        OverallScoreManager.Instance?.AddScore(basePoints);
+
+        int bonusAsteroids = correctAsteroidCount - currentChallenge.minCorrectAsteroids;
+        int bonusPoints = bonusAsteroids > 0 ? bonusAsteroids * currentChallenge.bonusScore : 0;
+        OverallScoreManager.Instance?.AddScore(bonusPoints);
+
+        Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}");
+
+        int currentGameIndex = 3;
+        GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
+
+        if (gameProgress.stages.ContainsKey(currentChallengeIndex))
         {
-            // Base points for completing the challenge
-            int basePoints = currentChallenge.completionScore;
-            OverallScoreManager.Instance?.AddScore(basePoints);
+            gameProgress.stages[currentChallengeIndex].isCompleted = true;
+            gameProgress.stages[currentChallengeIndex].score = OverallScoreManager.Instance?.OverallScore ?? 0;
+            Debug.Log($"Challenge {currentChallengeIndex} marked as completed.");
+        }
 
-            // Bonus points for extra asteroids
-            int bonusAsteroids = correctAsteroidCount - currentChallenge.minCorrectAsteroids;
-            int bonusPoints = bonusAsteroids * currentChallenge.bonusScore;
-            OverallScoreManager.Instance?.AddScore(bonusPoints);
+        if (gameProgress.CheckIfCompleted())
+        {
+            gameProgress.isCompleted = true;
+            Debug.Log("All challenges in this game are completed!");
+        }
 
-            Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}");
+        GameProgressManager.Instance.SaveProgress();
 
-            // Show the success panel with a dynamic message
-            uiManager.ShowSuccessPanel($"Challenge completed!\nBase Points: {basePoints}\nBonus Points: {bonusPoints}");
-            // Update player progress when a challenge is completed
-            int currentGameIndex = 3; // Assuming this is the 4th mini-game (0-based index)
-            GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
-
-            if (gameProgress.stages.ContainsKey(currentChallengeIndex))
-            {
-                gameProgress.stages[currentChallengeIndex].isCompleted = true;
-                gameProgress.stages[currentChallengeIndex].score = OverallScoreManager.Instance?.OverallScore ?? 0;
-                Debug.Log($"Challenge {currentChallengeIndex} marked as completed.");
-            }
-
-            // Check if all challenges are done and mark the game as completed
-            if (gameProgress.CheckIfCompleted())
-            {
-                gameProgress.isCompleted = true;
-                Debug.Log("All challenges in this game are completed!");
-            }
-
-            // Save the progress
-            GameProgressManager.Instance.SaveProgress();
-
-            // Start coroutine to wait a few seconds and then move to the next stage
-            StartCoroutine(ProceedToNextChallenge());
+        if (currentChallengeIndex < asteroidChallengeManager.Challenges.Count - 1)
+        {
+            uiManager.ShowStageSuccessPanel(basePoints, bonusPoints, () => StartCoroutine(ProceedToNextChallenge()));
         }
         else
         {
-            FailChallenge();
+            uiManager.ShowCompletionPanel(basePoints, bonusPoints, ReturnToMainMenu);
         }
     }
 
@@ -535,10 +527,11 @@ public class AsteroidGameManager : MonoBehaviour
         Debug.Log("Challenge failed. Showing failure panel.");
 
         uiManager.ShowFailurePanel(
-            "Challenge failed. Try again or return to the menu.",
-            RestartChallenge,  // Option to retry
-            ReturnToMainMenu   // Option to go back to main menu
+            "לא הצלחנו במשימה, אבל בוא ננסה שוב!",
+            RestartChallenge,  // אפשרות לנסות שוב
+            ReturnToMainMenu   // אפשרות לחזור לתפריט הראשי
         );
+
     }
 
 
@@ -611,23 +604,19 @@ public class AsteroidGameManager : MonoBehaviour
     }
     private IEnumerator ProceedToNextChallenge()
     {
-        yield return new WaitForSeconds(3f); // Wait for UI transition
+        //yield return new WaitForSeconds(3f);
 
-        int currentGameIndex = 3; // 4th mini-game (0-based index)
+        int currentGameIndex = 3;
         GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
 
-        // Ensure we mark the current challenge as completed before searching for the next one
         if (gameProgress.stages.ContainsKey(currentChallengeIndex))
         {
             gameProgress.stages[currentChallengeIndex].isCompleted = true;
             gameProgress.stages[currentChallengeIndex].score = OverallScoreManager.Instance.OverallScore;
-            Debug.Log($"Challenge {currentChallengeIndex} marked as completed.");
         }
 
-        // Save updated progress before finding the next challenge
         GameProgressManager.Instance.SaveProgress();
 
-        // Check if all challenges are completed
         bool allStagesCompleted = true;
         int nextUnfinishedStage = -1;
 
@@ -636,29 +625,32 @@ public class AsteroidGameManager : MonoBehaviour
             if (!stage.Value.isCompleted)
             {
                 allStagesCompleted = false;
-                nextUnfinishedStage = stage.Key; // Get the next unfinished stage
-                break; // Stop at the first unfinished stage
+                nextUnfinishedStage = stage.Key;
+                break;
             }
         }
 
         if (allStagesCompleted)
         {
-            Debug.Log("All challenges completed. Showing end panel.");
-            ShowEndPanel();
-            yield break; // Correctly exits the coroutine
+            Debug.Log("All challenges completed. Showing completion panel.");
+            uiManager.ShowCompletionPanel(
+                gameProgress.stages[currentChallengeIndex].score,
+                0, // Bonus points are already counted
+                ReturnToMainMenu
+            );
+            yield break;
         }
 
-        Debug.Log($"Moving to the next challenge: {nextUnfinishedStage}");
-        currentChallengeIndex = nextUnfinishedStage;  // Ensure the index is updated
+        Debug.Log($"Moving to next challenge: {nextUnfinishedStage}");
+        currentChallengeIndex = nextUnfinishedStage;
         asteroidChallengeManager.SetCurrentChallengeIndex(currentChallengeIndex);
 
-        // Wait a frame to ensure progress is fully updated before initializing the challenge
         yield return null;
 
-        // Reset UI and prepare the next challenge
         uiManager.HideAllUI();
         InitializeChallenge();
     }
+
 
 
 

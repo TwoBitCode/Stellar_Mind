@@ -55,12 +55,17 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private GameObject stageCompletePanel;
     [SerializeField] private TextMeshProUGUI stageCompleteText;
     [SerializeField] private Button nextStageButton;
+    [SerializeField] private TextMeshProUGUI stageCompleteBaseScoreText; // NEW: Base score display
+    [SerializeField] private TextMeshProUGUI stageCompleteBonusScoreText; // NEW: Bonus score display
+
 
     [SerializeField] private SparkEffectHandler sparkEffectHandler;
 
     [Header("End Panel")]
     [SerializeField] private GameObject endPanel;
     [SerializeField] private Button returnToMapButtonE; // New reference for returning to the map
+    [SerializeField] private TextMeshProUGUI endBaseScoreText; // NEW: Base score display
+    [SerializeField] private TextMeshProUGUI endBonusScoreText; // NEW: Bonus score display
 
 
     private int gameIndex = 1; // Set the correct game index
@@ -228,17 +233,19 @@ public class CableConnectionManager : MonoBehaviour
 
         CableConnectionStage stage = stages[currentStage];
 
-        // Ensure the timer UI is still active
         if (timerUI != null)
         {
             timerUI.SetActive(true);
         }
 
-        // Change the timer color instead of stopping it
+        // Change the timer color to red to indicate urgency
         if (timerText != null)
         {
-            timerText.color = Color.red; // Change to red when the stage timer starts
+            timerText.color = Color.red;
         }
+
+        // **Start the stage timer IMMEDIATELY, before transition starts**
+        StartStageTimer();
 
         // **Trigger spark effect and transition to disconnected panel**
         if (panelTransitionHandler != null)
@@ -249,20 +256,15 @@ public class CableConnectionManager : MonoBehaviour
                 sparkEffectHandler,
                 () =>
                 {
-                    // **Now hide the connected panel after the transition**
                     if (stage.connectedPanel != null)
                     {
                         stage.connectedPanel.SetActive(false);
                     }
 
-                    // **Ensure the disconnected panel is active**
                     if (stage.disconnectedPanel != null)
                     {
                         stage.disconnectedPanel.SetActive(true);
                     }
-
-                    // Start the stage timer after transition completes
-                    StartStageTimer();
                 }
             );
         }
@@ -494,15 +496,10 @@ public class CableConnectionManager : MonoBehaviour
                 Debug.Log($"Stage {currentStage} in Game {gameIndex} marked as completed.");
             }
 
-            // Check if the whole game is now completed
             if (gameProgress.CheckIfCompleted())
             {
                 Debug.Log($"Game {gameIndex} is now fully completed!");
-
-                // Mark game as completed
                 gameProgress.isCompleted = true;
-
-                // Save final overall score when the game is completed
                 playerProgress.totalScore = OverallScoreManager.Instance.OverallScore;
                 Debug.Log($"Final Score for Game {gameIndex}: {playerProgress.totalScore}");
             }
@@ -512,17 +509,22 @@ public class CableConnectionManager : MonoBehaviour
             Debug.LogError($"Game {gameIndex} not found in progress manager!");
         }
 
-        GameProgressManager.Instance.SaveProgress(); // Save updated progress
+        GameProgressManager.Instance.SaveProgress();
 
-        // Check if this is the last stage
+        // Calculate base and bonus score
+        int baseScore = currentStageData.scoreToAdd;
+        int bonusScore = (stageTimeRemaining >= currentStageData.bonusThreshold) ? currentStageData.bonusPoints : 0;
+
+        // If it's the final stage, show the End Panel
         if (currentStage >= stages.Length - 1)
         {
-            Debug.Log("Final stage completed! Showing end panel.");
+            Debug.Log("Final stage completed! Showing End Panel.");
             if (endPanel != null)
             {
-                endPanel.SetActive(true); // Show the finish game panel
+                endPanel.SetActive(true);
+                endBaseScoreText.text = $"{baseScore}"; // Show base score
+                endBonusScoreText.text = $"{bonusScore}"; // Show bonus score
 
-                // Ensure the Return to Map button works
                 if (returnToMapButtonE != null)
                 {
                     returnToMapButtonE.onClick.RemoveAllListeners();
@@ -536,13 +538,16 @@ public class CableConnectionManager : MonoBehaviour
         }
         else
         {
-            // Show stage complete panel for regular stage completion
+            // Show stage complete panel for normal stage completion
             stageCompletePanel.SetActive(true);
             if (stageCompleteText != null)
             {
                 string message = currentStageData.completionMessage;
                 stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
             }
+
+            stageCompleteBaseScoreText.text = $"{baseScore}"; // Show base score
+            stageCompleteBonusScoreText.text = $"{bonusScore}"; // Show bonus score
 
             if (nextStageButton != null)
             {
@@ -556,6 +561,7 @@ public class CableConnectionManager : MonoBehaviour
             }
         }
     }
+
 
 
 
