@@ -5,13 +5,28 @@ using UnityEngine.EventSystems;
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [Header("UI Elements")]
-    [SerializeField] private Image image; // The item's image component
+    [SerializeField] private Image image;
+
     [Header("Audio")]
-    [SerializeField] private AudioSource dragSoundSource; // Reference to the global AudioSource
+    [SerializeField] private AudioSource dragSoundSource;
+
+    private bool canDrag = false;
+    private bool isCurrentlyDragging = false; // Flag to track if dragging actually started
+    private Transform parentAfterDrag;
+
+    public int TubeID { get; set; }
+    public Image Image => image;
+
+    public Transform ParentAfterDrag
+    {
+        get => parentAfterDrag;
+        set => parentAfterDrag = value;
+    }
 
     private void Awake()
     {
-        // Dynamically find the global AudioSource if not assigned
+        DisableDragging(); // Ensure it starts disabled
+
         if (dragSoundSource == null)
         {
             dragSoundSource = FindFirstObjectByType<AudioSource>();
@@ -22,46 +37,56 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    public int TubeID { get; set; } // Hidden unique identifier for internal use
-
-    public Image Image => image; // Public property for read-only access
-
-    private Transform parentAfterDrag;
-
-    public Transform ParentAfterDrag
+    public void EnableDragging()
     {
-        get => parentAfterDrag;
-        set => parentAfterDrag = value;
+        canDrag = true;
     }
 
-    [SerializeField] private const string LOG_BEGIN_DRAG = "Begin drag";
-    [SerializeField] private const string LOG_DRAGGING = "Dragging";
-    [SerializeField] private const string LOG_END_DRAG = "End drag";
+    public void DisableDragging()
+    {
+        canDrag = false;
+    }
+
     public virtual void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log(LOG_BEGIN_DRAG);
+        if (!canDrag || (GameManager.Instance != null && !GameManager.Instance.IsInteractionAllowed))
+        {
+            Debug.Log($"{gameObject.name}: Dragging is not allowed.");
+            isCurrentlyDragging = false;
+            return;
+        }
+
+        Debug.Log($"{gameObject.name}: Begin drag");
+        isCurrentlyDragging = true;
 
         ParentAfterDrag = transform.parent;
         transform.SetParent(transform.root);
         transform.SetAsLastSibling();
-        image.raycastTarget = false; // Disable raycast while dragging
+        image.raycastTarget = false;
 
-        // Play drag sound
-        if (dragSoundSource != null)
+        // **Play Global Drag Sound**
+        if (GlobalSoundManager.Instance != null)
         {
-            dragSoundSource.Play();
+            GlobalSoundManager.Instance.PlayDragSound();
+            Debug.Log("Global drag sound started.");
         }
     }
+
+
+
     public virtual void OnDrag(PointerEventData eventData)
     {
-        transform.position = eventData.position; // Default dragging behavior
+        if (!isCurrentlyDragging) return; // Prevent movement if dragging never started
+        transform.position = eventData.position;
     }
+
     public virtual void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log(LOG_END_DRAG);
+        if (!isCurrentlyDragging) return; // Do nothing if drag never started
 
+        Debug.Log("End drag");
+        isCurrentlyDragging = false; // Reset flag when drag ends
         transform.SetParent(ParentAfterDrag);
-        image.raycastTarget = true; // Re-enable raycast
+        image.raycastTarget = true;
     }
-
 }

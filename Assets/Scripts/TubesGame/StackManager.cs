@@ -33,6 +33,9 @@ public class StackManager : MonoBehaviour
                 // Update the drag logic for allowing tubes to return to the grid
                 draggableItem.ParentAfterDrag = gridElements[i].transform;
 
+                // **Ensure the item is draggable now**
+                draggableItem.EnableDragging();
+
                 Debug.Log($"Stack index {i} now has {stackElements[i].transform.childCount} children.");
             }
             else
@@ -46,7 +49,15 @@ public class StackManager : MonoBehaviour
         {
             Debug.Log($"Stack index {i} has {stackElements[i].transform.childCount} children after move.");
         }
+
+        // Now that elements have moved, allow dragging globally
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetInteractionAllowed(true);
+            Debug.Log("Interaction is now allowed. Players can drag items.");
+        }
     }
+
 
 
 
