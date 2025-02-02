@@ -22,9 +22,16 @@ public class TubesUIManager : MonoBehaviour
     [Header("Completion Panel")]
     [SerializeField] private GameObject completionPanel;
     [SerializeField] private Button completionReturnToMapButton; // New button for completion panel
-
+    [SerializeField] private TextMeshProUGUI completionBaseScoreText;
+    [SerializeField] private TextMeshProUGUI completionBonusScoreText;
     [Header("Timer Background")]
     [SerializeField] private Image timerBackground;
+
+    [Header("Stage Success Panel")]
+    [SerializeField] private GameObject stageSuccessPanel;
+    [SerializeField] private TextMeshProUGUI baseScoreText;
+    [SerializeField] private TextMeshProUGUI bonusScoreText;
+    [SerializeField] private Button nextStageButton;
 
 
     private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)
@@ -35,40 +42,39 @@ public class TubesUIManager : MonoBehaviour
        // mainMenuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMainMenu());
     }
 
-    public void ShowCompletionPanel()
+    public void ShowCompletionPanel(int baseScore, int bonusScore)
     {
         completionPanel.SetActive(true);
+        completionBaseScoreText.text = $"{baseScore}";
+
+
+        completionBonusScoreText.text = bonusScore.ToString();
 
         var playerProgress = GameProgressManager.Instance.playerProgress;
 
         if (playerProgress != null && playerProgress.gamesProgress.ContainsKey(gameIndex))
         {
             GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+            gameProgress.isCompleted = true;
 
-            if (gameProgress.CheckIfCompleted()) // Check if all stages are done
-            {
-                gameProgress.isCompleted = true; // Mark the game as fully completed
+            // Save the final overall score when game is completed
+            playerProgress.totalScore = OverallScoreManager.Instance.OverallScore;
+            GameProgressManager.Instance.SaveProgress();
 
-                // Save the final overall score when game is completed
-                playerProgress.totalScore = OverallScoreManager.Instance.OverallScore;
-                GameProgressManager.Instance.SaveProgress();
-
-                Debug.Log($"Game {gameIndex} is now marked as completed! Final Total Score: {playerProgress.totalScore}");
-
-                //  Assign the correct return action to the new completion panel button
-                completionReturnToMapButton.onClick.RemoveAllListeners();
-                completionReturnToMapButton.onClick.AddListener(() =>
-                {
-                    Debug.Log("Returning to map from Completion Panel...");
-
-                    GameProgressManager.Instance.SaveProgress(); // Save progress before leaving
-                    ReturnToMap(); // Call the function to return to the map
-                });
-
-                completionReturnToMapButton.gameObject.SetActive(true); // Make sure it's visible
-            }
+            Debug.Log($"Game {gameIndex} is now marked as completed! Final Total Score: {playerProgress.totalScore}");
         }
+        completionReturnToMapButton.onClick.RemoveAllListeners();
+        completionReturnToMapButton.onClick.AddListener(() =>
+        {
+            Debug.Log("Returning to map from Completion Panel...");
+            GameProgressManager.Instance.SaveProgress();
+            ReturnToMap();
+        });
+
+        completionReturnToMapButton.gameObject.SetActive(true);
     }
+
+
 
 
 
@@ -187,7 +193,28 @@ public class TubesUIManager : MonoBehaviour
         }
     }
 
+    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
+    {
+        if (stageSuccessPanel != null)
+        {
+            stageSuccessPanel.SetActive(true);
+            baseScoreText.text = $"{baseScore}";
+            bonusScoreText.text = bonusScore.ToString();
 
+            nextStageButton.onClick.RemoveAllListeners();
+            nextStageButton.onClick.AddListener(() =>
+            {
+                stageSuccessPanel.SetActive(false);
+                onNextStage.Invoke();
+            });
+        }
+    }
+    public int GetCurrentSortingTime()
+    {
+        int time = 0;
+        int.TryParse(sortingTimerText.text.Replace("s", ""), out time);
+        return time;
+    }
 
 
 

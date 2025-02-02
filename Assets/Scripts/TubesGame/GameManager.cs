@@ -2,7 +2,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine.SceneManagement;
 
 [System.Serializable]
@@ -124,11 +123,12 @@ public class GameManager : MonoBehaviour
         gridManager.GenerateGridElements(currentStage.numTubes);
         stackManager.GenerateStackElements(currentStage.numTubes);
 
-        uiManager.ShowCheckButton();
+  
+        uiManager.HideCheckButton();
 
-       
         StartCoroutine(CountdownAndSetupStage(currentStage));
     }
+
 
     private IEnumerator CountdownAndSetupStage(Stage stage)
     {
@@ -137,7 +137,6 @@ public class GameManager : MonoBehaviour
         if (countdownBackground != null)
         {
             countdownBackground.SetActive(true);
-       
         }
 
         while (remainingTime > 0)
@@ -148,19 +147,19 @@ public class GameManager : MonoBehaviour
         }
 
         uiManager.UpdateCountdownText("");
-        //if (countdownBackground != null)
-        //{
-        //    //countdownBackground.SetActive(false);
-        //}
+
 
         gridManager.ShuffleGridElements();
         stackManager.MoveElementsToStack(gridManager.GridElements);
 
-
         uiManager.ChangeTimerBackgroundColor(Color.red);
+
+
+        uiManager.ShowCheckButton();
 
         StartCoroutine(StartSortingTimer(stage));
     }
+
 
 
     private IEnumerator ShuffleAndDisplayStage(Stage stage)
@@ -217,6 +216,11 @@ public class GameManager : MonoBehaviour
             ShowFailurePanel("טעית בסידור המבחנות. נסה שוב!");
         }
     }
+    private int GetRemainingTime()
+    {
+        return Mathf.Max(0, uiManager.GetCurrentSortingTime()); // שולף את הזמן מהטיימר במסך
+    }
+
 
     private IEnumerator HandleFeedbackDelay(bool isCorrect)
     {
@@ -224,10 +228,55 @@ public class GameManager : MonoBehaviour
 
         if (isCorrect)
         {
-            ProgressToNextStage(); // Move to the next stage
+            Stage currentStage = stages[currentStageIndex];
+
+
+            int remainingTime = GetRemainingTime();
+
+            bool earnedBonus = remainingTime >= currentStage.bonusTimeLimit;
+
+            int baseScore = currentStage.scoreReward;
+            int bonusScore = earnedBonus ? 25 : 0; 
+
+            Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Remaining Time: {remainingTime}");
+
+            var playerProgress = GameProgressManager.Instance.playerProgress;
+
+            if (playerProgress != null && playerProgress.gamesProgress.ContainsKey(gameIndex))
+            {
+                GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+
+                if (gameProgress.stages.ContainsKey(currentStageIndex))
+                {
+                    gameProgress.stages[currentStageIndex].isCompleted = true;
+                    Debug.Log($"Stage {currentStageIndex} in Game {gameIndex} marked as completed.");
+                }
+
+                if (currentStageIndex == stages.Count - 1)
+                {
+                    gameProgress.isCompleted = true;
+                    Debug.Log($"Game {gameIndex} marked as fully completed!");
+                }
+
+                GameProgressManager.Instance.SaveProgress();
+            }
+
+            if (currentStageIndex < stages.Count - 1)
+            {
+                uiManager.ShowStageSuccessPanel(baseScore, bonusScore, () =>
+                {
+                    ProgressToNextStage();
+                });
+            }
+            else
+            {
+                uiManager.ShowCompletionPanel(baseScore, bonusScore);
+            }
         }
- 
     }
+
+
+
     private void ProgressToNextStage()
     {
         uiManager.ResetUI();
@@ -255,11 +304,10 @@ public class GameManager : MonoBehaviour
 
         currentStageIndex++;
 
-        // If there are more stages, continue
+       
         if (currentStageIndex < stages.Count)
         {
             Debug.Log($"Moving to next stage: {currentStageIndex}");
-            uiManager.ChangeTimerBackgroundColor(Color.yellow);
             ShowStageIntroduction(currentStageIndex);
         }
         else
@@ -267,10 +315,10 @@ public class GameManager : MonoBehaviour
             Debug.Log($"All stages completed for Game {gameIndex}!");
             uiManager.HideCheckButton();
             uiManager.HideInstructionPanel();
-            uiManager.ShowCompletionPanel();
+           
         }
 
-        GameProgressManager.Instance.SaveProgress(); // Ensure the progress is saved
+        GameProgressManager.Instance.SaveProgress();
     }
 
 
@@ -382,8 +430,6 @@ public class GameManager : MonoBehaviour
         uiManager.HideFailurePanel();
         ShowStageIntroduction(currentStageIndex); // Restart from the same stage
     }
-
-
 
 
 
