@@ -52,11 +52,10 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             dragSoundSource.Play();
         }
     }
-    public void OnDrag(PointerEventData eventData)
+    public virtual void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition; // Allow dragging
+        transform.position = eventData.position; // Default dragging behavior
     }
-
     public virtual void OnEndDrag(PointerEventData eventData)
     {
         Debug.Log(LOG_END_DRAG);
@@ -64,4 +63,5 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         transform.SetParent(ParentAfterDrag);
         image.raycastTarget = true; // Re-enable raycast
     }
+
 }
