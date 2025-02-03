@@ -454,7 +454,6 @@ MonoBehaviour:
   spawnArea: {fileID: 1938509785}
   totalObjects: 20
   spawnRate: 0.5
-  fallSpeed: 800
   fallDuration: 2
 --- !u!4 &220993060
 Transform:
@@ -786,7 +785,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -67, y: -29}
+  m_AnchoredPosition: {x: -67, y: -29.000004}
   m_SizeDelta: {x: -200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &568920141
@@ -863,8 +862,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 319.33, y: 9.01}
-  m_SizeDelta: {x: 263.12, y: 87.88}
+  m_AnchoredPosition: {x: 298.2, y: 11.485}
+  m_SizeDelta: {x: 292.72, y: 116.76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &568920145
 MonoBehaviour:
@@ -1447,7 +1446,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 345.8, y: -150.8}
+  m_AnchoredPosition: {x: 312, y: -161.23}
   m_SizeDelta: {x: 155.06, y: 223.32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &836562767
