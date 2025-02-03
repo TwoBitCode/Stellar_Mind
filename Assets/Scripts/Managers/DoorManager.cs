@@ -16,6 +16,20 @@ public class DoorManager : MonoBehaviour
     [SerializeField] private Sprite completedGameSprite;
     [SerializeField] private string defaultDoorText;
 
+    [Header("End Game Panel Settings")]
+    [SerializeField] private GameObject endGamePanel;
+    [SerializeField] private TextMeshProUGUI finalScoreText;
+    [SerializeField] private string endSceneName = "EndScene";
+
+    [Header("Falling Objects Settings")]
+    [SerializeField] private GameObject[] fallingPrefabs; // Prefabs of stars, coins, etc.
+    [SerializeField] private RectTransform spawnArea;
+    [SerializeField] private int totalObjects = 50; // Number of falling objects
+    [SerializeField] private float spawnRate = 0.1f; // Interval between spawns
+    //[SerializeField] private float fallSpeed = 300f; // Speed of falling objects
+    [SerializeField] private float fallDuration = 3f; // Duration of fall
+
+
     private AudioSource audioSource;
 
     private void Awake()
@@ -35,13 +49,89 @@ public class DoorManager : MonoBehaviour
 
         if (doorText != null)
         {
-            doorText.text = defaultDoorText; 
+            doorText.text = defaultDoorText;
         }
 
         Debug.Log("Finished loading progress, now initializing doors...");
         InitializeDoors();
+
+        if (CheckIfAllGamesCompleted())
+        {
+            ShowEndGamePanel();
+        }
+    }
+    private void ShowEndGamePanel()
+    {
+        if (endGamePanel != null)
+        {
+            endGamePanel.SetActive(true);
+
+           
+            // מתחיל להפעיל את הכוכבים הנופלים
+            StartCoroutine(SpawnFallingObjects());
+
+            // מעבר אוטומטי לסצנת הסיום
+            StartCoroutine(TransitionToEndScene());
+        }
+    }
+    private IEnumerator SpawnFallingObjects()
+    {
+        for (int i = 0; i < totalObjects; i++)
+        {
+            SpawnObject();
+            yield return new WaitForSeconds(spawnRate);
+        }
     }
 
+    private void SpawnObject()
+    {
+        if (fallingPrefabs.Length == 0 || spawnArea == null) return;
+
+        GameObject prefab = fallingPrefabs[Random.Range(0, fallingPrefabs.Length)];
+        GameObject newObject = Instantiate(prefab, spawnArea);
+
+        RectTransform objTransform = newObject.GetComponent<RectTransform>();
+
+        float randomX = Random.Range(-spawnArea.sizeDelta.x / 2, spawnArea.sizeDelta.x / 2);
+        float startY = spawnArea.sizeDelta.y / 2;
+
+        objTransform.anchoredPosition = new Vector2(randomX, startY);
+
+        StartCoroutine(FallAnimation(objTransform));
+    }
+
+    private IEnumerator FallAnimation(RectTransform objTransform)
+    {
+        float elapsedTime = 0f;
+        Vector2 startPos = objTransform.anchoredPosition;
+        Vector2 endPos = new Vector2(startPos.x, -spawnArea.sizeDelta.y / 2);
+
+        while (elapsedTime < fallDuration)
+        {
+            objTransform.anchoredPosition = Vector2.Lerp(startPos, endPos, elapsedTime / fallDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        Destroy(objTransform.gameObject);
+    }
+
+    private IEnumerator TransitionToEndScene()
+    {
+        yield return new WaitForSeconds(5f);
+        SceneManager.LoadScene(endSceneName);
+    }
+    private bool CheckIfAllGamesCompleted()
+    {
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+        if (playerProgress == null || playerProgress.gamesProgress == null) return false;
+
+        foreach (var game in playerProgress.gamesProgress.Values)
+        {
+            if (!game.isCompleted) return false;
+        }
+        return true;
+    }
     private void InitializeDoors()
     {
         var playerProgress = GameProgressManager.Instance.playerProgress;

@@ -43,12 +43,16 @@ public class OverallScoreManager : MonoBehaviour
 
         if (GameProgressManager.Instance != null && GameProgressManager.Instance.playerProgress != null)
         {
-            GameProgressManager.Instance.playerProgress.totalScore = overallScore; // Store in PlayerProgress
-            GameProgressManager.Instance.SaveProgress(); // Save after updating
+            GameProgressManager.Instance.playerProgress.totalScore = overallScore;
+            GameProgressManager.Instance.SaveProgress();
         }
 
         Debug.Log($"Added {score} to Overall Score. New Overall Score: {overallScore}. Progress saved.");
+
+        // Notify ScoreDisplay to temporarily change the text color if score is negative
+        ScoreDisplay.Instance?.UpdateScoreDisplay(score);
     }
+
 
 
 

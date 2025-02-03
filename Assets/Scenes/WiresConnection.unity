@@ -2532,7 +2532,6 @@ RectTransform:
   - {fileID: 1938752175}
   - {fileID: 656636975}
   - {fileID: 50476322}
-  - {fileID: 747034591}
   - {fileID: 172168417}
   - {fileID: 1536476218}
   - {fileID: 2076844443}
@@ -8941,12 +8940,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 165074423}
+  m_Father: {fileID: 783421343}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 45.4, y: -165.54}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 16.58, y: -227.32}
+  m_SizeDelta: {x: 200.76, y: 66.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &747034592
 MonoBehaviour:
@@ -8969,9 +8968,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: 
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_isRightToLeft: 1
+  m_fontAsset: {fileID: 11400000, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
+  m_sharedMaterial: {fileID: 5276240468773084248, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8995,13 +8994,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -9576,6 +9575,7 @@ RectTransform:
   - {fileID: 1567725514}
   - {fileID: 1188319031}
   - {fileID: 1952574722}
+  - {fileID: 747034591}
   - {fileID: 62732873}
   - {fileID: 1107989071}
   - {fileID: 1354069713}
@@ -10936,7 +10936,11 @@ MonoBehaviour:
   dialogues:
   - "\u05E0\u05E8\u05D0\u05D4 \u05E9\u05D9\u05E9 \u05D1\u05E2\u05D9\u05D4 \u05E2\u05DD
     \u05D4\u05DB\u05D1\u05DC\u05D9\u05DD"
-  - "\u05E0\u05E1\u05D4 \u05DC\u05D6\u05DB\u05D5\u05E8 \u05D0\u05EA \u05D4\u05D7\u05D9\u05D1\u05D5\u05E8\u05D9\u05DD!"
+  - "\u05D4\u05EA\u05D1\u05D5\u05E0\u05E0\u05D5 \u05D1\u05D7\u05D5\u05D8\u05D9\u05DD
+    \u05D5\u05D1\u05E6\u05D5\u05E8\u05D5\u05EA \u05D5\u05D6\u05DB\u05E8\u05D5 \u05D0\u05D9\u05DA
+    \u05D4\u05DD \u05DE\u05D7\u05D5\u05D1\u05E8\u05D9\u05DD. \u05DC\u05D0\u05D7\u05E8
+    \u05DE\u05DB\u05DF, \u05E0\u05E1\u05D5 \u05DC\u05D7\u05D1\u05E8 \u05D0\u05D5\u05EA\u05DD
+    \u05E0\u05DB\u05D5\u05DF"
   typingSpeed: 0.05
   startButton: {fileID: 1827040072}
   typingAudioSource: {fileID: 926337666}
@@ -21852,7 +21856,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00000071526, y: 4.9}
+  m_AnchoredPosition: {x: -1.475, y: 0.0000052452}
   m_SizeDelta: {x: 119.12, y: 45.36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2139108145
@@ -21877,15 +21881,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 64fdd9a32763a48429fd35cfd42e07a4, type: 2}
-  m_sharedMaterial: {fileID: 1988775104194890541, guid: 64fdd9a32763a48429fd35cfd42e07a4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4cf76040292c8614283ab31d063c440f, type: 2}
+  m_sharedMaterial: {fileID: 4493481264613224336, guid: 4cf76040292c8614283ab31d063c440f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4278242506
+  m_fontColor: {r: 0.7939737, g: 0.801, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -21902,13 +21906,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535

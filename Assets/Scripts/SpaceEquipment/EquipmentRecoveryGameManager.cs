@@ -238,7 +238,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             return;
         }
 
-        gameTimerText.text = $"Time Left: {Mathf.Ceil(gameTimeRemaining)}s";
+        gameTimerText.text = $"{Mathf.Ceil(gameTimeRemaining)}s";
 
         StartCoroutine(UpdateGameTimer(gameTimerText));
     }
@@ -275,6 +275,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         correctPartsPlaced++;
 
         Debug.Log($"Correct parts placed: {correctPartsPlaced}/{CurrentStage.totalParts}");
+
+        // **Show feedback when a correct part is placed**
+        EquipmentRecoveryUIManager.Instance?.ShowFeedback("יפה", Color.green);
 
         if (correctPartsPlaced >= CurrentStage.totalParts)
         {
@@ -314,6 +317,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
             // Deduct 1 point using the OverallScoreManager
             OverallScoreManager.Instance?.AddScore(-1);
+            EquipmentRecoveryUIManager.Instance?.ShowFeedback("נסה שוב", Color.red);
         }
         else
         {

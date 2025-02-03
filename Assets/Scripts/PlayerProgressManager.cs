@@ -24,7 +24,7 @@ public class PlayerProgress
     {
         playerName = name;
         selectedCharacter = character;
-        totalScore = 0;
+        totalScore = 100;
         lastPlayedGame = -1;
         lastPlayedStage = -1;
         gamesProgress = new Dictionary<int, GameProgress>();

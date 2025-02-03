@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("Game Settings")]
     [SerializeField] private float shuffleDelay = 2f; // Delay before shuffling
-    [SerializeField] private float feedbackDuration = 2f; // Duration to show feedback
+    //[SerializeField] private float feedbackDuration = 2f; // Duration to show feedback
     [SerializeField] private List<Stage> stages;
     [SerializeField] private GameObject countdownBackground; // Timer background
 
