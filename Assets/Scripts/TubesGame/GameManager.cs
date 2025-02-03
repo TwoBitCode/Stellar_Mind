@@ -11,6 +11,7 @@ public class Stage
     public bool isReverseOrder;
     public int timeLimit;
     public int scoreReward;
+    [TextArea] // Allows multi-line input in the Inspector
     public string instructionText;
     public int sortingTimeLimit;
     public int bonusTimeLimit;
@@ -237,56 +238,57 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandleFeedbackDelay(bool isCorrect)
     {
-        yield return new WaitForSeconds(feedbackDuration);
-
-        if (isCorrect)
+        if (!isCorrect)
         {
-            Stage currentStage = stages[currentStageIndex];
-
-
-            int remainingTime = GetRemainingTime();
-
-            bool earnedBonus = remainingTime >= currentStage.bonusTimeLimit;
-
-            int baseScore = currentStage.scoreReward;
-            int bonusScore = earnedBonus ? 25 : 0; 
-
-            Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Remaining Time: {remainingTime}");
-
-            var playerProgress = GameProgressManager.Instance.playerProgress;
-
-            if (playerProgress != null && playerProgress.gamesProgress.ContainsKey(gameIndex))
-            {
-                GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
-
-                if (gameProgress.stages.ContainsKey(currentStageIndex))
-                {
-                    gameProgress.stages[currentStageIndex].isCompleted = true;
-                    Debug.Log($"Stage {currentStageIndex} in Game {gameIndex} marked as completed.");
-                }
-
-                if (currentStageIndex == stages.Count - 1)
-                {
-                    gameProgress.isCompleted = true;
-                    Debug.Log($"Game {gameIndex} marked as fully completed!");
-                }
-
-                GameProgressManager.Instance.SaveProgress();
-            }
-
-            if (currentStageIndex < stages.Count - 1)
-            {
-                uiManager.ShowStageSuccessPanel(baseScore, bonusScore, () =>
-                {
-                    ProgressToNextStage();
-                });
-            }
-            else
-            {
-                uiManager.ShowCompletionPanel(baseScore, bonusScore);
-            }
+            yield break; // Exit immediately if the answer is incorrect
         }
+
+        // Execute UI & Progress Logic Immediately
+        Stage currentStage = stages[currentStageIndex];
+        int remainingTime = GetRemainingTime();
+        bool earnedBonus = remainingTime >= currentStage.bonusTimeLimit;
+        int baseScore = currentStage.scoreReward;
+        int bonusScore = earnedBonus ? 25 : 0;
+
+        Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Remaining Time: {remainingTime}");
+
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+
+        if (playerProgress != null && playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            GameProgress gameProgress = playerProgress.gamesProgress[gameIndex];
+
+            if (gameProgress.stages.ContainsKey(currentStageIndex))
+            {
+                gameProgress.stages[currentStageIndex].isCompleted = true;
+                Debug.Log($"Stage {currentStageIndex} in Game {gameIndex} marked as completed.");
+            }
+
+            if (currentStageIndex == stages.Count - 1)
+            {
+                gameProgress.isCompleted = true;
+                Debug.Log($"Game {gameIndex} marked as fully completed!");
+            }
+
+            GameProgressManager.Instance.SaveProgress();
+        }
+
+        // Skip waiting, move immediately to next UI action
+        if (currentStageIndex < stages.Count - 1)
+        {
+            uiManager.ShowStageSuccessPanel(baseScore, bonusScore, () =>
+            {
+                ProgressToNextStage();
+            });
+        }
+        else
+        {
+            uiManager.ShowCompletionPanel(baseScore, bonusScore);
+        }
+
+        yield return null; // Avoid blocking execution
     }
+
 
 
 
