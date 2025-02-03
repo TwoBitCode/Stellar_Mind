@@ -1,12 +1,12 @@
 fileFormatVersion: 2
-guid: b665778073d0ebc4f89b966786a2087e
+guid: d580629f01694154ba60deb644cf9521
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7772972749787017224
-    second: "DALL\xB7E 2025-02-03 09.00.58 - A colorful spaceship flying away from
+      213: 5849272594481090208
+    second: "DALL\xB7E 2025-02-03 08.48.02 - A colorful spaceship flying away from
       the bright, radiant sun towards a distant, mysterious galaxy. The foreground
-      features a glowing blue planet with_0"
+      features a glowing celestial body w (1)_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -128,9 +128,9 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "DALL\xB7E 2025-02-03 09.00.58 - A colorful spaceship flying away from
+      name: "DALL\xB7E 2025-02-03 08.48.02 - A colorful spaceship flying away from
         the bright, radiant sun towards a distant, mysterious galaxy. The foreground
-        features a glowing blue planet with_0"
+        features a glowing celestial body w (1)_0"
       rect:
         serializedVersion: 2
         x: 0
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8ff4720977ad02490800000000000000
-      internalID: -7772972749787017224
+      spriteID: 0ae09741f6acc2150800000000000000
+      internalID: 5849272594481090208
       vertices: []
       indices: 
       edges: []
@@ -164,7 +164,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "DALL\xB7E 2025-02-03 08.48.02 - A colorful spaceship flying away from the bright, radiant sun towards a distant, mysterious galaxy. The foreground features a glowing celestial body w (1)_0": 5849272594481090208
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
