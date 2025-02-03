@@ -72,15 +72,19 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private StrategyManager strategyManager; 
 
     private int gameIndex = 1; // Set the correct game index
-
+    private Color defaultTimerColor; // Store original color
     void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (stageCompletePanel != null) stageCompletePanel.SetActive(false);
-        if (stageTimerUI != null) stageTimerUI.SetActive(false);
+        if (stageTimerText != null)
+        {
+            defaultTimerColor = stageTimerText.color; // Save the original color
+        }
         if (endPanel != null) endPanel.SetActive(false);
 
         timerUI.SetActive(false);
+
 
         // Load last played stage from GameProgressManager for the current game index
         int savedStage = 0;
@@ -405,7 +409,7 @@ public class CableConnectionManager : MonoBehaviour
         if (IsCorrectConnection(cable, target))
         {
             Debug.Log($"Cable {cable.name} is connected to the correct target: {target.name}");
-            ShowFeedback("Correct Connection!", correctFeedbackColor);
+            ShowFeedback("יפה!", correctFeedbackColor);
 
             if (AllCablesConnected(stage))
             {
@@ -484,6 +488,10 @@ public class CableConnectionManager : MonoBehaviour
         Debug.Log("Stage completed! Hiding timer.");
 
         isStageTimerRunning = false;
+        if (stageTimerText != null)
+        {
+            stageTimerText.color = defaultTimerColor;
+        }
 
         if (timerUI != null)
         {

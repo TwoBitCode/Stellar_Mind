@@ -44,12 +44,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WiresConnection.unity
     guid: f7cba1f7db068b04080696e605c2ccef
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/NavigateTheSpaceship.unity
     guid: cc7669a7f13245443b3c6fccf60155ba
   - enabled: 1
     path: Assets/Scenes/LioAndMayaScene.unity
     guid: 4c0e8673375f87d42baab849ff827a57
+  - enabled: 1
+    path: Assets/Scenes/Final Scene.unity
+    guid: c0a91e27172e9b44b9a1545139670ef1
+  - enabled: 1
+    path: Assets/Scenes/Restart Game.unity
+    guid: 2619144b612223a40ae2f3ef08d99d25
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
