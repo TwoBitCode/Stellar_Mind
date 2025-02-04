@@ -113,7 +113,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             feedbackText.color = color;
 
             CancelInvoke(nameof(HideFeedback));
-            Invoke(nameof(HideFeedback), 2f);
+            Invoke(nameof(HideFeedback), 1f);
         }
         else
         {

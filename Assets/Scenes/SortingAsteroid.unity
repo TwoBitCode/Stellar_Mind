@@ -3450,7 +3450,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -6.2127686, y: 0}
+  m_AnchoredPosition: {x: -6.212799, y: 0}
   m_SizeDelta: {x: 12.423, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &815295197
@@ -3581,8 +3581,8 @@ MonoBehaviour:
     mixedConditions: []
   - challengeName: Mixed Challenge
     sortingRule: {fileID: 0}
-    spawnDelay: 1
-    spawnInterval: 1
+    spawnDelay: 0.6
+    spawnInterval: 0.7
     maxAsteroids: 30
     instructionsHebrew: "\u05DE\u05D9\u05D9\u05E0\u05D5 \u05D0\u05EA \u05D4\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
       \u05DC\u05E4\u05D9 \u05D4\u05E1\u05D3\u05E8 \u05D4\u05D1\u05D0:\n\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
