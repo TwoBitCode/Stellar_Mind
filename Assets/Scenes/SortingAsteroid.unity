@@ -3450,7 +3450,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -6.2125854, y: 0}
+  m_AnchoredPosition: {x: -6.2127686, y: 0}
   m_SizeDelta: {x: 12.423, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &815295197
@@ -3581,8 +3581,8 @@ MonoBehaviour:
     mixedConditions: []
   - challengeName: Mixed Challenge
     sortingRule: {fileID: 0}
-    spawnDelay: 0.5
-    spawnInterval: 0.5
+    spawnDelay: 1
+    spawnInterval: 1
     maxAsteroids: 30
     instructionsHebrew: "\u05DE\u05D9\u05D9\u05E0\u05D5 \u05D0\u05EA \u05D4\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
       \u05DC\u05E4\u05D9 \u05D4\u05E1\u05D3\u05E8 \u05D4\u05D1\u05D0:\n\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
@@ -3683,8 +3683,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3.05, y: -31.14}
-  m_SizeDelta: {x: 575.03, y: 444.59}
+  m_AnchoredPosition: {x: 12.2, y: -9.09}
+  m_SizeDelta: {x: 670.36, y: 471.28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &922456533
 MonoBehaviour:
@@ -5438,7 +5438,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 32, y: 5.69}
+  m_AnchoredPosition: {x: 4.2, y: 5.69}
   m_SizeDelta: {x: 862.65, y: 331.24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1323251067
@@ -7386,7 +7386,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 15, y: 63}
+  m_AnchoredPosition: {x: 12.2, y: 101.43}
   m_SizeDelta: {x: 638.42, y: 174.96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1810501856

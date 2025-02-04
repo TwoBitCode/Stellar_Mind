@@ -426,7 +426,7 @@ public class CableConnectionManager : MonoBehaviour
             if (AllCablesConnected(stage))
             {
                 Debug.Log("Stage completed!");
-                ShowFeedback("Stage Completed!", stageCompletedFeedbackColor);
+                //ShowFeedback("Stage Completed!", stageCompletedFeedbackColor);
 
                 if (OverallScoreManager.Instance != null)
                 {
@@ -578,7 +578,7 @@ public class CableConnectionManager : MonoBehaviour
             if (stageCompleteText != null)
             {
                 string message = currentStageData.completionMessage;
-                stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
+               // stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
             }
 
             stageCompleteBaseScoreText.text = $"{baseScore}"; // Show base score
