@@ -199,11 +199,16 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         // Stop all sounds immediately before transitioning
         StopAllSounds();
 
+        // Transition to the workspace panel
         panelTransitionManager.TransitionPanels(introPanel, workspacePanel);
 
-        // Start the workspace instructions
-        EquipmentRecoveryUIManager.Instance?.StartWorkspaceInstructions();
+        // Ensure the workspace start button is visible so the player can begin the stage
+        if (EquipmentRecoveryUIManager.Instance != null && EquipmentRecoveryUIManager.Instance.workspaceStartButton != null)
+        {
+            EquipmentRecoveryUIManager.Instance.workspaceStartButton.gameObject.SetActive(true);
+        }
     }
+
     private IEnumerator ShowRobotBeforeTurningBlack()
     {
         Debug.Log("Showing the robot for memory phase before turning black...");

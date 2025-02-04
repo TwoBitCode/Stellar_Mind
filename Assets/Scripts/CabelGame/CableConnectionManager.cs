@@ -69,7 +69,13 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI endBonusScoreText; // NEW: Bonus score display
 
     [Header("Strategy Panel")]
-    [SerializeField] private StrategyManager strategyManager; 
+    [SerializeField] private StrategyManager strategyManager;
+    [Header("Start Stage Panel")]
+    [SerializeField] private GameObject startStagePanel; // פאנל שמופיע אחרי הדיאלוג
+    [SerializeField] private Button startStageButton; // כפתור שמתחיל את השלב
+    [SerializeField] private Button dialogueNextButton; // כפתור שעובר בדיאלוג
+    [SerializeField] private Canvas dialogueCanvas; // הקנבס של הדיאלוג
+
 
     private int gameIndex = 1; // Set the correct game index
     private Color defaultTimerColor; // Store original color
@@ -107,7 +113,11 @@ public class CableConnectionManager : MonoBehaviour
         {
             Debug.LogError("GameProgressManager instance is missing! Defaulting to stage 0.");
         }
-
+        // בהתחלה, הפאנל של Start Stage יהיה מוסתר
+        if (startStagePanel != null)
+        {
+            startStagePanel.SetActive(false);
+        }
         currentStage = savedStage;
         LoadStage(currentStage);
     }
@@ -162,9 +172,14 @@ public class CableConnectionManager : MonoBehaviour
                 stage.dialoguePanel.StartDialogue(() =>
                 {
                     stage.dialoguePanel.gameObject.SetActive(false);
-                   // if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(false);
-                    StartMemoryCountdown(); // Start countdown after dialogue
+
+                    // הצגת הפאנל של Start Stage במקום להתחיל ישר את השלב
+                    if (startStagePanel != null)
+                    {
+                        startStagePanel.SetActive(true);
+                    }
                 });
+
             }
         }
         else
@@ -175,27 +190,24 @@ public class CableConnectionManager : MonoBehaviour
     }
 
 
-    public void OnStartButtonClick()
+    public void OnStartStageButtonClick()
     {
-        Debug.Log("Start button clicked, beginning memory countdown.");
-
-        if (startButton != null) startButton.SetActive(false); // Hide start button after clicking
-
-        // Hide dialogue panel & canvas if it exists
-        CableConnectionStage stage = stages[currentStage];
-        if (stage.dialoguePanel != null)
+        // הסתרת הפאנל של "Start Stage"
+        if (startStagePanel != null)
         {
-            stage.dialoguePanel.gameObject.SetActive(false);
-
-            Canvas dialogueCanvas = stage.dialoguePanel.GetComponentInParent<Canvas>();
-            if (dialogueCanvas != null)
-            {
-                dialogueCanvas.gameObject.SetActive(false);
-            }
+            startStagePanel.SetActive(false);
         }
 
+        // הסתרת הקנבס של הדיאלוג
+        if (dialogueCanvas != null)
+        {
+            dialogueCanvas.gameObject.SetActive(false);
+        }
+
+        // התחלת המשחק
         StartMemoryCountdown();
     }
+
 
 
     private void StartMemoryCountdown()
@@ -485,9 +497,11 @@ public class CableConnectionManager : MonoBehaviour
 
     private void ShowStageCompletePanel()
     {
+        isStageTimerRunning = false;
         Debug.Log("Stage completed! Hiding timer.");
 
         isStageTimerRunning = false;
+        // Hide timer UI
         if (stageTimerText != null)
         {
             stageTimerText.color = defaultTimerColor;
@@ -583,6 +597,20 @@ public class CableConnectionManager : MonoBehaviour
         }
     }
 
+    public void OnDialogueFinished()
+    {
+        // כיבוי כפתור הדיאלוג כדי למנוע לחיצות נוספות
+        if (dialogueNextButton != null)
+        {
+            dialogueNextButton.gameObject.SetActive(false);
+        }
+
+        // הצגת הפאנל של "Start Stage"
+        if (startStagePanel != null)
+        {
+            startStagePanel.SetActive(true);
+        }
+    }
 
 
 

@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(Button))] 
-public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
+[RequireComponent(typeof(Button))]
+public class UIButtonSound : MonoBehaviour, IPointerClickHandler
 {
-    public AudioSource audioSource; // מקור הסאונד
-    public AudioClip buttonSound; // הסאונד שיופעל גם בלחיצה וגם במעבר עכבר
+    public AudioSource audioSource; // Sound source
+    public AudioClip buttonSound; // Sound to play on click
 
     private void Awake()
     {
@@ -14,10 +14,6 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickH
         {
             audioSource = FindFirstObjectByType<AudioSource>();
         }
-    }
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        PlaySound();
     }
 
     public void OnPointerClick(PointerEventData eventData)

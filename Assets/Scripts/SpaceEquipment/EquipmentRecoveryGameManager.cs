@@ -30,6 +30,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     public TextMeshProUGUI levelCompleteText; // Text to display final stage points and bonus
     public UnityEngine.UI.Button levelCompleteButton; // Button to exit or return to the map
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource tickingAudioSource;
+
 
     public bool isInteractionAllowed = false; // Prevent dragging until allowed
     private void Awake()
@@ -136,17 +139,23 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         Debug.Log("Starting memory phase countdown...");
 
         countdownTimerUI.SetActive(true); // Show the full countdown UI
-
         TextMeshProUGUI countdownText = countdownTimerUI.GetComponentInChildren<TextMeshProUGUI>();
+
         if (countdownText == null)
         {
-            Debug.LogError(" Countdown Timer UI is missing a TextMeshProUGUI component.");
+            Debug.LogError("Countdown Timer UI is missing a TextMeshProUGUI component.");
             yield break;
         }
 
         float countdown = initialCountdownTime;
         while (countdown > 0)
         {
+            // Play ticking sound every second
+            if (tickingAudioSource != null && tickingAudioSource.clip != null)
+            {
+                tickingAudioSource.PlayOneShot(tickingAudioSource.clip);
+            }
+
             countdownText.text = $"{Mathf.Ceil(countdown)}";
             yield return new WaitForSeconds(1f);
             countdown -= 1f;
@@ -155,6 +164,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         countdownTimerUI.SetActive(false); // Hide the entire countdown UI
         StartCoroutine(DelayedTurnBlack()); // Proceed to turn black
     }
+
 
 
 

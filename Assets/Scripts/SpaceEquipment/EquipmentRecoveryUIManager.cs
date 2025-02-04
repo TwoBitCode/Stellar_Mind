@@ -8,35 +8,30 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
 
     [Header("UI Elements")]
     public GameObject dialoguePanel; // Panel for the character and text
-    public TextMeshProUGUI dialogueText; // Text component for the character's instructions
-    public GameObject workspaceStartButton; // Button to start the interaction in the workspace
+    //public TextMeshProUGUI dialogueText; // Text component for the character's instructions
+    public GameObject workspaceStartButton; // Button to start the stage
 
     [Header("Feedback Elements")]
-    public TextMeshProUGUI feedbackText; // Reference to the feedback text
+    public TextMeshProUGUI feedbackText;
 
-    [Header("Dialogue Settings")]
-    [TextArea(2, 5)]
-    public string[] workspaceInstructions; // Instructions for the workspace
-    public float textDisplayDuration = 2f; // Duration for each instruction to display
     [Header("Reward UI")]
     public GameObject rewardPanel;
-    public TextMeshProUGUI rewardBaseScoreText; // NEW: Base points display
-    public TextMeshProUGUI rewardBonusScoreText; // NEW: Bonus points display
+    public TextMeshProUGUI rewardBaseScoreText;
+    public TextMeshProUGUI rewardBonusScoreText;
     public UnityEngine.UI.Button continueButton;
+
     [Header("Game Over UI")]
-    public GameObject gameOverPanel; // Panel that appears when time runs out
+    public GameObject gameOverPanel;
     public UnityEngine.UI.Button restartButton;
     public UnityEngine.UI.Button returnToMapButton;
     public UnityEngine.UI.Button strategyButton;
+
     [Header("Level Complete UI")]
     public GameObject levelCompletePanel;
-    public TextMeshProUGUI levelCompleteBaseScoreText; // NEW: Base points display
-    public TextMeshProUGUI levelCompleteBonusScoreText; // NEW: Bonus points display
+    public TextMeshProUGUI levelCompleteBaseScoreText;
+    public TextMeshProUGUI levelCompleteBonusScoreText;
     public UnityEngine.UI.Button levelCompleteButton;
-    [Header("Strategy Panel")]
-    public StrategyManager strategyManager; 
 
-    private int currentInstructionIndex = 0;
     private void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
@@ -72,94 +67,26 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             });
         }
 
-        if (strategyButton != null)
+        // Ensure workspace start button is always visible
+        if (workspaceStartButton != null)
         {
-            strategyButton.onClick.AddListener(() =>
-            {
-                if (strategyManager != null)
-                {
-                    strategyManager.ShowNextStrategy(); 
-                }
-            });
+            workspaceStartButton.SetActive(true);
+            workspaceStartButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnWorkspaceStartClicked());
+        }
+
+        // Ensure dialogue panel is shown immediately
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(true);
         }
     }
 
     private void Awake()
     {
-        Instance = this; // Assign Instance without `DontDestroyOnLoad`
+        Instance = this;
         Debug.Log("EquipmentRecoveryUIManager started!");
     }
 
-
-
-    // Displays feedback text with the specified message and color
-    public void ShowFeedback(string message, Color color)
-    {
-        if (feedbackText != null)
-        {
-            feedbackText.text = message; // Set the text message
-            feedbackText.color = color; // Set the color of the text
-
-            // Hide the feedback after a delay (default is 2 seconds)
-            CancelInvoke(nameof(HideFeedback));
-            Invoke(nameof(HideFeedback), 2f); // Adjust the delay if needed
-        }
-        else
-        {
-            Debug.LogWarning("FeedbackText is not assigned in EquipmentRecoveryUIManager!");
-        }
-    }
-
-    // Clears and hides the feedback text
-    private void HideFeedback()
-    {
-        if (feedbackText != null)
-        {
-            feedbackText.text = ""; // Clear the text
-        }
-    }
-
-    // Starts the workspace instructions dialogue
-    public void StartWorkspaceInstructions()
-    {
-        Debug.Log("Starting workspace instructions...");
-
-        currentInstructionIndex = 0; // Reset the instruction index
-        dialoguePanel.SetActive(true); // Show the dialogue panel
-        workspaceStartButton.SetActive(false); // Hide the start button initially
-
-        ShowNextInstruction();
-    }
-
-    private void ShowNextInstruction()
-    {
-        if (currentInstructionIndex < workspaceInstructions.Length)
-        {
-            Debug.Log($"Showing instruction {currentInstructionIndex + 1}: {workspaceInstructions[currentInstructionIndex]}");
-            dialogueText.text = workspaceInstructions[currentInstructionIndex]; // Update text
-            currentInstructionIndex++;
-
-            // Schedule the next instruction
-            if (currentInstructionIndex < workspaceInstructions.Length)
-            {
-                Invoke(nameof(ShowNextInstruction), textDisplayDuration);
-            }
-            else
-            {
-                // Show the start button after the last instruction
-                Invoke(nameof(EnableWorkspaceStartButton), textDisplayDuration);
-            }
-        }
-    }
-
-
-    // Enables the workspace start button
-    private void EnableWorkspaceStartButton()
-    {
-        workspaceStartButton.SetActive(true); // Show the start button
-    }
-
-    // Handles the start of the workspace interaction
     public void OnWorkspaceStartClicked()
     {
         dialoguePanel.SetActive(false); // Hide the dialogue panel
@@ -167,10 +94,9 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
 
         Debug.Log("Player can now interact with the robot parts!");
 
-        // Start the first stage
         if (EquipmentRecoveryGameManager.Instance != null)
         {
-            Debug.Log("Calling StartStage() from UIManager...");
+            Debug.Log("Starting the stage...");
             EquipmentRecoveryGameManager.Instance.StartStage();
         }
         else
@@ -178,6 +104,31 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             Debug.LogError("EquipmentRecoveryGameManager.Instance is null! Cannot start the stage.");
         }
     }
+
+    public void ShowFeedback(string message, Color color)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = color;
+
+            CancelInvoke(nameof(HideFeedback));
+            Invoke(nameof(HideFeedback), 2f);
+        }
+        else
+        {
+            Debug.LogWarning("FeedbackText is not assigned in EquipmentRecoveryUIManager!");
+        }
+    }
+
+    private void HideFeedback()
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = "";
+        }
+    }
+
     public void ShowRewardPanel(int stagePoints, int bonusPoints)
     {
         if (rewardPanel != null)
@@ -187,6 +138,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             rewardBonusScoreText.text = $"{bonusPoints}";
         }
     }
+
     public void HideRewardPanel()
     {
         if (rewardPanel != null)
@@ -194,6 +146,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             rewardPanel.SetActive(false);
         }
     }
+
     public void ProceedToNextStage()
     {
         Debug.Log("Continue button clicked - proceeding to next stage.");
@@ -208,7 +161,6 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
         }
     }
 
-
     public void ShowGameOverPanel()
     {
         if (gameOverPanel != null)
@@ -216,6 +168,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             gameOverPanel.SetActive(true);
         }
     }
+
     public void HideGameOverPanel()
     {
         if (gameOverPanel != null)
@@ -223,7 +176,6 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             gameOverPanel.SetActive(false);
         }
     }
-
 
     public void ShowLevelCompletePanel(int stagePoints, int bonusPoints)
     {
@@ -234,6 +186,4 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             levelCompleteBonusScoreText.text = $"{bonusPoints}";
         }
     }
-
-
 }

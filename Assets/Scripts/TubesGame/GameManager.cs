@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour
 {
     [Header("Game Settings")]
     [SerializeField] private float shuffleDelay = 2f; // Delay before shuffling
-    //[SerializeField] private float feedbackDuration = 2f; // Duration to show feedback
     [SerializeField] private List<Stage> stages;
     [SerializeField] private GameObject countdownBackground; // Timer background
 
@@ -30,13 +29,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GridManager gridManager;
     [SerializeField] private StackManager stackManager;
     [SerializeField] private TubesUIManager uiManager;
-    //private DoorManager doorManager;
 
     private int currentStageIndex = 0;
 
     [SerializeField] private TubesGameIntroductionManager introductionManager; // Introduction manager
     [SerializeField] private GameObject errorPanel;
     private int gameIndex; // Store the game index
+    [Header("Audio")]
+    [SerializeField] private AudioSource tickingAudioSource;
+
     public static GameManager Instance { get; private set; }
 
 
@@ -154,6 +155,12 @@ public class GameManager : MonoBehaviour
 
         while (remainingTime > 0)
         {
+            // Play ticking sound once per second
+            if (tickingAudioSource != null)
+            {
+                tickingAudioSource.PlayOneShot(tickingAudioSource.clip);
+            }
+
             uiManager.UpdateCountdownText($"{remainingTime}s");
             yield return new WaitForSeconds(1f);
             remainingTime--;
@@ -174,6 +181,7 @@ public class GameManager : MonoBehaviour
         uiManager.ShowCheckButton();
         StartCoroutine(StartSortingTimer(stage));
     }
+
 
 
     private IEnumerator ShuffleAndDisplayStage(Stage stage)

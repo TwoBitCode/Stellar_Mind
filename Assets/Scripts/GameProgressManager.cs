@@ -16,11 +16,42 @@ public class GameProgressManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
 
+            // בדיקה אם יש צורך לאפס את הנתונים
+            CheckForReset();
+
             StartCoroutine(LoadProgressCoroutine());
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+    private void CheckForReset()
+    {
+        if (PlayerPrefs.HasKey("reset") && PlayerPrefs.GetInt("reset") == 1)
+        {
+            Debug.Log("Reset detected! Clearing all saved progress...");
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
+
+#if UNITY_WEBGL
+            Debug.Log("Clearing localStorage for WebGL...");
+            Application.ExternalEval("localStorage.clear(); location.reload();");
+#endif
+
+            // מחיקת קובץ השמירה אם קיים (רק בפלטפורמות תומכות)
+#if !UNITY_WEBGL
+            if (File.Exists(saveFilePath))
+            {
+                File.Delete(saveFilePath);
+                Debug.Log("Deleted progress file: " + saveFilePath);
+            }
+#endif
+
+            // יצירת פרוגרס חדש
+            playerProgress = new PlayerProgress("", "");
+            SaveProgress();
+            PlayerPrefs.SetInt("reset", 0); // מניעת איפוס מחזורי
         }
     }
 

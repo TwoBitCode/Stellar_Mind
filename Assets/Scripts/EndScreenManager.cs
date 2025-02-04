@@ -1,6 +1,6 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.IO;
 
 public class EndScreenManager : MonoBehaviour
 {
@@ -8,12 +8,19 @@ public class EndScreenManager : MonoBehaviour
     {
         Debug.Log("Restart button clicked! Resetting all data...");
 
-        // מחיקת כל הנתונים שנשמרו ב-PlayerPrefs (רלוונטי ל-WebGL ולנתונים כלליים)
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save(); // לוודא שהשינויים נשמרים
+        // סימון שהמשחק צריך להתאפס
+        PlayerPrefs.SetInt("reset", 1);
+        PlayerPrefs.Save();
 
-#if !UNITY_WEBGL
-        // מחיקת קובץ ההתקדמות אם לא ב-WebGL
+#if UNITY_WEBGL
+        // מחיקת localStorage בדפדפן דרך JavaScript
+        ResetLocalStorage();
+#else
+        // מחיקת כל הנתונים שנשמרו ב-PlayerPrefs (בפלטפורמות שאינן WebGL)
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+
+        // מחיקת קובץ ההתקדמות
         string saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
         if (File.Exists(saveFilePath))
         {
@@ -26,15 +33,29 @@ public class EndScreenManager : MonoBehaviour
         }
 #endif
 
-        // איפוס ה-GameProgressManager כדי לוודא שהמשחק מתחיל מאפס
-        if (GameProgressManager.Instance != null)
+
+        GameObject progressManager = GameObject.Find("GameProgressManager");
+        if (progressManager != null)
+        {
+            Debug.Log("Found and destroying GameProgressManager manually.");
+            Destroy(progressManager);
+        }
+        else if (GameProgressManager.Instance != null)
         {
             Debug.Log("Destroying GameProgressManager instance...");
-            Destroy(GameProgressManager.Instance.gameObject); // מוחק את האובייקט מהזיכרון
+            Destroy(GameProgressManager.Instance.gameObject);
         }
 
         // טעינת סצנת ההתחלה מחדש
         Debug.Log("Loading first scene: WelcomeScene-vivi");
         SceneManager.LoadScene("WelcomeScene-vivi");
     }
+
+#if UNITY_WEBGL
+    private void ResetLocalStorage()
+    {
+        Debug.Log("Resetting localStorage via JavaScript...");
+        Application.ExternalEval("localStorage.clear(); location.reload();");
+    }
+#endif
 }
