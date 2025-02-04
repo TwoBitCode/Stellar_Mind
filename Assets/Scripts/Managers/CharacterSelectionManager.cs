@@ -15,8 +15,6 @@ public class CharacterSelectionManager : MonoBehaviour
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private GameObject dialogueBubble;
     [SerializeField] private Button nextButton;
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip crashDialogue;
     [TextArea(3, 5)] public string crashDialogueText;
 
     private string[] dialogueLines;
@@ -83,13 +81,6 @@ public class CharacterSelectionManager : MonoBehaviour
     {
         isTyping = true;
         dialogueText.text = ""; // Clear text before typing
-
-        // **Play audio at the start of the line**
-        if (crashDialogue != null && audioSource != null)
-        {
-            audioSource.clip = crashDialogue;
-            audioSource.Play();
-        }
 
         foreach (char letter in line.ToCharArray())
         {
