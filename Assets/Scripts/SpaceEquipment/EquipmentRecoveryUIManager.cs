@@ -32,6 +32,10 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     public TextMeshProUGUI levelCompleteBonusScoreText;
     public UnityEngine.UI.Button levelCompleteButton;
 
+    [Header("Strategy Panel")]
+    public StrategyManager strategyManager;
+
+
     private void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
@@ -78,6 +82,16 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
         if (dialoguePanel != null)
         {
             dialoguePanel.SetActive(true);
+        }
+        if (strategyButton != null)
+        {
+            strategyButton.onClick.AddListener(() =>
+            {
+                if (strategyManager != null)
+                {
+                    strategyManager.ShowNextStrategy();
+                }
+            });
         }
     }
 

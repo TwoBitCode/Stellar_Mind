@@ -6087,8 +6087,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -18.79, y: 0.54222}
-  m_SizeDelta: {x: 1059.32, y: 590.63}
+  m_AnchoredPosition: {x: -1.3497, y: -0.01545}
+  m_SizeDelta: {x: 962.56, y: 599.97}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &783163725
 GameObject:
@@ -13031,6 +13031,7 @@ MonoBehaviour:
   levelCompleteBaseScoreText: {fileID: 1953183804}
   levelCompleteBonusScoreText: {fileID: 1335052530}
   levelCompleteButton: {fileID: 549274294}
+  strategyManager: {fileID: 1676024491}
 --- !u!4 &1632993241
 Transform:
   m_ObjectHideFlags: 0
@@ -16934,7 +16935,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1.3526917, y: 0}
+  m_AnchoredPosition: {x: -1.3527222, y: 0}
   m_SizeDelta: {x: 2.7054, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2094330257
