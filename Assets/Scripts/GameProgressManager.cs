@@ -99,7 +99,7 @@ public class GameProgressManager : MonoBehaviour
             // Ensure playerName is initialized if missing
             if (string.IsNullOrEmpty(playerProgress.playerName))
             {
-                playerProgress.playerName = "Player";  // Set a default name if empty
+                playerProgress.playerName = "שחקן";  // Set a default name if empty
                 Debug.LogWarning("playerName was empty! Resetting to default.");
             }
 
