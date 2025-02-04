@@ -41,13 +41,21 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Handle dragging the wire
-        Vector2 pointerDelta = eventData.delta / canvas.scaleFactor;
-        rectTransform.anchoredPosition += pointerDelta;
+        // Convert the mouse position to world space using the canvas camera
+        Vector3 newPosition;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(canvas.GetComponent<RectTransform>(), eventData.position, canvas.worldCamera, out newPosition);
+
+        // Reduce the offset to bring it even closer to the mouse
+        newPosition.y += 0.1f; // Try lowering this value further if needed
+        newPosition.x += 0.05f; // Slight horizontal adjustment (optional)
+
+        // Apply the new position
+        rectTransform.position = newPosition;
 
         // Update the wire positions during drag
         UpdateWireTipsPosition();
     }
+
 
 
     public void OnPointerUp(PointerEventData eventData)
