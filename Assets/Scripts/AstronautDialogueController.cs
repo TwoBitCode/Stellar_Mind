@@ -98,14 +98,15 @@ public class AstronautDialogueController : MonoBehaviour
         if (enableLandingShake && shakeEffect != null)
         {
             Debug.Log("Starting shake effect before scene transition...");
-            shakeEffect.StartShake(); // מפעיל רעידה
-            yield return new WaitForSeconds(2f); // מחכה קצת כדי שהרעידה תהיה מורגשת
+            shakeEffect.StartShake();
+            yield return new WaitForSeconds(2f); // Wait for shake
         }
         else
         {
-            Debug.LogWarning("hake effect skipped: Either disabled or not found.");
+            Debug.Log("Skipping shake effect: Either disabled or not found.");
         }
 
+        // Ensure we always transition to the next scene
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             Debug.Log($"Transitioning to scene: {nextSceneName}");
@@ -116,5 +117,6 @@ public class AstronautDialogueController : MonoBehaviour
             Debug.LogError("Next scene name is not set in the Inspector!");
         }
     }
+
 
 }

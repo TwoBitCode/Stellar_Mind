@@ -6,26 +6,35 @@ public class EndScreenManager : MonoBehaviour
 {
     public void RestartGame()
     {
-        // Delete Player Progress File
+        Debug.Log("Restart button clicked! Resetting all data...");
+
+        // מחיקת כל הנתונים שנשמרו ב-PlayerPrefs (רלוונטי ל-WebGL ולנתונים כלליים)
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save(); // לוודא שהשינויים נשמרים
+
+#if !UNITY_WEBGL
+        // מחיקת קובץ ההתקדמות אם לא ב-WebGL
         string saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
         if (File.Exists(saveFilePath))
         {
             File.Delete(saveFilePath);
-            Debug.Log("Player progress reset!");
+            Debug.Log("Player progress file deleted.");
+        }
+        else
+        {
+            Debug.Log("No player progress file found.");
+        }
+#endif
+
+        // איפוס ה-GameProgressManager כדי לוודא שהמשחק מתחיל מאפס
+        if (GameProgressManager.Instance != null)
+        {
+            Debug.Log("Destroying GameProgressManager instance...");
+            Destroy(GameProgressManager.Instance.gameObject); // מוחק את האובייקט מהזיכרון
         }
 
-        // Reload the first scene (Main Menu or Name Entry)
-        SceneManager.LoadScene("WelcomeScene-vivi"); // Change this to your first scene
-    }
-
-    public void ExitGame()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // Works in the Editor
-#elif UNITY_WEBGL
-            Application.OpenURL("about:blank"); // Close tab in WebGL
-#else
-            Application.Quit(); // Works in standalone builds
-#endif
+        // טעינת סצנת ההתחלה מחדש
+        Debug.Log("Loading first scene: WelcomeScene-vivi");
+        SceneManager.LoadScene("WelcomeScene-vivi");
     }
 }
