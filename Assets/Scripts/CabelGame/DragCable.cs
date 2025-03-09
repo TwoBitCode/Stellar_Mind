@@ -30,7 +30,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Dragging Started");
+        //Debug.Log("Dragging Started");
 
         // Play the drag sound only once when dragging starts
         if (CableAudioManager.Instance != null && CableAudioManager.Instance.dragSound != null)
@@ -60,7 +60,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Dragging Ended");
+        //Debug.Log("Dragging Ended");
 
         // Stop any looping sound or reset if necessary
         if (CableAudioManager.Instance != null)
@@ -99,6 +99,11 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     public void ResetToStartPosition()
     {
+        // Notify the connection manager that a mistake happened
+        if (connectionManager != null)
+        {
+            connectionManager.OnCableResetMistake();
+        }
         // Move the cable back to its starting position
         rectTransform.anchoredPosition = startPoint.anchoredPosition;
 
@@ -116,7 +121,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             lineRenderer.SetPosition(3, startPosition); // Endpoint
         }
 
-        Debug.Log("Cable reset to start position.");
+       // Debug.Log("Cable reset to start position.");
     }
 
     private RectTransform GetClosestTarget()
@@ -133,7 +138,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             float distance = Vector3.Distance(cableWorldPos, targetWorldPos);
 
             // Debug log to verify distances
-            Debug.Log($"Distance to {target.name}: {distance}");
+           // Debug.Log($"Distance to {target.name}: {distance}");
 
             // Check if the target is within the snapping range
             CableTarget targetScript = target.GetComponent<CableTarget>();
@@ -157,11 +162,11 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             // Update the LineRenderer to reflect the snapped position
             UpdateWireTipsPosition();
 
-            Debug.Log($"Snapped to target: {target.name}");
+            //Debug.Log($"Snapped to target: {target.name}");
         }
         else
         {
-            Debug.Log("No valid target to snap to.");
+            //Debug.Log("No valid target to snap to.");
         }
     }
 

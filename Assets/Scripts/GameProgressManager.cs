@@ -194,6 +194,13 @@ public class GameProgressManager : MonoBehaviour
 
             Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
         }
+        else if (stage is GameProgress.CableConnectionStageProgress cableStage)
+        {
+            cableStage.timeTaken = timeSpent;
+            cableStage.mistakes = mistakes; // Save mistakes
+
+            Debug.Log($"Saved Cable Connection Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+        }
         // Handle Tubes Game (no mistakes, only time)
         else if (stage is GameProgress.StageProgress tubesStage)
         {
@@ -201,6 +208,8 @@ public class GameProgressManager : MonoBehaviour
 
             Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s");
         }
+
+
         else
         {
             Debug.LogError("Stage is not recognized! Data was not saved correctly.");
@@ -208,7 +217,6 @@ public class GameProgressManager : MonoBehaviour
 
         SaveProgress();
     }
-
 
 
 

@@ -25,11 +25,13 @@ public class CableConnectionManager : MonoBehaviour
 
     public CableConnectionStage[] stages;
 
-    [Header("Feedback")]
+    [Header("UI References")]
+    public TextMeshProUGUI scoreText;
     public TextMeshProUGUI feedbackText;
     public float feedbackDuration = 2f;
     public Color correctFeedbackColor = Color.green;
-    public Color stageCompletedFeedbackColor = Color.blue;
+    public Color penaltyFeedbackColor = Color.red;
+    private Color defaultScoreColor=Color.black;
 
     [Header("Stage Management")]
     public int currentStage = 0;
@@ -80,6 +82,8 @@ public class CableConnectionManager : MonoBehaviour
     private int gameIndex = 1; // Set the correct game index
     private Color defaultTimerColor; // Store original color
     private float stageStartTime; // Tracks when the stage timer starts
+    private int mistakesCount = 0; // Track mistakes per stage
+
 
     void Start()
     {
@@ -115,7 +119,7 @@ public class CableConnectionManager : MonoBehaviour
         {
             Debug.LogError("GameProgressManager instance is missing! Defaulting to stage 0.");
         }
-        // בהתחלה, הפאנל של Start Stage יהיה מוסתר
+    
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(false);
@@ -134,6 +138,7 @@ public class CableConnectionManager : MonoBehaviour
         }
 
         currentStage = stageIndex;
+        mistakesCount = 0;
         CableConnectionStage stage = stages[currentStage];
         // **Turn off all other stages' panels before enabling the current stage**
         foreach (var s in stages)
@@ -428,7 +433,6 @@ public class CableConnectionManager : MonoBehaviour
             if (AllCablesConnected(stage))
             {
                 Debug.Log("Stage completed!");
-                //ShowFeedback("Stage Completed!", stageCompletedFeedbackColor);
 
                 if (OverallScoreManager.Instance != null)
                 {
@@ -449,17 +453,30 @@ public class CableConnectionManager : MonoBehaviour
         }
         else
         {
+            mistakesCount++; // Increase mistakes count
             Debug.Log($"Incorrect connection! Deducting {stage.mistakePenalty} points.");
+            
 
             if (OverallScoreManager.Instance != null)
             {
-                OverallScoreManager.Instance.AddScore(-(stage.mistakePenalty));
+                OverallScoreManager.Instance.AddScore(-stage.mistakePenalty);
+                StartCoroutine(FlashScorePenalty());
             }
 
-            ShowFeedback($"Mistake! -{stage.mistakePenalty} points", Color.red);
+            ShowFeedback($"טעות!", Color.red);
         }
     }
 
+
+    private IEnumerator FlashScorePenalty()
+    {
+        if (scoreText != null)
+        {
+            scoreText.color = penaltyFeedbackColor; // Turn red
+            yield return new WaitForSeconds(1f);
+            scoreText.color = defaultScoreColor; // Restore default color
+        }
+    }
     private bool IsCorrectConnection(DragCable cable, RectTransform target)
     {
         CableTarget targetScript = target.GetComponent<CableTarget>();
@@ -494,6 +511,30 @@ public class CableConnectionManager : MonoBehaviour
         }
         return null;
     }
+    public void OnCableResetMistake()
+    {
+        CableConnectionStage stage = stages[currentStage];
+
+        // Increase mistakes count
+        mistakesCount++;
+
+        Debug.Log($"Cable reset! Mistake counted. Total mistakes: {mistakesCount}");
+
+        // Deduct score penalty
+        if (OverallScoreManager.Instance != null)
+        {
+            OverallScoreManager.Instance.AddScore(-stage.mistakePenalty);
+            StartCoroutine(FlashScorePenalty()); // Flash penalty effect
+        }
+
+        //// Play mistake sound (if available)
+        //if (CableAudioManager.Instance != null && CableAudioManager.Instance.mistakeSound != null)
+        //{
+        //    CableAudioManager.Instance.PlayOneShot(CableAudioManager.Instance.mistakeSound);
+        //}
+
+        ShowFeedback($"טעות!", Color.red);
+    }
 
 
 
@@ -508,7 +549,6 @@ public class CableConnectionManager : MonoBehaviour
         {
             stageTimerText.color = defaultTimerColor;
         }
-
         if (timerUI != null)
         {
             timerUI.SetActive(false);
@@ -532,7 +572,7 @@ public class CableConnectionManager : MonoBehaviour
                 gameProgress.stages[currentStage].isCompleted = true;
                 // **Calculate the actual time spent on the stage**
                 float timeSpent = Time.time - stageStartTime;
-                GameProgressManager.Instance.SaveStageProgress(gameIndex, currentStage, timeSpent);
+                GameProgressManager.Instance.SaveStageProgress(gameIndex, currentStage, timeSpent, mistakesCount);
 
                 Debug.Log($"Stage {currentStage} in Game {gameIndex} marked as completed.");
             }

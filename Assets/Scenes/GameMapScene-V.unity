@@ -443,25 +443,19 @@ MonoBehaviour:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         hasStarted: 0
     - gameIndex: 1
       progress:
@@ -472,25 +466,19 @@ MonoBehaviour:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         hasStarted: 0
     - gameIndex: 2
       progress:
@@ -501,25 +489,19 @@ MonoBehaviour:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         hasStarted: 0
     - gameIndex: 3
       progress:
@@ -530,25 +512,19 @@ MonoBehaviour:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         - stageIndex: 0
           progress:
             isCompleted: 0
             score: 0
             timeTaken: 0
-            correctAsteroids: 0
-            incorrectAsteroids: 0
-            bonusAsteroids: 0
+            mistakes: 0
         hasStarted: 0
 --- !u!4 &162552666
 Transform:
@@ -2209,8 +2185,8 @@ RectTransform:
   - {fileID: 1758065693}
   - {fileID: 1456121703}
   - {fileID: 259252269}
-  - {fileID: 582278480}
   - {fileID: 141975934}
+  - {fileID: 582278480}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

@@ -112,7 +112,6 @@ public class GameProgress
     public List<SerializableStageProgress> stagesList;
     public bool hasStarted; // NEW: Track if this mini-game has started
 
-
     public GameProgress(int gameIndex)
     {
         isCompleted = false;
@@ -123,14 +122,17 @@ public class GameProgress
         {
             if (gameIndex == 3) // Asteroid Game uses `AsteroidStageProgress`
                 stages[i] = new AsteroidStageProgress();
-            else if (gameIndex == 2) // Equipment Recovery Game should use `EquipmentRecoveryStageProgress`
+            else if (gameIndex == 2) // Equipment Recovery Game
                 stages[i] = new EquipmentRecoveryStageProgress();
-            else
+            else if (gameIndex == 1) // Cable Connection Game
+                stages[i] = new CableConnectionStageProgress();
+            else // Default game
                 stages[i] = new StageProgress();
         }
 
         ConvertDictionaryToList();
     }
+
 
 
     public void ConvertDictionaryToList()
@@ -192,14 +194,14 @@ public class GameProgress
         public bool isCompleted;
         public int score;
         public float timeTaken;
-        //public int mistakes;
+        public int mistakes;
 
         public StageProgress()
         {
             isCompleted = false;
             score = 0;
             timeTaken = 0f;
-            //mistakes = 0;
+            mistakes = 0;
         }
     }
 
@@ -217,12 +219,22 @@ public class GameProgress
     }
     public class EquipmentRecoveryStageProgress : StageProgress
     {
-        public int mistakes; // Number of incorrect placements
-
         public EquipmentRecoveryStageProgress()
+        {
+            mistakes = 0; // Initialize mistakes using the inherited field
+        }
+    }
+    [System.Serializable]
+    public class CableConnectionStageProgress : StageProgress
+    {
+   
+
+        public CableConnectionStageProgress()
         {
             mistakes = 0; // Initialize mistakes to zero
         }
     }
+
+
 }
 

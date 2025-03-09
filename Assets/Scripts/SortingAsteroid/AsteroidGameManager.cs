@@ -527,6 +527,7 @@ public class AsteroidGameManager : MonoBehaviour
             currentChallengeIndex,
             gameProgress.stages[currentChallengeIndex].timeTaken, // Keep the original saved time
             incorrectAsteroidCount,
+            incorrectAsteroidCount,
             bonusAsteroidCount // Now correctly updated with full bonus count
         );
 

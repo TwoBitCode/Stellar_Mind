@@ -258,17 +258,36 @@ public class DoorManager : MonoBehaviour
     private int GetLastCompletedStage(int gameIndex)
     {
         var playerProgress = GameProgressManager.Instance.playerProgress;
-        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
-            return 0;
+
+        // Check if game progress exists
+        if (playerProgress == null || !playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            Debug.LogWarning($"No progress found for game {gameIndex}. Returning stage 0.");
+            return 0; // Default to stage 0 if no progress exists
+        }
 
         var gameProgress = playerProgress.gamesProgress[gameIndex];
+
+        // Check if there are any stages in the game
+        if (gameProgress.stages == null || gameProgress.stages.Count == 0)
+        {
+            Debug.LogWarning($"Game {gameIndex} has no stages recorded yet. Returning stage 0.");
+            return 0; // Default to 0 if no stages exist
+        }
+
+        // Find the last incomplete stage
         for (int i = 0; i < gameProgress.stages.Count; i++)
         {
             if (!gameProgress.stages[i].isCompleted)
+            {
                 return i;
+            }
         }
+
+        // If all stages are completed, return the total stage count
         return gameProgress.stages.Count;
     }
+
 
     private void DestroyMiniGameManagers()
     {
@@ -297,7 +316,7 @@ public class DoorManager : MonoBehaviour
     }
     public void OpenGameReport()
     {
-        PlayerPrefs.SetString("PreviousScene", SceneManager.GetActiveScene().name); // Save current scene
+        PlayerPrefs.SetString("LastSceneBeforeReport", SceneManager.GetActiveScene().name); // Save current scene
         PlayerPrefs.Save();
         SceneManager.LoadScene("Player report"); // Change to your actual report scene name
     }

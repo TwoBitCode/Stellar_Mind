@@ -31,12 +31,76 @@ public class GameReportManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tubesTimer2;
     [SerializeField] private TextMeshProUGUI tubesTimer3;
 
+    [Header("Cable Connection Game Report UI References")]
+    [SerializeField] private TextMeshProUGUI cableTimer1;
+    [SerializeField] private TextMeshProUGUI cableMistakes1;
+    [SerializeField] private TextMeshProUGUI cableTimer2;
+    [SerializeField] private TextMeshProUGUI cableMistakes2;
+    [SerializeField] private TextMeshProUGUI cableTimer3;
+    [SerializeField] private TextMeshProUGUI cableMistakes3;
+
     private void Start()
     {
-        previousScene = PlayerPrefs.GetString("PreviousScene", "GameMapScene-V");
+        previousScene = PlayerPrefs.GetString("LastSceneBeforeReport", "GameMapScene-V");
         LoadAsteroidGameReport();
         LoadEquipmentRecoveryGameReport();
         LoadTubesGameReport();
+        LoadCableGameReport();
+    }
+
+    private void LoadCableGameReport()
+    {
+        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
+        {
+            Debug.LogError("GameProgressManager or PlayerProgress is missing!");
+            return;
+        }
+
+        int gameIndex = 1; // Cable Connection Game Index
+        if (!GameProgressManager.Instance.playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            Debug.LogError("Cable game progress not found!");
+            return;
+        }
+
+        var cableGameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[gameIndex];
+
+        if (cableGameProgress.stages.Count == 0)
+        {
+            Debug.LogError("No Cable game stages found!");
+            return;
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            if (!cableGameProgress.stages.ContainsKey(i - 1)) continue;
+
+            var stageData = cableGameProgress.stages[i - 1];
+
+            if (stageData is GameProgress.StageProgress cableStage)
+            {
+                switch (i)
+                {
+                    case 1:
+                        cableTimer1.text = $"{cableStage.timeTaken:F2}";
+                        cableMistakes1.text = $"{cableStage.mistakes}";
+                        break;
+                    case 2:
+                        cableTimer2.text = $"{cableStage.timeTaken:F2}";
+                        cableMistakes2.text = $"{cableStage.mistakes}";
+                        break;
+                    case 3:
+                        cableTimer3.text = $"{cableStage.timeTaken:F2}";
+                        cableMistakes3.text = $"{cableStage.mistakes}";
+                        break;
+                }
+            }
+            else
+            {
+                Debug.LogError($"Stage {i - 1} is not of type StageProgress! Data may not display correctly.");
+                Debug.Log($"Stage {i - 1} actual type: {stageData.GetType().Name}");
+            }
+        }
     }
 
     public void ReturnToPreviousScene()
@@ -212,4 +276,5 @@ public class GameReportManager : MonoBehaviour
             }
         }
     }
+
 }
