@@ -121,9 +121,10 @@ public class GameProgress
 
         for (int i = 0; i < 3; i++) // Assuming 3 stages per game
         {
-            // Use AsteroidStageProgress only for the Asteroid Game (gameIndex == 3)
-            if (gameIndex == 3)
+            if (gameIndex == 3) // Asteroid Game uses `AsteroidStageProgress`
                 stages[i] = new AsteroidStageProgress();
+            else if (gameIndex == 2) // Equipment Recovery Game should use `EquipmentRecoveryStageProgress`
+                stages[i] = new EquipmentRecoveryStageProgress();
             else
                 stages[i] = new StageProgress();
         }
@@ -134,10 +135,13 @@ public class GameProgress
 
     public void ConvertDictionaryToList()
     {
-        stagesList.Clear();
-        foreach (var pair in stages)
+        if (stages != null)
         {
-            stagesList.Add(new SerializableStageProgress { stageIndex = pair.Key, progress = pair.Value });
+            stagesList.Clear();
+            foreach (var pair in stages)
+            {
+                stagesList.Add(new SerializableStageProgress { stageIndex = pair.Key, progress = pair.Value });
+            }
         }
     }
 
@@ -154,51 +158,71 @@ public class GameProgress
             }
         }
 
-        stages.Clear();
-        foreach (var item in stagesList)
+        if (stages != null)
         {
-            stages[item.stageIndex] = item.progress;
+            stages.Clear();
+            foreach (var item in stagesList)
+            {
+                stages[item.stageIndex] = item.progress;
+            }
         }
+
+
     }
 
     public bool CheckIfCompleted()
     {
-        foreach (var stage in stages.Values)
+        if (stages != null)
         {
-            if (!stage.isCompleted)
+            foreach (var stage in stages.Values)
             {
-                return false;
+                if (!stage.isCompleted)
+                {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
-}
-
-[System.Serializable]
-public class StageProgress
-{
-    public bool isCompleted;
-    public int score;
-    public float timeTaken;
-
-    public StageProgress()
+    [System.Serializable]
+    public class StageProgress
     {
-        isCompleted = false;
-        score = 0;
-        timeTaken = 0f;
+        public bool isCompleted;
+        public int score;
+        public float timeTaken;
+        //public int mistakes;
+
+        public StageProgress()
+        {
+            isCompleted = false;
+            score = 0;
+            timeTaken = 0f;
+            //mistakes = 0;
+        }
+    }
+
+    [System.Serializable]
+    public class SerializableStageProgress
+    {
+        public int stageIndex;
+        public StageProgress progress;
+    }
+    [System.Serializable]
+    public class AsteroidStageProgress : StageProgress
+    {
+        public int incorrectAsteroids;
+        public int bonusAsteroids;
+    }
+    public class EquipmentRecoveryStageProgress : StageProgress
+    {
+        public int mistakes; // Number of incorrect placements
+
+        public EquipmentRecoveryStageProgress()
+        {
+            mistakes = 0; // Initialize mistakes to zero
+        }
     }
 }
 
-[System.Serializable]
-public class SerializableStageProgress
-{
-    public int stageIndex;
-    public StageProgress progress;
-}
-[System.Serializable]
-public class AsteroidStageProgress : StageProgress
-{
-    public int incorrectAsteroids;
-    public int bonusAsteroids;
-}

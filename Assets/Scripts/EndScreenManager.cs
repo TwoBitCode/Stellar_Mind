@@ -8,62 +8,62 @@ public class EndScreenManager : MonoBehaviour
     public TextMeshProUGUI gameTimesText;
     private void Start()
     {
-        PrintAllGameTimes(); // Show game times when End Screen appears
+       // PrintAllGameTimes(); // Show game times when End Screen appears
     }
-    private void PrintAllGameTimes()
-    {
-        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
-        {
-            Debug.LogError("GameProgressManager instance or playerProgress is null!");
-            return;
-        }
+    //private void PrintAllGameTimes()
+    //{
+    //    if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
+    //    {
+    //        Debug.LogError("GameProgressManager instance or playerProgress is null!");
+    //        return;
+    //    }
 
-        var gamesProgress = GameProgressManager.Instance.playerProgress.gamesProgress;
-        if (gamesProgress == null || gamesProgress.Count == 0)
-        {
-            Debug.LogError("No game progress found!");
-            return;
-        }
+    //    var gamesProgress = GameProgressManager.Instance.playerProgress.gamesProgress;
+    //    if (gamesProgress == null || gamesProgress.Count == 0)
+    //    {
+    //        Debug.LogError("No game progress found!");
+    //        return;
+    //    }
 
-        string timesText = "Game Completion Times:\n"; // Text to display on screen
+    //    string timesText = "Game Completion Times:\n"; // Text to display on screen
 
-        foreach (var gameEntry in gamesProgress)
-        {
-            int gameIndex = gameEntry.Key;
-            GameProgress gameProgress = gameEntry.Value;
+    //    foreach (var gameEntry in gamesProgress)
+    //    {
+    //        int gameIndex = gameEntry.Key;
+    //        GameProgress gameProgress = gameEntry.Value;
 
-            if (gameProgress == null)
-            {
-                Debug.LogWarning($"Game {gameIndex} progress is null, skipping...");
-                continue;
-            }
+    //        if (gameProgress == null)
+    //        {
+    //            Debug.LogWarning($"Game {gameIndex} progress is null, skipping...");
+    //            continue;
+    //        }
 
-            timesText += $"Game {gameIndex}:\n";
+    //        timesText += $"Game {gameIndex}:\n";
 
-            foreach (var stageEntry in gameProgress.stages)
-            {
-                int stageIndex = stageEntry.Key;
-                StageProgress stage = stageEntry.Value;
+    //        foreach (var stageEntry in gameProgress.stages)
+    //        {
+    //            int stageIndex = stageEntry.Key;
+    //            StageProgress stage = stageEntry.Value;
 
-                if (stage == null)
-                {
-                    Debug.LogWarning($"Game {gameIndex}, Stage {stageIndex} progress is null, skipping...");
-                    continue;
-                }
+    //            if (stage == null)
+    //            {
+    //                Debug.LogWarning($"Game {gameIndex}, Stage {stageIndex} progress is null, skipping...");
+    //                continue;
+    //            }
 
-                timesText += $"- Stage {stageIndex}: {stage.timeTaken:F2} sec\n";
-            }
-        }
+    //            timesText += $"- Stage {stageIndex}: {stage.timeTaken:F2} sec\n";
+    //        }
+    //    }
 
-        if (gameTimesText != null)
-        {
-            gameTimesText.text = timesText; // Update the UI text
-        }
-        else
-        {
-            Debug.LogError("GameTimesText UI element is not assigned in the Inspector!");
-        }
-    }
+    //    if (gameTimesText != null)
+    //    {
+    //        gameTimesText.text = timesText; // Update the UI text
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("GameTimesText UI element is not assigned in the Inspector!");
+    //    }
+    //}
 
     public void RestartGame()
     {

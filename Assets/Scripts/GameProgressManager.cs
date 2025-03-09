@@ -153,7 +153,7 @@ public class GameProgressManager : MonoBehaviour
     {
         return playerProgress.lastPlayedGame;
     }
-    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int incorrectAsteroids = 0, int bonusAsteroids = 0)
+    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int mistakes = 0, int incorrectAsteroids = 0, int bonusAsteroids = 0)
     {
         if (playerProgress == null)
         {
@@ -177,22 +177,38 @@ public class GameProgressManager : MonoBehaviour
 
         var stage = gameProgress.stages[stageIndex];
 
-        // Ensure we use AsteroidStageProgress for the asteroid game
-        if (stage is AsteroidStageProgress asteroidStage)
+        // Handle Asteroid Game
+        if (stage is GameProgress.AsteroidStageProgress asteroidStage)
         {
             asteroidStage.timeTaken = timeSpent;
             asteroidStage.incorrectAsteroids = incorrectAsteroids;
             asteroidStage.bonusAsteroids = bonusAsteroids;
 
-            Debug.Log($"Saved Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
+            Debug.Log($"Saved Asteroid Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
+        }
+        // Handle Equipment Recovery Game
+        else if (stage is GameProgress.EquipmentRecoveryStageProgress equipStage)
+        {
+            equipStage.timeTaken = timeSpent;
+            equipStage.mistakes = mistakes; // Store mistakes separately
+
+            Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+        }
+        // Handle Tubes Game (no mistakes, only time)
+        else if (stage is GameProgress.StageProgress tubesStage)
+        {
+            tubesStage.timeTaken = timeSpent;
+
+            Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s");
         }
         else
         {
-            Debug.LogError("Stage is not an AsteroidStageProgress object! Data was not saved correctly.");
+            Debug.LogError("Stage is not recognized! Data was not saved correctly.");
         }
 
         SaveProgress();
     }
+
 
 
 

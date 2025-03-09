@@ -339,58 +339,45 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     {
         Debug.Log($"Stage {CurrentStage.stageName} complete!");
 
-        // **Stop game timer**
         StopAllCoroutines();
         gameTimerUI.SetActive(false);
-
         isGameActive = false;
         isInteractionAllowed = false;
 
-        int totalPointsEarned = CurrentStage.pointsForCompletion;
-        int bonusEarned = 0;
+        //  Track time and mistakes
+        float timeSpent = Time.time - stageStartTime;
+        int mistakes = penalizedParts.Count;
 
-        if (gameTimeRemaining >= CurrentStage.bonusTimeThreshold)
-        {
-            bonusEarned = CurrentStage.bonusPoints;
-            Debug.Log($" Bonus achieved! {bonusEarned} points awarded.");
-        }
-
-        int stageScore = totalPointsEarned + bonusEarned;
-        OverallScoreManager.Instance?.AddScore(stageScore);
-
-        Debug.Log($"Player earned {stageScore} points in this stage!");
+        Debug.Log($"Stage completed in {timeSpent:F2} sec with {mistakes} mistakes.");
 
         int currentGameIndex = GetCurrentGameIndex();
         int currentStage = currentStageIndex;
-        float timeSpent = Time.time - stageStartTime;
-        // **Explicitly mark the last stage as completed**
-        GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].stages[currentStage].isCompleted = true;
-        GameProgressManager.Instance.SaveStageProgress(currentGameIndex, currentStage, timeSpent);
-        GameProgressManager.Instance.SaveProgress();
-        Debug.Log($"Final stage {currentStage} marked as completed!");
 
-        // **Check if all stages are completed**
+        // Save time + mistakes for this game
+        GameProgressManager.Instance.SaveStageProgress(currentGameIndex, currentStage, timeSpent, mistakes);
+        GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].stages[currentStage].isCompleted = true;
+        GameProgressManager.Instance.SaveProgress();
+
+        Debug.Log($"Stage {currentStage} saved! Time: {timeSpent:F2} sec, Mistakes: {mistakes}");
+
+        // If all stages are done, mark game as completed
         if (GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].CheckIfCompleted())
         {
             Debug.Log("All stages completed! Marking the entire mini-game as completed...");
-
-            // **Mark the entire mini-game as completed**
             GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].isCompleted = true;
             GameProgressManager.Instance.SaveProgress();
-
-            // **Show the Level Complete panel**
-            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(totalPointsEarned, bonusEarned);
-
-            Debug.Log("Mini-game completed! Level Complete Panel displayed.");
-            return; // **Exit here to prevent continuing to another stage**
+            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(CurrentStage.pointsForCompletion, CurrentStage.bonusPoints);
+            return;
         }
 
-        // **If not the last stage, show the reward panel**
+        //  If there are more stages, show reward panel
         if (currentStageIndex < stages.Count - 1)
         {
-            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(totalPointsEarned, bonusEarned);
+            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(CurrentStage.pointsForCompletion, CurrentStage.bonusPoints);
         }
     }
+
+
 
 
 
