@@ -56,6 +56,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Drafts/NavigateTheSpaceship.unity
     guid: cc7669a7f13245443b3c6fccf60155ba
+  - enabled: 1
+    path: Assets/Scenes/Player report.unity
+    guid: d3e98d0392bece2479a75f671d7a007a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

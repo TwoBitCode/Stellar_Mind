@@ -117,7 +117,12 @@ public class GameProgressManager : MonoBehaviour
 
                 for (int i = 0; i < 4; i++)
                 {
-                    playerProgress.gamesProgressList.Add(new SerializableGameProgress { gameIndex = i, progress = new GameProgress() });
+                    // Ensure Asteroid Game uses `GameProgress(3)`
+                    playerProgress.gamesProgressList.Add(new SerializableGameProgress
+                    {
+                        gameIndex = i,
+                        progress = new GameProgress(i) // Pass game index 
+                    });
                 }
             }
 
@@ -135,6 +140,7 @@ public class GameProgressManager : MonoBehaviour
     }
 
 
+
     public void SetLastPlayedGame(int gameIndex, int stageIndex)
     {
         playerProgress.lastPlayedGame = gameIndex;
@@ -147,7 +153,7 @@ public class GameProgressManager : MonoBehaviour
     {
         return playerProgress.lastPlayedGame;
     }
-    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent)
+    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int incorrectAsteroids = 0, int bonusAsteroids = 0)
     {
         if (playerProgress == null)
         {
@@ -169,11 +175,25 @@ public class GameProgressManager : MonoBehaviour
             return;
         }
 
-        gameProgress.stages[stageIndex].timeTaken = timeSpent;
-        Debug.Log($"Saved time {timeSpent:F2} sec for Game {gameIndex}, Stage {stageIndex}");
+        var stage = gameProgress.stages[stageIndex];
+
+        // Ensure we use AsteroidStageProgress for the asteroid game
+        if (stage is AsteroidStageProgress asteroidStage)
+        {
+            asteroidStage.timeTaken = timeSpent;
+            asteroidStage.incorrectAsteroids = incorrectAsteroids;
+            asteroidStage.bonusAsteroids = bonusAsteroids;
+
+            Debug.Log($"Saved Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
+        }
+        else
+        {
+            Debug.LogError("Stage is not an AsteroidStageProgress object! Data was not saved correctly.");
+        }
 
         SaveProgress();
     }
+
 
 
     public int GetLastPlayedStage()

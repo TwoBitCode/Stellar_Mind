@@ -31,6 +31,8 @@ public class AsteroidGameManager : MonoBehaviour
     private float spawnInterval;
     private int maxAsteroids;
     private int currentAsteroidCount;
+    private int incorrectAsteroidCount;
+    private int bonusAsteroidCount;
     private bool isGameActive;
     private float spawnTimer;
     private List<GameObject> activeAsteroids = new List<GameObject>(); // Track spawned asteroids
@@ -43,6 +45,9 @@ public class AsteroidGameManager : MonoBehaviour
     private int totalAsteroidCount = 0;
     private OverallScoreManager overallScoreManager;
     private float stageStartTime; // Tracks when the stage timer starts
+
+
+
 
     public AsteroidChallenge CurrentChallenge =>
         (currentChallengeIndex >= 0 && currentChallengeIndex < asteroidChallengeManager.Challenges.Count) ?
@@ -269,11 +274,15 @@ public class AsteroidGameManager : MonoBehaviour
         timerManager.SetDuration(currentChallenge.timeLimit);
         timerManager.StartTimer();
 
-        // Start tracking time from when the timer begins
+        // Reset asteroid stats for this stage
         stageStartTime = Time.time;
+        correctAsteroidCount = 0;
+        incorrectAsteroidCount = 0;
+        bonusAsteroidCount = 0;
 
         Debug.Log($"Game started! Timer set to {currentChallenge.timeLimit} seconds.");
     }
+
 
 
 
@@ -486,11 +495,14 @@ public class AsteroidGameManager : MonoBehaviour
         int basePoints = currentChallenge.completionScore;
         OverallScoreManager.Instance?.AddScore(basePoints);
 
-        int bonusAsteroids = correctAsteroidCount - currentChallenge.minCorrectAsteroids;
-        int bonusPoints = bonusAsteroids > 0 ? bonusAsteroids * currentChallenge.bonusScore : 0;
+        // Update `bonusAsteroidCount` at the END of the challenge
+        bonusAsteroidCount = correctAsteroidCount - currentChallenge.minCorrectAsteroids;
+        if (bonusAsteroidCount < 0) bonusAsteroidCount = 0;
+
+        int bonusPoints = bonusAsteroidCount * currentChallenge.bonusScore;
         OverallScoreManager.Instance?.AddScore(bonusPoints);
 
-        Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}");
+        Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}, Bonus Asteroids: {bonusAsteroidCount}");
 
         int currentGameIndex = 3;
         GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
@@ -500,11 +512,7 @@ public class AsteroidGameManager : MonoBehaviour
             gameProgress.stages[currentChallengeIndex].isCompleted = true;
             gameProgress.stages[currentChallengeIndex].score = OverallScoreManager.Instance?.OverallScore ?? 0;
 
-            // **Calculate time spent from when the stage timer started**
-            float timeSpent = Time.time - stageStartTime;
-            GameProgressManager.Instance.SaveStageProgress(currentGameIndex, currentChallengeIndex, timeSpent);
-
-            Debug.Log($"Challenge {currentChallengeIndex} marked as completed in {timeSpent:F2} sec.");
+            Debug.Log($"Challenge {currentChallengeIndex} marked as completed.");
         }
 
         if (gameProgress.CheckIfCompleted())
@@ -512,6 +520,15 @@ public class AsteroidGameManager : MonoBehaviour
             gameProgress.isCompleted = true;
             Debug.Log("All challenges in this game are completed!");
         }
+
+        // FINAL SAVE: Update progress now with CORRECT bonus count
+        GameProgressManager.Instance.SaveStageProgress(
+            currentGameIndex,
+            currentChallengeIndex,
+            gameProgress.stages[currentChallengeIndex].timeTaken, // Keep the original saved time
+            incorrectAsteroidCount,
+            bonusAsteroidCount // Now correctly updated with full bonus count
+        );
 
         GameProgressManager.Instance.SaveProgress();
 
@@ -524,6 +541,9 @@ public class AsteroidGameManager : MonoBehaviour
             uiManager.ShowCompletionPanel(basePoints, bonusPoints, ReturnToMainMenu);
         }
     }
+
+
+
 
 
 
@@ -578,7 +598,7 @@ public class AsteroidGameManager : MonoBehaviour
 
 
 
-    public void OnAsteroidSorted(bool isCorrect)
+    public void OnAsteroidSorted(bool isCorrect, bool isBonus)
     {
         if (currentChallenge == null) return;
 
@@ -588,26 +608,36 @@ public class AsteroidGameManager : MonoBehaviour
         {
             correctAsteroidCount++;
         }
+        else if (isBonus)
+        {
+            bonusAsteroidCount++; //  Keep tracking bonus asteroids even after min correct reached
+        }
         else
         {
-            // Deduct penalty for incorrect drop
+            incorrectAsteroidCount++;
             int penaltyPoints = currentChallenge.scorePenalty;
             OverallScoreManager.Instance?.AddScore(-penaltyPoints);
             Debug.Log($"Penalty applied: -{penaltyPoints}");
         }
 
-        if (totalAsteroidCount >= currentChallenge.maxAsteroids)
+        // Save the time when min correct asteroids are reached
+        if (correctAsteroidCount == currentChallenge.minCorrectAsteroids)
         {
-            if (correctAsteroidCount >= currentChallenge.minCorrectAsteroids)
-            {
-                CompleteChallenge();
-            }
-            else
-            {
-                FailChallenge();
-            }
+            float timeToComplete = Time.time - stageStartTime;
+            Debug.Log($"Minimum correct asteroids reached! Saving time: {timeToComplete:F2} sec");
+
+            int currentGameIndex = 3;
+            GameProgressManager.Instance.SaveStageProgress(
+                currentGameIndex,
+                currentChallengeIndex,
+                timeToComplete, // Save time at the right moment
+                incorrectAsteroidCount,
+                bonusAsteroidCount // Bonus asteroids not fully counted yet!
+            );
         }
     }
+
+
     private IEnumerator ProceedToNextChallenge()
     {
         //yield return new WaitForSeconds(3f);

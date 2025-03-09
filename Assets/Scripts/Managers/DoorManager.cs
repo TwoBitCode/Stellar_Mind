@@ -149,9 +149,11 @@ public class DoorManager : MonoBehaviour
                 continue;
             }
 
+            // Ensure the correct `GameProgress` type is assigned
             if (!playerProgress.gamesProgress.ContainsKey(i))
             {
-                playerProgress.gamesProgress[i] = new GameProgress();
+                // If this is the Asteroid Game (index 3), use `GameProgress(3)`
+                playerProgress.gamesProgress[i] = new GameProgress(i);
             }
 
             bool isCompleted = playerProgress.gamesProgress[i].CheckIfCompleted();
@@ -166,6 +168,7 @@ public class DoorManager : MonoBehaviour
 
         GameProgressManager.Instance.SaveProgress();
     }
+
 
     private void SetDoorAsCompleted(GameObject door)
     {
@@ -292,4 +295,11 @@ public class DoorManager : MonoBehaviour
             audioSource.PlayOneShot(clip);
         }
     }
+    public void OpenGameReport()
+    {
+        PlayerPrefs.SetString("PreviousScene", SceneManager.GetActiveScene().name); // Save current scene
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("Player report"); // Change to your actual report scene name
+    }
+
 }
