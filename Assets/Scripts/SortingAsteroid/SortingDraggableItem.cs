@@ -163,7 +163,8 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
         GlobalAsteroidSoundManager.Instance?.PlayCorrectSound();
 
         // Notify the game manager
-        gameManager?.OnAsteroidSorted(true);
+        gameManager?.OnAsteroidSorted(true, IsDistractor); // Pass IsDistractor as the second parameter
+
 
         if (correctIndicatorPrefab != null)
         {
@@ -179,7 +180,8 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
         GlobalAsteroidSoundManager.Instance?.PlayIncorrectSound();
 
         // Notify the game manager
-        gameManager?.OnAsteroidSorted(false);
+        gameManager?.OnAsteroidSorted(false, IsDistractor); // Pass IsDistractor as the second parameter
+
 
         if (incorrectIndicatorPrefab != null)
         {
@@ -206,7 +208,7 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
             rectTransform.localPosition = localPoint; // Move inside UI
         }
 
-        Debug.Log($"Asteroid {gameObject.name} is moving to: {rectTransform.localPosition}");
+       // Debug.Log($"Asteroid {gameObject.name} is moving to: {rectTransform.localPosition}");
     }
 
 

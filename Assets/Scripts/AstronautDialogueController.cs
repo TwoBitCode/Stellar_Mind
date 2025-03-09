@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI; // Added for Button support
 
 public class AstronautDialogueController : MonoBehaviour
 {
@@ -16,11 +17,14 @@ public class AstronautDialogueController : MonoBehaviour
     public string[] mayaDialogue;
 
     [Header("Scene Management")]
-    public string nextSceneName; // ניתן לעריכה ב-Inspector
-    public bool enableLandingShake = false; // בודק האם צריך רעידה
+    public string nextSceneName; // Set in Inspector
+    public bool enableLandingShake = false; // Determines if shake effect happens
 
     private UILandingShakeEffect shakeEffect;
     private int currentLine = 0;
+
+    [Header("Skip Button")]
+    public Button skipButton; // The button that always appears to skip everything
 
     void Start()
     {
@@ -29,7 +33,18 @@ public class AstronautDialogueController : MonoBehaviour
             endButton.SetActive(false);
         }
 
-        // מחפש את הרעידה אם היא קיימת
+        // Ensure Skip Button is active and ready to skip
+        if (skipButton != null)
+        {
+            skipButton.gameObject.SetActive(true); // Always visible
+            skipButton.onClick.AddListener(SkipDialogue);
+        }
+        else
+        {
+            Debug.LogError("Skip Button is not assigned in the Inspector!");
+        }
+
+        // Find shake effect if available
         shakeEffect = FindFirstObjectByType<UILandingShakeEffect>();
 
         if (dialogueAudio.Length > 0 && audioSource != null)
@@ -41,9 +56,10 @@ public class AstronautDialogueController : MonoBehaviour
             Debug.LogError("Dialogue audio or audio source is missing!");
         }
     }
+
     IEnumerator TypeText(TMP_Text textComponent, string dialogueLine)
     {
-        textComponent.text = ""; // Clear the text before typing
+        textComponent.text = ""; // Clear text before typing
         foreach (char letter in dialogueLine.ToCharArray())
         {
             textComponent.text += letter;
@@ -87,7 +103,6 @@ public class AstronautDialogueController : MonoBehaviour
         }
     }
 
-
     public void ContinueToNextScene()
     {
         StartCoroutine(ShakeAndChangeScene());
@@ -106,7 +121,6 @@ public class AstronautDialogueController : MonoBehaviour
             Debug.Log("Skipping shake effect: Either disabled or not found.");
         }
 
-        // Ensure we always transition to the next scene
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             Debug.Log($"Transitioning to scene: {nextSceneName}");
@@ -118,5 +132,10 @@ public class AstronautDialogueController : MonoBehaviour
         }
     }
 
-
+    // New method to skip dialogue and instantly move to the next scene
+    public void SkipDialogue()
+    {
+        Debug.Log("Skipping dialogue and moving to next scene.");
+        SceneManager.LoadScene(nextSceneName);
+    }
 }

@@ -5892,10 +5892,11 @@ MonoBehaviour:
     mistakePenalty: 5
     bonusThreshold: 5
     bonusPoints: 20
+  scoreText: {fileID: 1825885714}
   feedbackText: {fileID: 747034592}
   feedbackDuration: 2
   correctFeedbackColor: {r: 0, g: 1, b: 0, a: 1}
-  stageCompletedFeedbackColor: {r: 0, g: 0, b: 1, a: 1}
+  penaltyFeedbackColor: {r: 1, g: 0, b: 0, a: 1}
   currentStage: 0
   panelTransitionHandler: {fileID: 1295639630}
   timerText: {fileID: 2139108145}

@@ -16,7 +16,6 @@ public class GameProgressManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
 
-            // בדיקה אם יש צורך לאפס את הנתונים
             CheckForReset();
 
             StartCoroutine(LoadProgressCoroutine());
@@ -39,7 +38,7 @@ public class GameProgressManager : MonoBehaviour
             Application.ExternalEval("localStorage.clear(); location.reload();");
 #endif
 
-            // מחיקת קובץ השמירה אם קיים (רק בפלטפורמות תומכות)
+
 #if !UNITY_WEBGL
             if (File.Exists(saveFilePath))
             {
@@ -48,10 +47,10 @@ public class GameProgressManager : MonoBehaviour
             }
 #endif
 
-            // יצירת פרוגרס חדש
+
             playerProgress = new PlayerProgress("", "");
             SaveProgress();
-            PlayerPrefs.SetInt("reset", 0); // מניעת איפוס מחזורי
+            PlayerPrefs.SetInt("reset", 0);
         }
     }
 
@@ -118,7 +117,12 @@ public class GameProgressManager : MonoBehaviour
 
                 for (int i = 0; i < 4; i++)
                 {
-                    playerProgress.gamesProgressList.Add(new SerializableGameProgress { gameIndex = i, progress = new GameProgress() });
+                    // Ensure Asteroid Game uses `GameProgress(3)`
+                    playerProgress.gamesProgressList.Add(new SerializableGameProgress
+                    {
+                        gameIndex = i,
+                        progress = new GameProgress(i) // Pass game index 
+                    });
                 }
             }
 
@@ -136,6 +140,7 @@ public class GameProgressManager : MonoBehaviour
     }
 
 
+
     public void SetLastPlayedGame(int gameIndex, int stageIndex)
     {
         playerProgress.lastPlayedGame = gameIndex;
@@ -148,6 +153,72 @@ public class GameProgressManager : MonoBehaviour
     {
         return playerProgress.lastPlayedGame;
     }
+    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int mistakes = 0, int incorrectAsteroids = 0, int bonusAsteroids = 0)
+    {
+        if (playerProgress == null)
+        {
+            Debug.LogError("SaveStageProgress: playerProgress is null!");
+            return;
+        }
+
+        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            Debug.LogError($"SaveStageProgress: Invalid game index {gameIndex}");
+            return;
+        }
+
+        var gameProgress = playerProgress.gamesProgress[gameIndex];
+
+        if (!gameProgress.stages.ContainsKey(stageIndex))
+        {
+            Debug.LogError($"SaveStageProgress: Invalid stage index {stageIndex} for game {gameIndex}");
+            return;
+        }
+
+        var stage = gameProgress.stages[stageIndex];
+
+        // Handle Asteroid Game
+        if (stage is GameProgress.AsteroidStageProgress asteroidStage)
+        {
+            asteroidStage.timeTaken = timeSpent;
+            asteroidStage.incorrectAsteroids = incorrectAsteroids;
+            asteroidStage.bonusAsteroids = bonusAsteroids;
+
+            Debug.Log($"Saved Asteroid Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
+        }
+        // Handle Equipment Recovery Game
+        else if (stage is GameProgress.EquipmentRecoveryStageProgress equipStage)
+        {
+            equipStage.timeTaken = timeSpent;
+            equipStage.mistakes = mistakes; // Store mistakes separately
+
+            Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+        }
+        else if (stage is GameProgress.CableConnectionStageProgress cableStage)
+        {
+            cableStage.timeTaken = timeSpent;
+            cableStage.mistakes = mistakes; // Save mistakes
+
+            Debug.Log($"Saved Cable Connection Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+        }
+        // Handle Tubes Game (no mistakes, only time)
+        else if (stage is GameProgress.StageProgress tubesStage)
+        {
+            tubesStage.timeTaken = timeSpent;
+
+            Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s");
+        }
+
+
+        else
+        {
+            Debug.LogError("Stage is not recognized! Data was not saved correctly.");
+        }
+
+        SaveProgress();
+    }
+
+
 
     public int GetLastPlayedStage()
     {

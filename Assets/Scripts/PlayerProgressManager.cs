@@ -29,36 +29,30 @@ public class PlayerProgress
         lastPlayedStage = -1;
         gamesProgress = new Dictionary<int, GameProgress>();
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++) // Assuming 4 different games
         {
-            gamesProgress[i] = new GameProgress();
+            if (i == 3) // Asteroid Game uses `AsteroidStageProgress`
+                gamesProgress[i] = new GameProgress(3);
+            else
+                gamesProgress[i] = new GameProgress(i);
         }
+
     }
 
     public void ConvertListToDictionary()
     {
-        if (gamesProgress == null)
-        {
-            Debug.LogError("ConvertListToDictionary: gamesProgress was NULL before conversion! Creating new Dictionary.");
-            gamesProgress = new Dictionary<int, GameProgress>();
-        }
-
         if (gamesProgressList == null || gamesProgressList.Count == 0)
         {
-            Debug.LogError("ConvertListToDictionary: gamesProgressList is EMPTY! Initializing new data.");
+            Debug.LogError("ConvertListToDictionary: gamesProgressList is EMPTY! Initializing.");
             gamesProgressList = new List<SerializableGameProgress>();
 
-            // אם רשימת המשחקים ריקה, ניצור 4 משחקים ריקים כדי למנוע באגים
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++) // Assuming 4 different games
             {
-                gamesProgressList.Add(new SerializableGameProgress { gameIndex = i, progress = new GameProgress() });
+                gamesProgressList.Add(new SerializableGameProgress { gameIndex = i, progress = new GameProgress(i) });
             }
         }
 
-        Debug.Log($"ConvertListToDictionary: Converting {gamesProgressList.Count} games...");
-
         gamesProgress.Clear();
-
         foreach (var item in gamesProgressList)
         {
             if (item == null)
@@ -70,7 +64,7 @@ public class PlayerProgress
             if (item.progress == null)
             {
                 Debug.LogError($"ConvertListToDictionary: Game {item.gameIndex} has NULL progress! Creating new GameProgress.");
-                item.progress = new GameProgress();
+                item.progress = new GameProgress(item.gameIndex);
             }
 
             item.progress.ConvertListToDictionary();
@@ -89,19 +83,23 @@ public class PlayerProgress
             Debug.LogError("ConvertDictionaryToList: gamesProgress is EMPTY or NULL! Creating default data.");
             gamesProgress = new Dictionary<int, GameProgress>();
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++) // Assuming 4 different games
             {
-                gamesProgress[i] = new GameProgress();
+                if (i == 3) // Asteroid Game uses `AsteroidStageProgress`
+                    gamesProgress[i] = new GameProgress(3);
+                else
+                    gamesProgress[i] = new GameProgress(i);
             }
         }
 
         gamesProgressList.Clear();
         foreach (var pair in gamesProgress)
         {
-            pair.Value.ConvertDictionaryToList(); // ממיר גם את השלבים בתוך המשחק
+            pair.Value.ConvertDictionaryToList();
             gamesProgressList.Add(new SerializableGameProgress { gameIndex = pair.Key, progress = pair.Value });
         }
     }
+
 
 
 }
@@ -114,26 +112,38 @@ public class GameProgress
     public List<SerializableStageProgress> stagesList;
     public bool hasStarted; // NEW: Track if this mini-game has started
 
-
-    public GameProgress()
+    public GameProgress(int gameIndex)
     {
         isCompleted = false;
         stages = new Dictionary<int, StageProgress>();
         stagesList = new List<SerializableStageProgress>();
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) // Assuming 3 stages per game
         {
-            stages[i] = new StageProgress();
+            if (gameIndex == 3) // Asteroid Game uses `AsteroidStageProgress`
+                stages[i] = new AsteroidStageProgress();
+            else if (gameIndex == 2) // Equipment Recovery Game
+                stages[i] = new EquipmentRecoveryStageProgress();
+            else if (gameIndex == 1) // Cable Connection Game
+                stages[i] = new CableConnectionStageProgress();
+            else // Default game
+                stages[i] = new StageProgress();
         }
+
         ConvertDictionaryToList();
     }
 
+
+
     public void ConvertDictionaryToList()
     {
-        stagesList.Clear();
-        foreach (var pair in stages)
+        if (stages != null)
         {
-            stagesList.Add(new SerializableStageProgress { stageIndex = pair.Key, progress = pair.Value });
+            stagesList.Clear();
+            foreach (var pair in stages)
+            {
+                stagesList.Add(new SerializableStageProgress { stageIndex = pair.Key, progress = pair.Value });
+            }
         }
     }
 
@@ -150,43 +160,81 @@ public class GameProgress
             }
         }
 
-        stages.Clear();
-        foreach (var item in stagesList)
+        if (stages != null)
         {
-            stages[item.stageIndex] = item.progress;
+            stages.Clear();
+            foreach (var item in stagesList)
+            {
+                stages[item.stageIndex] = item.progress;
+            }
         }
+
+
     }
 
     public bool CheckIfCompleted()
     {
-        foreach (var stage in stages.Values)
+        if (stages != null)
         {
-            if (!stage.isCompleted)
+            foreach (var stage in stages.Values)
             {
-                return false;
+                if (!stage.isCompleted)
+                {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
-}
-
-[System.Serializable]
-public class StageProgress
-{
-    public bool isCompleted;
-    public int score;
-
-    public StageProgress()
+    [System.Serializable]
+    public class StageProgress
     {
-        isCompleted = false;
-        score = 0;
+        public bool isCompleted;
+        public int score;
+        public float timeTaken;
+        public int mistakes;
+
+        public StageProgress()
+        {
+            isCompleted = false;
+            score = 0;
+            timeTaken = 0f;
+            mistakes = 0;
+        }
     }
+
+    [System.Serializable]
+    public class SerializableStageProgress
+    {
+        public int stageIndex;
+        public StageProgress progress;
+    }
+    [System.Serializable]
+    public class AsteroidStageProgress : StageProgress
+    {
+        public int incorrectAsteroids;
+        public int bonusAsteroids;
+    }
+    public class EquipmentRecoveryStageProgress : StageProgress
+    {
+        public EquipmentRecoveryStageProgress()
+        {
+            mistakes = 0; // Initialize mistakes using the inherited field
+        }
+    }
+    [System.Serializable]
+    public class CableConnectionStageProgress : StageProgress
+    {
+   
+
+        public CableConnectionStageProgress()
+        {
+            mistakes = 0; // Initialize mistakes to zero
+        }
+    }
+
+
 }
 
-[System.Serializable]
-public class SerializableStageProgress
-{
-    public int stageIndex;
-    public StageProgress progress;
-}
