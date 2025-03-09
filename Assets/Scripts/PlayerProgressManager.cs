@@ -176,11 +176,13 @@ public class StageProgress
 {
     public bool isCompleted;
     public int score;
+    public float timeTaken;
 
     public StageProgress()
     {
         isCompleted = false;
         score = 0;
+        timeTaken = 0f;
     }
 }
 

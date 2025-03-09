@@ -35,18 +35,14 @@ public class AsteroidGameManager : MonoBehaviour
     private float spawnTimer;
     private List<GameObject> activeAsteroids = new List<GameObject>(); // Track spawned asteroids
     [SerializeField] private List<GameObject> allDropZones; // Drag all drop zones here in the Inspector
-    //private int correctAsteroids = 0;
-    //private int remainingTime;
-    // private bool isChallengeFailed = false;
     [Header("Game Components")]
     [SerializeField] private AsteroidsGameIntroductionManager introductionManager;
-    //private bool isIntroductionComplete = false;
     public string LeftType { get; private set; }
     public string RightType { get; private set; }
     private int correctAsteroidCount = 0;
     private int totalAsteroidCount = 0;
-    //private bool isChallengeActive = false;
     private OverallScoreManager overallScoreManager;
+    private float stageStartTime; // Tracks when the stage timer starts
 
     public AsteroidChallenge CurrentChallenge =>
         (currentChallengeIndex >= 0 && currentChallengeIndex < asteroidChallengeManager.Challenges.Count) ?
@@ -273,8 +269,12 @@ public class AsteroidGameManager : MonoBehaviour
         timerManager.SetDuration(currentChallenge.timeLimit);
         timerManager.StartTimer();
 
+        // Start tracking time from when the timer begins
+        stageStartTime = Time.time;
+
         Debug.Log($"Game started! Timer set to {currentChallenge.timeLimit} seconds.");
     }
+
 
 
     // Adjusted SpawnAsteroid method based on your earlier version
@@ -499,7 +499,12 @@ public class AsteroidGameManager : MonoBehaviour
         {
             gameProgress.stages[currentChallengeIndex].isCompleted = true;
             gameProgress.stages[currentChallengeIndex].score = OverallScoreManager.Instance?.OverallScore ?? 0;
-            Debug.Log($"Challenge {currentChallengeIndex} marked as completed.");
+
+            // **Calculate time spent from when the stage timer started**
+            float timeSpent = Time.time - stageStartTime;
+            GameProgressManager.Instance.SaveStageProgress(currentGameIndex, currentChallengeIndex, timeSpent);
+
+            Debug.Log($"Challenge {currentChallengeIndex} marked as completed in {timeSpent:F2} sec.");
         }
 
         if (gameProgress.CheckIfCompleted())
@@ -519,6 +524,7 @@ public class AsteroidGameManager : MonoBehaviour
             uiManager.ShowCompletionPanel(basePoints, bonusPoints, ReturnToMainMenu);
         }
     }
+
 
 
     private void FailChallenge()

@@ -16,7 +16,6 @@ public class GameProgressManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
 
-            // בדיקה אם יש צורך לאפס את הנתונים
             CheckForReset();
 
             StartCoroutine(LoadProgressCoroutine());
@@ -39,7 +38,7 @@ public class GameProgressManager : MonoBehaviour
             Application.ExternalEval("localStorage.clear(); location.reload();");
 #endif
 
-            // מחיקת קובץ השמירה אם קיים (רק בפלטפורמות תומכות)
+
 #if !UNITY_WEBGL
             if (File.Exists(saveFilePath))
             {
@@ -48,10 +47,10 @@ public class GameProgressManager : MonoBehaviour
             }
 #endif
 
-            // יצירת פרוגרס חדש
+
             playerProgress = new PlayerProgress("", "");
             SaveProgress();
-            PlayerPrefs.SetInt("reset", 0); // מניעת איפוס מחזורי
+            PlayerPrefs.SetInt("reset", 0);
         }
     }
 
@@ -148,6 +147,34 @@ public class GameProgressManager : MonoBehaviour
     {
         return playerProgress.lastPlayedGame;
     }
+    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent)
+    {
+        if (playerProgress == null)
+        {
+            Debug.LogError("SaveStageProgress: playerProgress is null!");
+            return;
+        }
+
+        if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
+        {
+            Debug.LogError($"SaveStageProgress: Invalid game index {gameIndex}");
+            return;
+        }
+
+        var gameProgress = playerProgress.gamesProgress[gameIndex];
+
+        if (!gameProgress.stages.ContainsKey(stageIndex))
+        {
+            Debug.LogError($"SaveStageProgress: Invalid stage index {stageIndex} for game {gameIndex}");
+            return;
+        }
+
+        gameProgress.stages[stageIndex].timeTaken = timeSpent;
+        Debug.Log($"Saved time {timeSpent:F2} sec for Game {gameIndex}, Stage {stageIndex}");
+
+        SaveProgress();
+    }
+
 
     public int GetLastPlayedStage()
     {

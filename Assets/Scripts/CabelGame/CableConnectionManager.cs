@@ -79,6 +79,8 @@ public class CableConnectionManager : MonoBehaviour
 
     private int gameIndex = 1; // Set the correct game index
     private Color defaultTimerColor; // Store original color
+    private float stageStartTime; // Tracks when the stage timer starts
+
     void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
@@ -290,15 +292,15 @@ public class CableConnectionManager : MonoBehaviour
     }
 
 
-
-
     private void StartStageTimer()
     {
         Debug.Log("Stage timer started!");
 
         isStageTimerRunning = true;
 
-        // No need to enable a separate timer UI; it's already active
+        // Start tracking time when the stage begins
+        stageStartTime = Time.time;
+
         StartCoroutine(StageTimerCoroutine());
     }
 
@@ -528,6 +530,10 @@ public class CableConnectionManager : MonoBehaviour
             if (gameProgress.stages.ContainsKey(currentStage))
             {
                 gameProgress.stages[currentStage].isCompleted = true;
+                // **Calculate the actual time spent on the stage**
+                float timeSpent = Time.time - stageStartTime;
+                GameProgressManager.Instance.SaveStageProgress(gameIndex, currentStage, timeSpent);
+
                 Debug.Log($"Stage {currentStage} in Game {gameIndex} marked as completed.");
             }
 

@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
     private bool isInteractionAllowed = false; // Initially false
 
     public bool IsInteractionAllowed => isInteractionAllowed; // Public getter
+    private float stageStartTime; // Tracks when the stage timer starts
+
 
     public void SetInteractionAllowed(bool allowed)
     {
@@ -269,6 +271,9 @@ public class GameManager : MonoBehaviour
             if (gameProgress.stages.ContainsKey(currentStageIndex))
             {
                 gameProgress.stages[currentStageIndex].isCompleted = true;
+                float timeSpent = Time.time - stageStartTime;
+                GameProgressManager.Instance.SaveStageProgress(gameIndex, currentStageIndex, timeSpent);
+
                 Debug.Log($"Stage {currentStageIndex} in Game {gameIndex} marked as completed.");
             }
 
@@ -392,7 +397,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator StartSortingTimer(Stage stage)
     {
         int remainingTime = stage.sortingTimeLimit;
-
+        stageStartTime = Time.time;
         while (remainingTime > 0)
         {
             uiManager.UpdateSortingTimer($"{remainingTime}s"); // עדכון התצוגה של הזמן
