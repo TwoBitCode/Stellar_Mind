@@ -35,7 +35,7 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private Button nextStageButton;
 
     [Header("Strategy Panel")]
-    [SerializeField] private StrategyManager strategyManager; 
+    [SerializeField] private StrategyManager strategyManager;
 
 
     private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)

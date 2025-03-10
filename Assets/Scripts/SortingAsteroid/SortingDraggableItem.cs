@@ -48,17 +48,17 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
             {
                 // Mixed challenge: visuals are based on assigned size and color
                 GetComponent<Image>().color = AssignedColor;
-               // Debug.Log($"Asteroid visuals applied for Mixed Challenge: {AssignedType}");
+                // Debug.Log($"Asteroid visuals applied for Mixed Challenge: {AssignedType}");
             }
             else if (currentChallenge.sortingRule is ISortingRule rule)
             {
                 // Regular challenge: Apply sorting rule visuals
                 rule.ApplyVisuals(gameObject);
-               // Debug.Log($"Asteroid visuals applied for Regular Challenge: {AssignedType}");
+                // Debug.Log($"Asteroid visuals applied for Regular Challenge: {AssignedType}");
             }
             else
             {
-               // Debug.LogError("No valid sorting rule or mixed conditions found!");
+                // Debug.LogError("No valid sorting rule or mixed conditions found!");
             }
         }
         else
@@ -132,7 +132,7 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
             }
         }
 
-      //  Debug.Log($"Incorrect placement for AssignedType: {AssignedType}");
+        //  Debug.Log($"Incorrect placement for AssignedType: {AssignedType}");
         HandleIncorrectPlacement();
     }
 
@@ -149,7 +149,7 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
         }
 
         bool isOver = RectTransformUtility.RectangleContainsScreenPoint(area, Input.mousePosition, Camera.main);
-       // Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
+        // Debug.Log($"Checking placement over {dropZoneName}: {isOver}");
         return isOver;
     }
 
@@ -208,7 +208,7 @@ public class SortingDraggableItem : DraggableItem, IDragHandler
             rectTransform.localPosition = localPoint; // Move inside UI
         }
 
-       // Debug.Log($"Asteroid {gameObject.name} is moving to: {rectTransform.localPosition}");
+        // Debug.Log($"Asteroid {gameObject.name} is moving to: {rectTransform.localPosition}");
     }
 
 

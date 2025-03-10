@@ -227,7 +227,7 @@ public class GameProgress
     [System.Serializable]
     public class CableConnectionStageProgress : StageProgress
     {
-   
+
 
         public CableConnectionStageProgress()
         {

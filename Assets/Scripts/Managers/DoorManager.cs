@@ -66,7 +66,7 @@ public class DoorManager : MonoBehaviour
         {
             endGamePanel.SetActive(true);
 
-           
+
             // מתחיל להפעיל את הכוכבים הנופלים
             StartCoroutine(SpawnFallingObjects());
 
@@ -174,7 +174,7 @@ public class DoorManager : MonoBehaviour
     {
         if (door.TryGetComponent(out UnityEngine.UI.Image image) && completedGameSprite != null)
         {
-            image.sprite = completedGameSprite; 
+            image.sprite = completedGameSprite;
         }
         else
         {

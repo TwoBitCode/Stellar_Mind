@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
         gridManager.GenerateGridElements(currentStage.numTubes);
         stackManager.GenerateStackElements(currentStage.numTubes);
 
-  
+
         uiManager.HideCheckButton();
 
         StartCoroutine(CountdownAndSetupStage(currentStage));
@@ -220,7 +220,7 @@ public class GameManager : MonoBehaviour
     // Check the player's answer
     private void CheckAnswer()
     {
-        StopAllCoroutines(); 
+        StopAllCoroutines();
 
         Stage currentStage = stages[currentStageIndex];
         bool isCorrect = currentStage.isReverseOrder ? CheckReverseOrder() : CheckOriginalOrder();
@@ -332,7 +332,7 @@ public class GameManager : MonoBehaviour
 
         currentStageIndex++;
 
-       
+
         if (currentStageIndex < stages.Count)
         {
             Debug.Log($"Moving to next stage: {currentStageIndex}");
@@ -343,7 +343,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"All stages completed for Game {gameIndex}!");
             uiManager.HideCheckButton();
             uiManager.HideInstructionPanel();
-           
+
         }
 
         GameProgressManager.Instance.SaveProgress();
@@ -390,8 +390,8 @@ public class GameManager : MonoBehaviour
     }
     public void OnStartStageButtonClicked()
     {
-        uiManager.HideInstructionPanel(); 
-        StartStage(); 
+        uiManager.HideInstructionPanel();
+        StartStage();
     }
 
     private IEnumerator StartSortingTimer(Stage stage)
@@ -405,16 +405,16 @@ public class GameManager : MonoBehaviour
             remainingTime--;
         }
 
-        uiManager.UpdateSortingTimer(""); 
+        uiManager.UpdateSortingTimer("");
         ShowFailurePanel("הזמן לסידור המבחנות נגמר. נסה שוב!");
     }
     private int CalculateScore(int remainingTime, Stage stage)
     {
         if (remainingTime >= stage.bonusTimeLimit)
         {
-            return stage.scoreReward + 25; 
+            return stage.scoreReward + 25;
         }
-        return stage.scoreReward; 
+        return stage.scoreReward;
     }
     private void ShowFailurePanel(string message)
     {
@@ -445,7 +445,7 @@ public class GameManager : MonoBehaviour
     private void ResetGameState()
     {
         currentStageIndex = 0;  // Ensure stage starts from zero on next return
-       // gameIndex = -1;  // Reset game index to prevent reloading issues
+                                // gameIndex = -1;  // Reset game index to prevent reloading issues
 
         Debug.Log("Game state reset before exiting.");
     }

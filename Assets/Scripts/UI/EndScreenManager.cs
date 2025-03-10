@@ -13,7 +13,7 @@ public class EndScreenManager : MonoBehaviour
     {
         PlayerPrefs.SetString("LastSceneBeforeReport", SceneManager.GetActiveScene().name);
         PlayerPrefs.Save();
-       
+
 
     }
     public void OpenGameReport()
@@ -22,19 +22,19 @@ public class EndScreenManager : MonoBehaviour
         SceneManager.LoadScene("Player report");
     }
     private void DestroyAllPersistentObjects()
-{
+    {
         // **Find all objects marked as DontDestroyOnLoad**
         GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
         foreach (GameObject obj in allObjects)
-    {
-        if (obj.scene.buildIndex == -1) // Objects in DontDestroyOnLoad
         {
-            Debug.Log($"Destroying persistent object: {obj.name}");
-            Destroy(obj);
+            if (obj.scene.buildIndex == -1) // Objects in DontDestroyOnLoad
+            {
+                Debug.Log($"Destroying persistent object: {obj.name}");
+                Destroy(obj);
+            }
         }
     }
-}
     public void RestartGame()
     {
         Debug.Log("Restart button clicked! Resetting all data...");
@@ -48,7 +48,7 @@ public class EndScreenManager : MonoBehaviour
         // מחיקת localStorage בדפדפן דרך JavaScript
         ResetLocalStorage();
 #else
-        
+
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
 

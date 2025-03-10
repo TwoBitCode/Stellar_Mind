@@ -121,7 +121,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             lineRenderer.SetPosition(3, startPosition); // Endpoint
         }
 
-       // Debug.Log("Cable reset to start position.");
+        // Debug.Log("Cable reset to start position.");
     }
 
     private RectTransform GetClosestTarget()
@@ -138,7 +138,7 @@ public class DragCable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             float distance = Vector3.Distance(cableWorldPos, targetWorldPos);
 
             // Debug log to verify distances
-           // Debug.Log($"Distance to {target.name}: {distance}");
+            // Debug.Log($"Distance to {target.name}: {distance}");
 
             // Check if the target is within the snapping range
             CableTarget targetScript = target.GetComponent<CableTarget>();

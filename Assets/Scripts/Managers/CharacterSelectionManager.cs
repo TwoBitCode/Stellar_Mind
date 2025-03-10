@@ -43,7 +43,7 @@ public class CharacterSelectionManager : MonoBehaviour
             TransitionToGame();
             return;
         }
-       // FindFirstObjectByType<ShakeUI>().StartShake();
+        // FindFirstObjectByType<ShakeUI>().StartShake();
 
         Debug.Log("No valid character found. Showing selection.");
         boyButton.SetActive(false);

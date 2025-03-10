@@ -52,17 +52,17 @@ public class ColorSortingRule : ScriptableObject, ISortingRule
                 if (typeColorPairs.Exists(pair => pair.color == draggableItem.AssignedColor))
                 {
                     image.color = draggableItem.AssignedColor; // Apply color
-                   // Debug.Log($"Asteroid visuals applied. Type: {draggableItem.AssignedType}, Color: {draggableItem.AssignedColor}");
+                                                               // Debug.Log($"Asteroid visuals applied. Type: {draggableItem.AssignedType}, Color: {draggableItem.AssignedColor}");
                 }
                 else
                 {
-                   // Debug.LogWarning("AssignedColor is invalid or not found in typeColorPairs, applying default color.");
+                    // Debug.LogWarning("AssignedColor is invalid or not found in typeColorPairs, applying default color.");
                     image.color = Color.white; // Default fallback
                 }
             }
             else
             {
-               // Debug.LogError("SortingDraggableItem component missing on the asteroid!");
+                // Debug.LogError("SortingDraggableItem component missing on the asteroid!");
             }
         }
         else
@@ -80,11 +80,11 @@ public class ColorSortingRule : ScriptableObject, ISortingRule
             var randomPair = unassignedPairs[Random.Range(0, unassignedPairs.Count)];
             assignedTypes.Add(randomPair.typeName); // Mark as assigned
 
-           // Debug.Log($"Randomly selected type: {randomPair.typeName}, Color: {randomPair.color}");
+            // Debug.Log($"Randomly selected type: {randomPair.typeName}, Color: {randomPair.color}");
             return randomPair.typeName;
         }
 
-       // Debug.LogWarning("No unassigned types available. Resetting assigned types.");
+        // Debug.LogWarning("No unassigned types available. Resetting assigned types.");
         ResetAssignedTypes(); // Reset when all types are used
         return GetRandomType(); // Retry
     }

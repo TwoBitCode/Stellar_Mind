@@ -60,7 +60,7 @@ public class GameProgressManager : MonoBehaviour
 
         LoadProgress();
 
-        yield return new WaitForSeconds(0.1f); 
+        yield return new WaitForSeconds(0.1f);
         Debug.Log("Finished loading progress, now ready to use data.");
     }
 

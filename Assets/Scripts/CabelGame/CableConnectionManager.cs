@@ -31,7 +31,7 @@ public class CableConnectionManager : MonoBehaviour
     public float feedbackDuration = 2f;
     public Color correctFeedbackColor = Color.green;
     public Color penaltyFeedbackColor = Color.red;
-    private Color defaultScoreColor=Color.black;
+    private Color defaultScoreColor = Color.black;
 
     [Header("Stage Management")]
     public int currentStage = 0;
@@ -119,7 +119,7 @@ public class CableConnectionManager : MonoBehaviour
         {
             Debug.LogError("GameProgressManager instance is missing! Defaulting to stage 0.");
         }
-    
+
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(false);
@@ -455,7 +455,7 @@ public class CableConnectionManager : MonoBehaviour
         {
             mistakesCount++; // Increase mistakes count
             Debug.Log($"Incorrect connection! Deducting {stage.mistakePenalty} points.");
-            
+
 
             if (OverallScoreManager.Instance != null)
             {
@@ -624,7 +624,7 @@ public class CableConnectionManager : MonoBehaviour
             if (stageCompleteText != null)
             {
                 string message = currentStageData.completionMessage;
-               // stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
+                // stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
             }
 
             stageCompleteBaseScoreText.text = $"{baseScore}"; // Show base score

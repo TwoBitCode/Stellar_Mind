@@ -51,12 +51,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (!canDrag || (GameManager.Instance != null && !GameManager.Instance.IsInteractionAllowed))
         {
-           // Debug.Log($"{gameObject.name}: Dragging is not allowed.");
+            // Debug.Log($"{gameObject.name}: Dragging is not allowed.");
             isCurrentlyDragging = false;
             return;
         }
 
-      //  Debug.Log($"{gameObject.name}: Begin drag");
+        //  Debug.Log($"{gameObject.name}: Begin drag");
         isCurrentlyDragging = true;
 
         ParentAfterDrag = transform.parent;
@@ -68,7 +68,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (GlobalSoundManager.Instance != null)
         {
             GlobalSoundManager.Instance.PlayDragSound();
-         //   Debug.Log("Global drag sound started.");
+            //   Debug.Log("Global drag sound started.");
         }
     }
 
@@ -84,7 +84,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (!isCurrentlyDragging) return; // Do nothing if drag never started
 
-       // Debug.Log("End drag");
+        // Debug.Log("End drag");
         isCurrentlyDragging = false; // Reset flag when drag ends
         transform.SetParent(ParentAfterDrag);
         image.raycastTarget = true;

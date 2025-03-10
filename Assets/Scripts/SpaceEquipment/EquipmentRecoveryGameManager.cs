@@ -9,7 +9,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 {
     public static EquipmentRecoveryGameManager Instance;
 
-    [Header("Stage Settings")] 
+    [Header("Stage Settings")]
     public List<EquipmentRecoveryStage> stages;
     public List<GameObject> stagePanels;
 
@@ -516,28 +516,28 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
 
     public void ReturnToMap()
-{
-    Debug.Log("Returning to map...");
-
-    int currentGameIndex = GetCurrentGameIndex();
-    if (currentGameIndex == -1) return;
-
-    int firstUnfinishedStage = GetFirstUnfinishedStage(currentGameIndex);
-
-    Debug.Log($"Saving first unfinished stage: {firstUnfinishedStage} for game {currentGameIndex}");
-
-    // **Save the correct unfinished stage**
-    GameProgressManager.Instance.SetLastPlayedGame(currentGameIndex, firstUnfinishedStage);
-    GameProgressManager.Instance.SaveProgress();
-
-    // **Deactivate all panels before leaving**
-    foreach (var panel in stagePanels)
     {
-        panel.SetActive(false);
-    }
+        Debug.Log("Returning to map...");
 
-    SceneManager.LoadScene("GameMapScene-V");
-}
+        int currentGameIndex = GetCurrentGameIndex();
+        if (currentGameIndex == -1) return;
+
+        int firstUnfinishedStage = GetFirstUnfinishedStage(currentGameIndex);
+
+        Debug.Log($"Saving first unfinished stage: {firstUnfinishedStage} for game {currentGameIndex}");
+
+        // **Save the correct unfinished stage**
+        GameProgressManager.Instance.SetLastPlayedGame(currentGameIndex, firstUnfinishedStage);
+        GameProgressManager.Instance.SaveProgress();
+
+        // **Deactivate all panels before leaving**
+        foreach (var panel in stagePanels)
+        {
+            panel.SetActive(false);
+        }
+
+        SceneManager.LoadScene("GameMapScene-V");
+    }
 
 
 
