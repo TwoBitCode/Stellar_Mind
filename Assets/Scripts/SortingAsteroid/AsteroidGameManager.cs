@@ -27,7 +27,7 @@ public class AsteroidGameManager : MonoBehaviour
 
     public AsteroidChallengeManager ChallengeManager => asteroidChallengeManager;
 
-   // private float spawnDelay;
+    // private float spawnDelay;
     private float spawnInterval;
     private int maxAsteroids;
     private int currentAsteroidCount;
@@ -247,12 +247,12 @@ public class AsteroidGameManager : MonoBehaviour
 
         if (currentChallenge == null || currentChallenge.dropZoneAssignments == null)
         {
-         //   Debug.LogError("Invalid challenge setup!");
+            //   Debug.LogError("Invalid challenge setup!");
             return;
         }
 
         // Do nothing. Keep the manually assigned drop zones in Unity
-       // Debug.Log("Using predefined drop zone assignments. No randomization applied.");
+        // Debug.Log("Using predefined drop zone assignments. No randomization applied.");
     }
 
 
@@ -335,7 +335,7 @@ public class AsteroidGameManager : MonoBehaviour
         else
         {
             // Distractor logic: no sorting applied, purely for confusion
-           // Debug.Log("Spawned distractor asteroid!");
+            // Debug.Log("Spawned distractor asteroid!");
         }
 
         // Track the spawned asteroid
@@ -382,7 +382,7 @@ public class AsteroidGameManager : MonoBehaviour
                     image.color = condition.color; // Apply color
                 }
 
-               // Debug.Log($"Mixed Challenge: Assigned {draggableItem.AssignedType} with Scale: {scale} to {condition.dropZoneName}");
+                // Debug.Log($"Mixed Challenge: Assigned {draggableItem.AssignedType} with Scale: {scale} to {condition.dropZoneName}");
             }
             else if (currentChallenge.sortingRule is ISortingRule rule)
             {
@@ -394,12 +394,12 @@ public class AsteroidGameManager : MonoBehaviour
             }
             else
             {
-               // Debug.LogError("No valid sorting rule or mixed conditions found for the challenge.");
+                // Debug.LogError("No valid sorting rule or mixed conditions found for the challenge.");
             }
         }
         else
         {
-           // Debug.LogError("SortingDraggableItem component is missing on the asteroid.");
+            // Debug.LogError("SortingDraggableItem component is missing on the asteroid.");
         }
     }
 
@@ -444,7 +444,7 @@ public class AsteroidGameManager : MonoBehaviour
             {
                 returnButton.onClick.RemoveAllListeners();
                 returnButton.onClick.AddListener(ReturnToMainMenu);
-               //returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return to Map";
+                //returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return to Map";
             }
         }
 
@@ -483,7 +483,7 @@ public class AsteroidGameManager : MonoBehaviour
             }
             else
             {
-               // Debug.LogWarning($"Drop zone with name {zoneName} not found!");
+                // Debug.LogWarning($"Drop zone with name {zoneName} not found!");
             }
         }
     }
