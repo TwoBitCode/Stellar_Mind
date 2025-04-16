@@ -239,7 +239,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         gameTimeRemaining = CurrentStage.stageTimeLimit;
         isGameActive = true;
 
-        gameTimerUI.SetActive(true);
+        gameTimerUI.SetActive(false);
         TextMeshProUGUI gameTimerText = gameTimerUI.GetComponentInChildren<TextMeshProUGUI>();
 
         if (gameTimerText == null)
@@ -250,7 +250,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
         gameTimerText.text = $"{Mathf.Ceil(gameTimeRemaining)}s";
         stageStartTime = Time.time;
-        StartCoroutine(UpdateGameTimer(gameTimerText));
+       // StartCoroutine(UpdateGameTimer(gameTimerText));
     }
 
 
@@ -271,8 +271,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         // Only trigger GameOver if the player hasn't already won
         if (isGameActive)
         {
-            gameTimerUI.SetActive(false);
-            GameOver();
+            //gameTimerUI.SetActive(false);
+            //GameOver();
+            yield break;
         }
     }
 

@@ -73,10 +73,10 @@ public class CableConnectionManager : MonoBehaviour
     [Header("Strategy Panel")]
     [SerializeField] private StrategyManager strategyManager;
     [Header("Start Stage Panel")]
-    [SerializeField] private GameObject startStagePanel; // פאנל שמופיע אחרי הדיאלוג
-    [SerializeField] private Button startStageButton; // כפתור שמתחיל את השלב
-    [SerializeField] private Button dialogueNextButton; // כפתור שעובר בדיאלוג
-    [SerializeField] private Canvas dialogueCanvas; // הקנבס של הדיאלוג
+    [SerializeField] private GameObject startStagePanel; 
+    [SerializeField] private Button startStageButton;
+    [SerializeField] private Button dialogueNextButton; 
+    [SerializeField] private Canvas dialogueCanvas; 
 
 
     private int gameIndex = 1; // Set the correct game index
@@ -199,19 +199,18 @@ public class CableConnectionManager : MonoBehaviour
 
     public void OnStartStageButtonClick()
     {
-        // הסתרת הפאנל של "Start Stage"
+
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(false);
         }
 
-        // הסתרת הקנבס של הדיאלוג
+
         if (dialogueCanvas != null)
         {
             dialogueCanvas.gameObject.SetActive(false);
         }
 
-        // התחלת המשחק
         StartMemoryCountdown();
     }
 
@@ -272,6 +271,11 @@ public class CableConnectionManager : MonoBehaviour
 
         // **Start the stage timer IMMEDIATELY, before transition starts**
         StartStageTimer();
+        if (timerUI != null)
+        {
+            timerUI.SetActive(false); // Hides the timer before cable interaction starts
+        }
+
 
         // **Trigger spark effect and transition to disconnected panel**
         if (panelTransitionHandler != null)
@@ -321,8 +325,11 @@ public class CableConnectionManager : MonoBehaviour
             yield return null;
         }
 
+
+        // ShowGameOverPanel();
         isStageTimerRunning = false;
-        ShowGameOverPanel();
+        yield break; // Stop silently — player continues
+
     }
 
 

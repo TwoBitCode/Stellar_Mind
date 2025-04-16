@@ -225,7 +225,25 @@ public class TubesUIManager : MonoBehaviour
         int.TryParse(sortingTimerText.text.Replace("s", ""), out time);
         return time;
     }
+    public void HideCountdownText()
+    {
+        UpdateCountdownText(""); // Just clears the text
+    }
 
+    public void HideTimerBackground()
+    {
+        if (timerBackground != null)
+        {
+            timerBackground.enabled = false;
+        }
+    }
+    public void ShowTimerBackground()
+    {
+        if (timerBackground != null)
+        {
+            timerBackground.enabled = true;
+        }
+    }
 
 
 }

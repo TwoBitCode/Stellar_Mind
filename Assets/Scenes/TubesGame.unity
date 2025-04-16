@@ -2808,7 +2808,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -6.7749023, y: -7.136505}
+  m_AnchoredPosition: {x: -6.7747498, y: -7.136505}
   m_SizeDelta: {x: 13.553, y: 14.273}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &788558294
@@ -4089,7 +4089,7 @@ MonoBehaviour:
       \u05DC\u05E9\u05DC\u05D1 \u05D6\u05D4:\n\u05E1\u05D3\u05E8\u05D5 \u05D0\u05EA
       \u05D4\u05DE\u05D1\u05D7\u05E0\u05D5\u05EA \u05D1\u05E1\u05D3\u05E8 \u05D4\u05DE\u05E7\u05D5\u05E8\u05D9"
     sortingTimeLimit: 10
-    bonusTimeLimit: 4
+    bonusTimeLimit: 20
   - numTubes: 5
     isReverseOrder: 1
     timeLimit: 8
@@ -4097,7 +4097,7 @@ MonoBehaviour:
     instructionText: "\u05E1\u05D3\u05E8\u05D5 \u05D0\u05EA \u05D4\u05DE\u05D1\u05D7\u05E0\u05D5\u05EA
       \u05D1\u05E1\u05D3\u05E8 \u05D4\u05E4\u05D5\u05DA"
     sortingTimeLimit: 10
-    bonusTimeLimit: 4
+    bonusTimeLimit: 11
   - numTubes: 6
     isReverseOrder: 1
     timeLimit: 12
@@ -4105,7 +4105,7 @@ MonoBehaviour:
     instructionText: "\u05E1\u05D3\u05E8\u05D5 \u05D0\u05EA \u05D4\u05DE\u05D1\u05D7\u05E0\u05D5\u05EA
       \u05D1\u05E1\u05D3\u05E8 \u05D4\u05E4\u05D5\u05DA"
     sortingTimeLimit: 18
-    bonusTimeLimit: 6
+    bonusTimeLimit: 15
   countdownBackground: {fileID: 1631505946}
   gridManager: {fileID: 1016497775}
   stackManager: {fileID: 1016497774}
