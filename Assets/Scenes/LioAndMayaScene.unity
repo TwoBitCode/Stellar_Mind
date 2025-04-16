@@ -1497,7 +1497,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 2113286660}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!1 &1421249664
 GameObject:
   m_ObjectHideFlags: 0
@@ -1615,13 +1616,13 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: f82c754c615a78d448b3812d1bac0433, type: 3}
   m_Resource: {fileID: 8300000, guid: f82c754c615a78d448b3812d1bac0433, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.12
+  m_Volume: 0.015
   m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 247
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -1751,12 +1752,12 @@ MonoBehaviour:
   endButton: {fileID: 1419688964}
   audioSource: {fileID: 1535760165}
   dialogueAudio:
-  - {fileID: 8300000, guid: 0fb83e27d7aa3954799153c1f68c134e, type: 3}
-  - {fileID: 8300000, guid: 0fb83e27d7aa3954799153c1f68c134e, type: 3}
-  - {fileID: 8300000, guid: 0fb83e27d7aa3954799153c1f68c134e, type: 3}
-  - {fileID: 8300000, guid: 0fb83e27d7aa3954799153c1f68c134e, type: 3}
+  - {fileID: 8300000, guid: 59052337d238fc54ab49974df3e2f04e, type: 3}
+  - {fileID: 8300000, guid: 26124a4801c364646bfff02eee18bf89, type: 3}
+  - {fileID: 8300000, guid: 3ab340c418a226b4a89a65c2cb4eacd2, type: 3}
+  - {fileID: 8300000, guid: 5a72511fa10a5ea45ae2798963863efb, type: 3}
   lioDialogue:
-  - "\u05E9\u05DC\u05D5\u05DD \u05D0\u05D9\u05D6\u05D4 \u05DB\u05D9\u05E3 \u05E9\u05D4\u05E6\u05D8\u05E8\u05E4\u05EA\u05DD"
+  - "\u05E9\u05DC\u05D5\u05DD \u05DC\u05DB\u05DD!"
   - "\u05E7\u05E8\u05D0\u05D5 \u05DC\u05E0\u05D5 \u05E2\u05DC \u05DE\u05E0\u05EA
     \u05DC\u05D4\u05E6\u05D9\u05DC \u05D0\u05D5\u05EA\u05D4"
   mayaDialogue:
@@ -1795,13 +1796,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.12
+  m_Volume: 0.207
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 80
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
