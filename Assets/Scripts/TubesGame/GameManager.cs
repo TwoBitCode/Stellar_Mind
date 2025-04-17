@@ -15,6 +15,8 @@ public class Stage
     public string instructionText;
     public int sortingTimeLimit;
     public int bonusTimeLimit;
+    public AudioClip instructionAudioClip; // NEW: Voice for instruction
+
 
 }
 
@@ -472,6 +474,18 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void ShowStageInstruction()
+    {
+        ShowStageIntroduction(currentStageIndex);
+    }
 
+    public List<Stage> GetStages()
+    {
+        return stages;
+    }
 
+    public int GetCurrentStageIndex()
+    {
+        return currentStageIndex;
+    }
 }

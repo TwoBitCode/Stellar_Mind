@@ -319,15 +319,22 @@ MonoBehaviour:
   dialogueBubble: {fileID: 453117497}
   nextButton: {fileID: 2146807236}
   crashDialogueText: "\u05D0\u05D5\u05D9 \u05DC\u05D0! \u05D4\u05D7\u05DC\u05DC\u05D9\u05EA
-    \u05D4\u05EA\u05E8\u05E1\u05E7\u05D4\n\u05DB\u05D5\u05DB\u05D1\u05D9 \u05D4\u05D6\u05D9\u05DB\u05E8\u05D5\u05DF,
-    \u05E9\u05DE\u05D8\u05E2\u05D9\u05E0\u05D9\u05DD \u05D0\u05EA \u05DC\u05D9\u05D1\u05EA
-    \u05D4\u05D0\u05E0\u05E8\u05D2\u05D9\u05D4, \u05D4\u05EA\u05E4\u05D6\u05E8\u05D5
-    \u05D1\u05E8\u05D7\u05D1\u05D9 \u05DE\u05E2\u05E8\u05DB\u05EA \u05D4\u05DB\u05D5\u05DB\u05D1\u05D9\u05DD.\n\u05E0\u05D0\u05E1\u05D5\u05E3
-    \u05D0\u05D5\u05EA\u05DD \u05D1\u05DE\u05E9\u05D9\u05DE\u05D5\u05EA \u05DB\u05D3\u05D9
-    \u05DC\u05D7\u05D6\u05D5\u05E8 \u05D4\u05D1\u05D9\u05EA\u05D4.\n\u05D0\u05D1\u05DC
-    \u05DE\u05D9\u05E9\u05D4\u05D5 \u05D7\u05D9\u05D9\u05D1 \u05DC\u05D4\u05D9\u05E9\u05D0\u05E8
-    \u05DB\u05D0\u05DF.\n\u05E2\u05DD \u05DE\u05D9 \u05EA\u05DE\u05E9\u05D9\u05DB\u05D5
-    \u05D1\u05DE\u05E1\u05E2?"
+    \u05E9\u05DC\u05E0\u05D5 \u05D4\u05EA\u05E8\u05E1\u05E7\u05D4\n\u05DB\u05D5\u05DB\u05D1\u05D9
+    \u05D4\u05D6\u05D9\u05DB\u05E8\u05D5\u05DF, \u05E9\u05DE\u05D8\u05E2\u05D9\u05E0\u05D9\u05DD
+    \u05D0\u05EA \u05DC\u05D9\u05D1\u05EA \u05D4\u05D0\u05E0\u05E8\u05D2\u05D9\u05D4,
+    \u05D4\u05EA\u05E4\u05D6\u05E8\u05D5 \u05D1\u05E8\u05D7\u05D1\u05D9 \u05DE\u05E2\u05E8\u05DB\u05EA
+    \u05D4\u05DB\u05D5\u05DB\u05D1\u05D9\u05DD.\n\u05E0\u05D0\u05E1\u05D5\u05E3 \u05D0\u05D5\u05EA\u05DD
+    \u05D1\u05DE\u05E9\u05D9\u05DE\u05D5\u05EA \u05DB\u05D3\u05D9 \u05DC\u05D7\u05D6\u05D5\u05E8
+    \u05D4\u05D1\u05D9\u05EA\u05D4.\n\u05D0\u05D1\u05DC \u05DE\u05D9\u05E9\u05D4\u05D5
+    \u05D7\u05D9\u05D9\u05D1 \u05DC\u05D4\u05D9\u05E9\u05D0\u05E8 \u05DB\u05D0\u05DF.\n\u05E2\u05DD
+    \u05DE\u05D9 \u05EA\u05DE\u05E9\u05D9\u05DB\u05D5 \u05D1\u05DE\u05E1\u05E2?"
+  textToSpeechAudioSource: {fileID: 719003928}
+  dialogueAudioClips:
+  - {fileID: 8300000, guid: 0551fc46babf6ec47b25e0301f4859a3, type: 3}
+  - {fileID: 8300000, guid: 428ea575ab5121b46a7bbac2fbb85a80, type: 3}
+  - {fileID: 8300000, guid: a241c4ccfe3bd354e9277f2188c3475e, type: 3}
+  - {fileID: 8300000, guid: 89ef9b5df31f98c46a23d925efa55bdf, type: 3}
+  - {fileID: 8300000, guid: 0085178382e28c741936accc289e831d, type: 3}
 --- !u!1 &265804995
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,7 +482,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 719003928}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 8300000, guid: 6f9c580c16c77b8498060f762ba4989d, type: 3}
 --- !u!1 &296183898
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,13 +514,13 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: d0cc7efcb3cbc1448b226120c67347b7, type: 3}
   m_Resource: {fileID: 8300000, guid: d0cc7efcb3cbc1448b226120c67347b7, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.3
+  m_Volume: 0.129
   m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 222
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -1073,13 +1081,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.12
+  m_Volume: 0.517
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 66
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -1319,7 +1327,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 719003928}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 8300000, guid: b6f1e2da81afc5c4e9ee86f513d42c7d, type: 3}
 --- !u!1 &865297309
 GameObject:
   m_ObjectHideFlags: 0
@@ -2898,7 +2907,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 719003928}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

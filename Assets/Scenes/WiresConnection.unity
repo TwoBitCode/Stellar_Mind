@@ -308,7 +308,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!114 &4232280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -793,6 +794,7 @@ RectTransform:
   - {fileID: 479706026}
   - {fileID: 2478790}
   - {fileID: 1706614963}
+  - {fileID: 187116621}
   m_Father: {fileID: 62732873}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2835,6 +2837,142 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 172168416}
   m_CullTransparentMesh: 1
+--- !u!1 &187116620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 187116621}
+  - component: {fileID: 187116625}
+  - component: {fileID: 187116624}
+  - component: {fileID: 187116623}
+  - component: {fileID: 187116622}
+  m_Layer: 5
+  m_Name: ButtonSpeech
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &187116621
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187116620}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 15378090}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -393.9, y: -216.9}
+  m_SizeDelta: {x: 89.07, y: 70.037}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &187116622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187116620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af9ae2c5930da6b4892ff975186f004b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 1361276057}
+  buttonClickSound: {fileID: 8300000, guid: ad259366063bc4e489d1f3fb6598ef15, type: 3}
+  hoverSound: {fileID: 0}
+--- !u!114 &187116623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187116620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 187116624}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &187116624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187116620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.824, g: 0.7656063, b: 0.30818897, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: a61abe5dacead464697fb215ea771915, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &187116625
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187116620}
+  m_CullTransparentMesh: 1
 --- !u!1 &189390835
 GameObject:
   m_ObjectHideFlags: 0
@@ -3332,7 +3470,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!114 &245109268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3876,7 +4015,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!1 &261993456
 GameObject:
   m_ObjectHideFlags: 0
@@ -4165,7 +4305,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!1 &282692938
 GameObject:
   m_ObjectHideFlags: 0
@@ -5535,12 +5676,12 @@ MonoBehaviour:
     \u05D7\u05D5\u05D8\u05D9\u05DD \u05D1\u05E6\u05D1\u05E2\u05D9\u05DD \u05E9\u05D5\u05E0\u05D9\u05DD
     \u05D4\u05DE\u05D7\u05D5\u05D1\u05E8\u05D9\u05DD \u05DC\u05E6\u05D5\u05E8\u05D5\u05EA.
     \u05EA\u05D6\u05DB\u05E8\u05D5 \u05D0\u05EA \u05D4\u05D7\u05D9\u05D1\u05D5\u05E8\u05D9\u05DD
-    \u05DC\u05E4\u05E0\u05D9 \u05E9\u05D4\u05DD \u05DE\u05EA\u05E0\u05EA\u05E7\u05D9\u05DD!\n\n\u05DC\u05D0\u05D7\u05E8
+    \u05DC\u05E4\u05E0\u05D9 \u05E9\u05D4\u05DD \u05DE\u05EA\u05E0\u05EA\u05E7\u05D9\u05DD!\r\n\r\n\u05DC\u05D0\u05D7\u05E8
     \u05D4\u05E4\u05D9\u05E6\u05D5\u05E5, \u05D4\u05D7\u05D5\u05D8\u05D9\u05DD \u05D5\u05D4\u05E6\u05D5\u05E8\u05D5\u05EA
-    \u05E2\u05E9\u05D5\u05D9\u05D9\u05DD \u05DC\u05D6\u05D5\u05D6. \u05E9\u05D7\u05D6\u05E8\u05D5
-    \u05D0\u05EA \u05D4\u05D7\u05D9\u05D1\u05D5\u05E8\u05D9\u05DD \u05D1\u05D6\u05DE\u05DF
-    \u2013 \u05D5\u05DE\u05D4\u05E8 \u05D1\u05DE\u05D9\u05D5\u05D7\u05D3 \u05DB\u05D3\u05D9
-    \u05DC\u05D6\u05DB\u05D5\u05EA \u05D1\u05D1\u05D5\u05E0\u05D5\u05E1!"
+    \u05E2\u05E9\u05D5\u05D9\u05D9\u05DD \u05DC\u05D6\u05D5\u05D6. \u05E1\u05D3\u05E8\u05D5
+    \u05D0\u05EA \u05D4\u05D7\u05D9\u05D1\u05D5\u05E8\u05D9\u05DD \u2013 \u05E1\u05D9\u05D3\u05D5\u05E8
+    \u05DE\u05D4\u05D9\u05E8 \u05D1\u05DE\u05D9\u05D5\u05D7\u05D3 \u05D9\u05E2\u05E0\u05D9\u05E7
+    \u05D1\u05D5\u05E0\u05D5\u05E1!"
   m_isRightToLeft: 1
   m_fontAsset: {fileID: 11400000, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
   m_sharedMaterial: {fileID: 5276240468773084248, guid: 4840c27318990134b9711906bbe6be4b, type: 2}
@@ -8191,7 +8332,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!114 &722416450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10883,7 +11025,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!114 &1031002692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14337,7 +14480,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!114 &1305291447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14935,7 +15079,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.12
   m_Pitch: 1
   Loop: 0
@@ -18457,7 +18601,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!1 &1707818769
 GameObject:
   m_ObjectHideFlags: 0
@@ -19698,7 +19843,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1361276057}
-  buttonSound: {fileID: 8300000, guid: 3b8bfbeaf6488f44ebefe87356ffbd6b, type: 3}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 0}
 --- !u!1 &1834670694
 GameObject:
   m_ObjectHideFlags: 0

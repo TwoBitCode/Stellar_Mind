@@ -20,6 +20,12 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
     [SerializeField] private AudioSource asteroidFallSound; // Sound for asteroid falling
     private Action onComplete; // Callback for completion
 
+    [Header("Dialogue Audio Settings")]
+    [SerializeField] private AudioSource dialogueAudioSource;
+    [SerializeField] private AudioClip[] girlDialogueAudioClips;
+    [SerializeField] private AudioClip[] boyDialogueAudioClips;
+
+
     private bool isSpawningAsteroids = true; // Flag to control asteroid spawning
 
     public void PlayIntroduction(Action onIntroductionComplete)
@@ -78,6 +84,7 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
     {
         for (int i = 0; i < dialogueLines.Length; i++)
         {
+            PlayDialogueAudio(i); // NEW: Play the corresponding audio
             yield return StartCoroutine(TypeDialogue(dialogueLines[i]));
             yield return new WaitForSeconds(1f); // Pause between lines
         }
@@ -86,6 +93,38 @@ public class AsteroidsGameIntroductionManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         startButton.SetActive(true);
     }
+    private void PlayDialogueAudio(int lineIndex)
+    {
+        if (dialogueAudioSource == null) return;
+
+        string selectedCharacter = GameProgressManager.Instance.playerProgress.selectedCharacter;
+
+        dialogueAudioSource.Stop(); // Stop any previous audio
+
+        if (selectedCharacter == "Girl")
+        {
+            if (girlDialogueAudioClips != null && lineIndex >= 0 && lineIndex < girlDialogueAudioClips.Length)
+            {
+                if (girlDialogueAudioClips[lineIndex] != null)
+                {
+                    dialogueAudioSource.clip = girlDialogueAudioClips[lineIndex];
+                    dialogueAudioSource.Play();
+                }
+            }
+        }
+        else if (selectedCharacter == "Boy")
+        {
+            if (boyDialogueAudioClips != null && lineIndex >= 0 && lineIndex < boyDialogueAudioClips.Length)
+            {
+                if (boyDialogueAudioClips[lineIndex] != null)
+                {
+                    dialogueAudioSource.clip = boyDialogueAudioClips[lineIndex];
+                    dialogueAudioSource.Play();
+                }
+            }
+        }
+    }
+
 
     private IEnumerator TypeDialogue(string line)
     {

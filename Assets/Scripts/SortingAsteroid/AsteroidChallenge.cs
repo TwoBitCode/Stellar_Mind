@@ -26,6 +26,8 @@ public class AsteroidChallenge
     public int bonusScore = 5; // Bonus points for sorting above the minimum
     public float timeLimit;
     public int completionScore;
+    [Header("Audio")]
+    public AudioClip instructionAudioClip;
 
 
 

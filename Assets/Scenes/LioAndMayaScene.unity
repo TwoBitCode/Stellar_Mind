@@ -430,6 +430,7 @@ GameObject:
   - component: {fileID: 450129688}
   - component: {fileID: 450129687}
   - component: {fileID: 450129686}
+  - component: {fileID: 450129690}
   m_Layer: 5
   m_Name: SkipButton
   m_TagString: Untagged
@@ -539,6 +540,21 @@ RectTransform:
   m_AnchoredPosition: {x: -413, y: 256}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &450129690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450129685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af9ae2c5930da6b4892ff975186f004b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 2113286660}
+  buttonClickSound: {fileID: 0}
+  hoverSound: {fileID: 8300000, guid: 5a7f227d34cdb8241a689bd4c52b21a6, type: 3}
 --- !u!1 &468656771
 GameObject:
   m_ObjectHideFlags: 0
@@ -1498,7 +1514,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 2113286660}
   buttonClickSound: {fileID: 0}
-  hoverSound: {fileID: 0}
+  hoverSound: {fileID: 8300000, guid: e8eb1f0461c6569409910e9f2932d87f, type: 3}
 --- !u!1 &1421249664
 GameObject:
   m_ObjectHideFlags: 0
