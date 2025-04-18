@@ -31,16 +31,32 @@ public class EquipmentRecoveryIntro : MonoBehaviour
     public float scatterDuration = 0.5f; // Duration of the slide-out effect
 
     [Header("Audio")]
-    public AudioSource audioSource; // Audio source for playing sounds
-    public AudioClip shakeSound; // Sound for the robot shaking
-    public AudioClip explodeSound; // Sound for the robot exploding
+    public AudioSource robotAudioSource; // NEW: For robot shake and explode sounds
+    public AudioSource dialogueAudioSource; // NEW: For dialogues (girl/boy)
+
+    public AudioClip shakeSound; // (no change)
+    public AudioClip explodeSound; // (no change)
+
+
+    private string selectedCharacter; // Who the player chose: "Girl" or "Boy"
 
     private int currentLineIndex = 0;
     [Header("Transitions")]
     public PanelTransitionManager panelTransitionManager; // Reference to the transition manager
 
+
+    [Header("Dialogue Audio Clips")]
+    public AudioClip[] girlDialogueAudioClips; // Audio clips for girl lines
+    public AudioClip[] boyDialogueAudioClips;  // Audio clips for boy lines
+    [Header("Transition Dialogue Audio")]
+    public AudioClip girlTransitionDialogueAudioClip; // Girl's transition voice
+    public AudioClip boyTransitionDialogueAudioClip;  // Boy's transition voice
+
+
+
     private void Start()
     {
+        selectedCharacter = GameProgressManager.Instance?.playerProgress?.selectedCharacter ?? "Girl"; // Default to Girl
         int lastPlayedStage = GameProgressManager.Instance?.GetLastPlayedStage() ?? 0;
 
         if (lastPlayedStage > 0)
@@ -72,12 +88,27 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
     private void InitializeDialogue()
     {
-        // Show the dialogue panel and the first line of text
         dialoguePanel.SetActive(true);
 
         if (dialogueLines.Length > 0)
         {
-            dialogueText.text = dialogueLines[0]; // Set the first line
+            dialogueText.text = dialogueLines[0]; // Set the first dialogue line
+
+            // Play the first dialogue audio immediately
+            if (selectedCharacter == "Boy")
+            {
+                if (boyDialogueAudioClips != null && boyDialogueAudioClips.Length > 0)
+                {
+                    PlayDialogueAudio(boyDialogueAudioClips[0]);
+                }
+            }
+            else // Assume Girl
+            {
+                if (girlDialogueAudioClips != null && girlDialogueAudioClips.Length > 0)
+                {
+                    PlayDialogueAudio(girlDialogueAudioClips[0]);
+                }
+            }
         }
         else
         {
@@ -85,16 +116,14 @@ public class EquipmentRecoveryIntro : MonoBehaviour
         }
     }
 
+
     private void OnStartButtonClicked()
     {
-        // Cancel any existing Invokes
         CancelInvoke();
 
-        // Proceed with starting the intro
         startButton.interactable = false;
         startButton.gameObject.SetActive(false);
 
-        ShowNextDialogueLine();
         PlayShakeSoundLoop();
         robotAnimator.SetTrigger("Shake");
 
@@ -106,52 +135,92 @@ public class EquipmentRecoveryIntro : MonoBehaviour
     }
 
 
+
     private void ShowNextDialogueLine()
     {
         if (currentLineIndex < dialogueLines.Length)
         {
-            dialogueText.text = dialogueLines[currentLineIndex]; // Update text
+            dialogueText.text = dialogueLines[currentLineIndex]; // Show text
+
+            // Play the correct voice based on selected character
+            if (selectedCharacter == "Boy")
+            {
+                if (boyDialogueAudioClips != null && currentLineIndex < boyDialogueAudioClips.Length)
+                {
+                    PlayDialogueAudio(boyDialogueAudioClips[currentLineIndex]);
+                }
+            }
+            else // Assume "Girl"
+            {
+                if (girlDialogueAudioClips != null && currentLineIndex < girlDialogueAudioClips.Length)
+                {
+                    PlayDialogueAudio(girlDialogueAudioClips[currentLineIndex]);
+                }
+            }
+
             currentLineIndex++;
 
             if (currentLineIndex < dialogueLines.Length)
             {
-                Invoke(nameof(ShowNextDialogueLine), textDisplayDuration); // Schedule the next line
+                Invoke(nameof(ShowNextDialogueLine), textDisplayDuration);
             }
         }
     }
 
+
     private void PlayShakeSoundLoop()
     {
-        if (audioSource != null && shakeSound != null)
+        if (robotAudioSource != null && shakeSound != null)
         {
-            audioSource.clip = shakeSound;
-            audioSource.loop = true; // Loop the shake sound
-            audioSource.Play();
+            robotAudioSource.clip = shakeSound;
+            robotAudioSource.loop = true;
+            robotAudioSource.Play();
         }
     }
 
     private void PlayExplodeSound()
     {
-        if (audioSource != null && explodeSound != null)
+        if (robotAudioSource != null && explodeSound != null)
         {
-            audioSource.loop = false; // Ensure the explode sound doesn't loop
-            audioSource.PlayOneShot(explodeSound);
+            robotAudioSource.loop = false;
+            robotAudioSource.PlayOneShot(explodeSound);
         }
     }
 
     private void StopAllSounds()
     {
-        if (audioSource != null)
+        if (robotAudioSource != null)
         {
-            audioSource.Stop(); // Stop all sounds immediately
+            robotAudioSource.Stop();
+        }
+        if (dialogueAudioSource != null)
+        {
+            dialogueAudioSource.Stop();
         }
     }
 
+
     private void DisplayTransitionDialogue()
     {
-        // Display the transition dialogue (e.g., "Oh no!")
-        dialogueText.text = transitionDialogue;
+        dialogueText.text = transitionDialogue; // Show "Oh no!" or similar
+
+        // Play correct transition voice based on selected character
+        if (selectedCharacter == "Boy")
+        {
+            if (boyTransitionDialogueAudioClip != null)
+            {
+                PlayDialogueAudio(boyTransitionDialogueAudioClip);
+            }
+        }
+        else // Assume girl
+        {
+            if (girlTransitionDialogueAudioClip != null)
+            {
+                PlayDialogueAudio(girlTransitionDialogueAudioClip);
+            }
+        }
     }
+
 
     private void HideFullRobotAndShowParts()
     {
@@ -220,6 +289,16 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
         Debug.Log("Turning the robot black now.");
         EquipmentRecoveryGameManager.Instance?.StartCoroutine(EquipmentRecoveryGameManager.Instance.DelayedTurnBlack());
+    }
+    private void PlayDialogueAudio(AudioClip clip)
+    {
+        if (dialogueAudioSource != null && clip != null)
+        {
+            dialogueAudioSource.Stop();
+            dialogueAudioSource.loop = false;
+            dialogueAudioSource.clip = clip;
+            dialogueAudioSource.Play();
+        }
     }
 
 

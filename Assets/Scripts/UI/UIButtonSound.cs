@@ -3,10 +3,11 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Button))]
-public class UIButtonSound : MonoBehaviour, IPointerClickHandler
+public class UIButtonSound : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 {
-    public AudioSource audioSource; // Sound source
-    public AudioClip buttonSound; // Sound to play on click
+    public AudioSource audioSource;
+    public AudioClip buttonClickSound;
+    public AudioClip hoverSound;
 
     private void Awake()
     {
@@ -18,14 +19,22 @@ public class UIButtonSound : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        PlaySound();
+        PlaySound(buttonClickSound);
     }
 
-    private void PlaySound()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        if (audioSource != null && buttonSound != null)
+        PlaySound(hoverSound);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
         {
-            audioSource.PlayOneShot(buttonSound);
+            audioSource.Stop();        
+            audioSource.clip = clip;    
+            audioSource.loop = false;
+            audioSource.Play();        
         }
     }
 }

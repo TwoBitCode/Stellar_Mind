@@ -15,6 +15,8 @@ public class DoorManager : MonoBehaviour
     [SerializeField] private AudioClip clickSound;
     [SerializeField] private Sprite completedGameSprite;
     [SerializeField] private string defaultDoorText;
+    [SerializeField] private AudioClip[] girlHoverAudioClips; // One clip per door
+    [SerializeField] private AudioClip[] boyHoverAudioClips;  // One clip per door
 
     [Header("End Game Panel Settings")]
     [SerializeField] private GameObject endGamePanel;
@@ -65,12 +67,7 @@ public class DoorManager : MonoBehaviour
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(true);
-
-
-            // מתחיל להפעיל את הכוכבים הנופלים
             StartCoroutine(SpawnFallingObjects());
-
-            // מעבר אוטומטי לסצנת הסיום
             StartCoroutine(TransitionToEndScene());
         }
     }
@@ -220,9 +217,10 @@ public class DoorManager : MonoBehaviour
                 doorText.text = gameNames[doorIndex];
             }
 
-            PlaySound(hoverSound);
+            PlayHoverSound(doorIndex, isCompleted);
         }
     }
+
 
     public void ResetDoorText()
     {
@@ -319,6 +317,45 @@ public class DoorManager : MonoBehaviour
         PlayerPrefs.SetString("LastSceneBeforeReport", SceneManager.GetActiveScene().name); // Save current scene
         PlayerPrefs.Save();
         SceneManager.LoadScene("Player report"); // Change to your actual report scene name
+    }
+    private void PlayHoverSound(int doorIndex, bool isCompleted)
+    {
+        if (audioSource == null || isCompleted)
+        {
+            PlaySound(hoverSound); // Play regular hover sound if completed
+            return;
+        }
+
+        string selectedCharacter = GameProgressManager.Instance.playerProgress.selectedCharacter;
+
+        if (selectedCharacter == "Girl")
+        {
+            if (girlHoverAudioClips != null && doorIndex >= 0 && doorIndex < girlHoverAudioClips.Length)
+            {
+                if (girlHoverAudioClips[doorIndex] != null)
+                {
+                    audioSource.Stop();
+                    audioSource.clip = girlHoverAudioClips[doorIndex];
+                    audioSource.Play();
+                }
+            }
+        }
+        else if (selectedCharacter == "Boy")
+        {
+            if (boyHoverAudioClips != null && doorIndex >= 0 && doorIndex < boyHoverAudioClips.Length)
+            {
+                if (boyHoverAudioClips[doorIndex] != null)
+                {
+                    audioSource.Stop();
+                    audioSource.clip = boyHoverAudioClips[doorIndex];
+                    audioSource.Play();
+                }
+            }
+        }
+        else
+        {
+            PlaySound(hoverSound); // fallback sound
+        }
     }
 
 }

@@ -16,6 +16,9 @@ public class CharacterSelectionManager : MonoBehaviour
     [SerializeField] private GameObject dialogueBubble;
     [SerializeField] private Button nextButton;
     [TextArea(3, 5)] public string crashDialogueText;
+    [SerializeField] private AudioSource textToSpeechAudioSource;
+    [SerializeField] private AudioClip[] dialogueAudioClips; // One clip per dialogue line
+
 
     private string[] dialogueLines;
     private int currentLine = 0;
@@ -63,12 +66,22 @@ public class CharacterSelectionManager : MonoBehaviour
 
         if (currentLine < dialogueLines.Length)
         {
+            // Play the corresponding voice clip (if exists)
+            if (textToSpeechAudioSource != null && dialogueAudioClips != null && currentLine < dialogueAudioClips.Length)
+            {
+                if (dialogueAudioClips[currentLine] != null)
+                {
+                    textToSpeechAudioSource.Stop(); // Stop any previous line
+                    textToSpeechAudioSource.clip = dialogueAudioClips[currentLine];
+                    textToSpeechAudioSource.Play();
+                }
+            }
+
             StartCoroutine(TypeText(dialogueLines[currentLine]));
             currentLine++;
         }
         else
         {
-            // End of dialogue - Show character selection buttons
             dialogueText.text = "";
             dialogueBubble.SetActive(false);
             nextButton.gameObject.SetActive(false);
@@ -76,6 +89,7 @@ public class CharacterSelectionManager : MonoBehaviour
             girlButton.SetActive(true);
         }
     }
+
 
     private IEnumerator TypeText(string line)
     {

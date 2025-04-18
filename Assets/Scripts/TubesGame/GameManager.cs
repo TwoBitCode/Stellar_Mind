@@ -15,6 +15,8 @@ public class Stage
     public string instructionText;
     public int sortingTimeLimit;
     public int bonusTimeLimit;
+    public AudioClip instructionAudioClip; // NEW: Voice for instruction
+
 
 }
 
@@ -37,6 +39,9 @@ public class GameManager : MonoBehaviour
     private int gameIndex; // Store the game index
     [Header("Audio")]
     [SerializeField] private AudioSource tickingAudioSource;
+
+    [Header("Instruction Audio")]
+    [SerializeField] private AudioSource instructionAudioSource; // Specific AudioSource for instruction sound
 
     public static GameManager Instance { get; private set; }
 
@@ -153,6 +158,8 @@ public class GameManager : MonoBehaviour
         if (countdownBackground != null)
         {
             countdownBackground.SetActive(true);
+            uiManager.ShowTimerBackground(); // Make it visible again
+
         }
 
         while (remainingTime > 0)
@@ -168,21 +175,27 @@ public class GameManager : MonoBehaviour
             remainingTime--;
         }
 
-        uiManager.UpdateCountdownText("");
+        //uiManager.UpdateCountdownText("");
 
         // Memory timer is done; shuffle and move elements to stack
         gridManager.ShuffleGridElements();
         stackManager.MoveElementsToStack(gridManager.GridElements);
 
-        uiManager.ChangeTimerBackgroundColor(Color.red);
+        //  uiManager.ChangeTimerBackgroundColor(Color.red);
+        uiManager.HideCountdownText(); // Hide timer before sorting begins
+        uiManager.HideTimerBackground();
+        stageStartTime = Time.time;  //  remove from here
+
+
 
         yield return new WaitForSeconds(1f); // Ensure elements finish moving before allowing interaction
 
         isInteractionAllowed = true; // Now allow interaction
 
         uiManager.ShowCheckButton();
-        StartCoroutine(StartSortingTimer(stage));
+        //StartCoroutine(StartSortingTimer(stage));
     }
+
 
 
 
@@ -227,8 +240,8 @@ public class GameManager : MonoBehaviour
 
         if (isCorrect)
         {
-            int remainingTime = Mathf.Max(0, currentStage.sortingTimeLimit - currentStage.bonusTimeLimit);
-            int score = CalculateScore(remainingTime, currentStage);
+            float timeSpent = Time.time - stageStartTime;
+            int score = CalculateScore(timeSpent, currentStage);
             OverallScoreManager.Instance.AddScore(score);
 
             uiManager.UpdateResultText("יפה מאוד");
@@ -255,12 +268,14 @@ public class GameManager : MonoBehaviour
 
         // Execute UI & Progress Logic Immediately
         Stage currentStage = stages[currentStageIndex];
-        int remainingTime = GetRemainingTime();
-        bool earnedBonus = remainingTime >= currentStage.bonusTimeLimit;
+
+        float timeSpent = Time.time - stageStartTime;
+        bool earnedBonus = timeSpent <= currentStage.bonusTimeLimit;
+
         int baseScore = currentStage.scoreReward;
         int bonusScore = earnedBonus ? 25 : 0;
 
-        Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Remaining Time: {remainingTime}");
+        Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Time Spent: {timeSpent:F2}s");
 
         var playerProgress = GameProgressManager.Instance.playerProgress;
 
@@ -271,7 +286,6 @@ public class GameManager : MonoBehaviour
             if (gameProgress.stages.ContainsKey(currentStageIndex))
             {
                 gameProgress.stages[currentStageIndex].isCompleted = true;
-                float timeSpent = Time.time - stageStartTime;
                 GameProgressManager.Instance.SaveStageProgress(gameIndex, currentStageIndex, timeSpent);
 
                 Debug.Log($"Stage {currentStageIndex} in Game {gameIndex} marked as completed.");
@@ -301,6 +315,7 @@ public class GameManager : MonoBehaviour
 
         yield return null; // Avoid blocking execution
     }
+
 
 
 
@@ -390,32 +405,43 @@ public class GameManager : MonoBehaviour
     }
     public void OnStartStageButtonClicked()
     {
+        // Stop instruction audio cleanly
+        if (instructionAudioSource != null && instructionAudioSource.isPlaying)
+        {
+            instructionAudioSource.Stop();
+            Debug.Log("Stopped instruction audio when starting the stage.");
+        }
+
         uiManager.HideInstructionPanel();
         StartStage();
     }
+
+
 
     private IEnumerator StartSortingTimer(Stage stage)
     {
         int remainingTime = stage.sortingTimeLimit;
         stageStartTime = Time.time;
-        while (remainingTime > 0)
-        {
-            uiManager.UpdateSortingTimer($"{remainingTime}s"); // עדכון התצוגה של הזמן
-            yield return new WaitForSeconds(1f);
-            remainingTime--;
-        }
+        //while (remainingTime > 0)
+        //{
+        //    uiManager.UpdateSortingTimer($"{remainingTime}s"); // עדכון התצוגה של הזמן
+        //    yield return new WaitForSeconds(1f);
+        //    remainingTime--;
+        //}
 
-        uiManager.UpdateSortingTimer("");
-        ShowFailurePanel("הזמן לסידור המבחנות נגמר. נסה שוב!");
+        //uiManager.UpdateSortingTimer("");
+        //ShowFailurePanel("הזמן לסידור המבחנות נגמר. נסה שוב!");
+        yield break;
     }
-    private int CalculateScore(int remainingTime, Stage stage)
+    private int CalculateScore(float timeSpent, Stage stage)
     {
-        if (remainingTime >= stage.bonusTimeLimit)
+        if (timeSpent <= stage.bonusTimeLimit)
         {
             return stage.scoreReward + 25;
         }
         return stage.scoreReward;
     }
+
     private void ShowFailurePanel(string message)
     {
         uiManager.ShowFailurePanel(message, () => RestartStage());
@@ -460,6 +486,18 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void ShowStageInstruction()
+    {
+        ShowStageIntroduction(currentStageIndex);
+    }
 
+    public List<Stage> GetStages()
+    {
+        return stages;
+    }
 
+    public int GetCurrentStageIndex()
+    {
+        return currentStageIndex;
+    }
 }

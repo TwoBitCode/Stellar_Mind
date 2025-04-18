@@ -19,8 +19,17 @@ public class TubesGameIntroductionManager : MonoBehaviour
     [SerializeField] private AudioSource flyingSound; // Reference to the AudioSource
     private Action onComplete;
 
+    [Header("Dialogue Audio")]
+    [SerializeField] private AudioSource dialogueAudioSource; // NEW: separate audio for dialogue
+    [SerializeField] private AudioClip[] girlDialogueAudioClips; // Girl voice lines
+    [SerializeField] private AudioClip[] boyDialogueAudioClips;  // Boy voice lines
+    private string selectedCharacter; // "Girl" or "Boy"
+
+
     public void PlayIntroduction(Action onIntroductionComplete)
     {
+        selectedCharacter = GameProgressManager.Instance?.playerProgress?.selectedCharacter ?? "Girl"; // Default to Girl
+
         onComplete = onIntroductionComplete;
 
         // If returning from the map, SKIP INTRO
@@ -66,11 +75,11 @@ public class TubesGameIntroductionManager : MonoBehaviour
     {
         for (int i = 0; i < dialogueLines.Length; i++)
         {
-            yield return StartCoroutine(TypeDialogue(dialogueLines[i]));
+            PlayCurrentDialogueAudio(i); // <-- NEW: Play audio first
+            yield return StartCoroutine(TypeDialogue(dialogueLines[i])); // Then type text
             yield return new WaitForSeconds(1f); // Pause between lines
         }
 
-        // Wait for flying tubes to finish, then show the Start button
         yield return new WaitForSeconds(1f);
         startButton.SetActive(true);
     }
@@ -109,10 +118,18 @@ public class TubesGameIntroductionManager : MonoBehaviour
     public void OnStartButtonClicked()
     {
         Debug.Log("Transitioning to game...");
+
         startButton.SetActive(false); // Hide the Start button
         panel.gameObject.SetActive(false); // Hide the intro panel
-        dialoguePanel.gameObject.SetActive(false); // Hide the intro panel
-        // Stop the introduction music
+        dialoguePanel.gameObject.SetActive(false); // Hide the dialogue panel
+
+        if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
+        {
+            dialogueAudioSource.Stop();
+            Debug.Log("Stopped dialogue voice on Start Button click.");
+        }
+
+        // Stop the introduction flying sound
         if (flyingSound != null && flyingSound.isPlaying)
         {
             flyingSound.Stop();
@@ -120,5 +137,31 @@ public class TubesGameIntroductionManager : MonoBehaviour
 
         onComplete?.Invoke(); // Notify GameManager to show stage instructions
     }
+
+    private void PlayCurrentDialogueAudio(int index)
+    {
+        if (dialogueAudioSource == null) return;
+
+        dialogueAudioSource.Stop();
+        dialogueAudioSource.loop = false;
+
+        if (selectedCharacter == "Boy")
+        {
+            if (boyDialogueAudioClips != null && index < boyDialogueAudioClips.Length)
+            {
+                dialogueAudioSource.clip = boyDialogueAudioClips[index];
+                dialogueAudioSource.Play();
+            }
+        }
+        else // Assume Girl
+        {
+            if (girlDialogueAudioClips != null && index < girlDialogueAudioClips.Length)
+            {
+                dialogueAudioSource.clip = girlDialogueAudioClips[index];
+                dialogueAudioSource.Play();
+            }
+        }
+    }
+
 
 }

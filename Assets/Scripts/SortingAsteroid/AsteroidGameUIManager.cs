@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +28,11 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private Button menuButton;
     [SerializeField] private Button strategyButton;
 
+    [Header("Instruction Sound Button")]
+    [SerializeField] private Button playInstructionsAudioButton;
+    [SerializeField] private AudioSource instructionsAudioSource;
+    [SerializeField] private List<AudioClip> instructionAudioClips; // One per challenge
+
     [SerializeField] private StrategyManager strategyManager;
     public void ShowInstructions(string instructions, System.Action onStartGame)
     {
@@ -49,10 +55,23 @@ public class AsteroidGameUIManager : MonoBehaviour
         startButton.onClick.RemoveAllListeners();
         startButton.onClick.AddListener(() =>
         {
+            if (instructionsAudioSource != null && instructionsAudioSource.isPlaying)
+            {
+                instructionsAudioSource.Stop(); // <-- Add this line!
+            }
+
             instructionsPanel.SetActive(false); // Hide the panel
-            onStartGame?.Invoke(); // Trigger the StartGame method
+            onStartGame?.Invoke(); // Start the game
         });
-    }
+
+
+        // NEW: Setup the sound button
+        if (playInstructionsAudioButton != null)
+        {
+            playInstructionsAudioButton.onClick.RemoveAllListeners();
+            playInstructionsAudioButton.onClick.AddListener(PlayInstructionsAudio);
+        }
+        }
 
 
     public void UpdateTimer(string timeText)
@@ -207,5 +226,30 @@ public class AsteroidGameUIManager : MonoBehaviour
             timerText.gameObject.SetActive(false);
         }
     }
+    private void PlayInstructionsAudio()
+    {
+        if (instructionsAudioSource == null) return;
+
+        AsteroidChallengeManager challengeManager = FindAnyObjectByType<AsteroidChallengeManager>();
+        if (challengeManager == null)
+        {
+            Debug.LogError("No AsteroidChallengeManager found in the scene!");
+            return;
+        }
+
+        var currentChallenge = challengeManager.CurrentChallenge;
+        if (currentChallenge != null && currentChallenge.instructionAudioClip != null)
+        {
+            instructionsAudioSource.Stop();
+            instructionsAudioSource.clip = currentChallenge.instructionAudioClip;
+            instructionsAudioSource.Play();
+        }
+        else
+        {
+            Debug.LogWarning("No instruction audio clip found for this challenge.");
+        }
+    }
+
+
 
 }

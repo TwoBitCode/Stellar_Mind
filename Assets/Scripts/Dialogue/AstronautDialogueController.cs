@@ -75,18 +75,23 @@ public class AstronautDialogueController : MonoBehaviour
             {
                 lioBubble.SetActive(true);
                 mayaBubble.SetActive(false);
+                lioText.text = "";
+
                 audioSource.clip = dialogueAudio[currentLine];
+                audioSource.Play(); // Start speaking with the text
                 yield return StartCoroutine(TypeText(lioText, lioDialogue[currentLine / 2]));
             }
             else
             {
                 mayaBubble.SetActive(true);
                 lioBubble.SetActive(false);
+                mayaText.text = "";
+
                 audioSource.clip = dialogueAudio[currentLine];
+                audioSource.Play(); // Start speaking with the text
                 yield return StartCoroutine(TypeText(mayaText, mayaDialogue[currentLine / 2]));
             }
 
-            audioSource.Play();
             yield return new WaitForSeconds(audioSource.clip.length + 1f);
             currentLine++;
         }
@@ -102,6 +107,7 @@ public class AstronautDialogueController : MonoBehaviour
             endButton.SetActive(true);
         }
     }
+
 
     public void ContinueToNextScene()
     {

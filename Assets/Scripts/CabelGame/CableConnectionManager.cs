@@ -60,6 +60,9 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private Button nextStageButton;
     [SerializeField] private TextMeshProUGUI stageCompleteBaseScoreText; // NEW: Base score display
     [SerializeField] private TextMeshProUGUI stageCompleteBonusScoreText; // NEW: Bonus score display
+    [SerializeField] private Button stageCompleteReturnToMapButton; // NEW
+    [SerializeField] private Button stageCompleteStrategyButton;    // NEW
+
 
 
     [SerializeField] private SparkEffectHandler sparkEffectHandler;
@@ -73,10 +76,13 @@ public class CableConnectionManager : MonoBehaviour
     [Header("Strategy Panel")]
     [SerializeField] private StrategyManager strategyManager;
     [Header("Start Stage Panel")]
-    [SerializeField] private GameObject startStagePanel; // פאנל שמופיע אחרי הדיאלוג
-    [SerializeField] private Button startStageButton; // כפתור שמתחיל את השלב
-    [SerializeField] private Button dialogueNextButton; // כפתור שעובר בדיאלוג
-    [SerializeField] private Canvas dialogueCanvas; // הקנבס של הדיאלוג
+    [SerializeField] private GameObject startStagePanel; 
+    [SerializeField] private Button startStageButton;
+    [SerializeField] private Button dialogueNextButton; 
+    [SerializeField] private Canvas dialogueCanvas;
+
+    [Header("Instruction Audio")]
+    [SerializeField] private AudioSource instructionAudioSource; // Specific audio source for instruction
 
 
     private int gameIndex = 1; // Set the correct game index
@@ -196,25 +202,38 @@ public class CableConnectionManager : MonoBehaviour
         }
     }
 
-
     public void OnStartStageButtonClick()
     {
-        // הסתרת הפאנל של "Start Stage"
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(false);
         }
 
-        // הסתרת הקנבס של הדיאלוג
         if (dialogueCanvas != null)
         {
             dialogueCanvas.gameObject.SetActive(false);
         }
 
-        // התחלת המשחק
+        // Stop the instruction audio cleanly
+        if (instructionAudioSource != null && instructionAudioSource.isPlaying)
+        {
+            instructionAudioSource.Stop();
+            Debug.Log("Stopped instruction audio on Start Stage button click.");
+        }
+
+        CableConnectionStage stage = stages[currentStage];
+        if (stage.dialoguePanel != null)
+        {
+            var dialogueAudioSource = stage.dialoguePanel.GetComponent<AudioSource>();
+            if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
+            {
+                dialogueAudioSource.Stop();
+                Debug.Log("Stopped dialogue audio from dialogue panel on Start Stage click.");
+            }
+        }
+
         StartMemoryCountdown();
     }
-
 
 
     private void StartMemoryCountdown()
@@ -272,6 +291,11 @@ public class CableConnectionManager : MonoBehaviour
 
         // **Start the stage timer IMMEDIATELY, before transition starts**
         StartStageTimer();
+        if (timerUI != null)
+        {
+            timerUI.SetActive(false); // Hides the timer before cable interaction starts
+        }
+
 
         // **Trigger spark effect and transition to disconnected panel**
         if (panelTransitionHandler != null)
@@ -321,8 +345,11 @@ public class CableConnectionManager : MonoBehaviour
             yield return null;
         }
 
+
+        // ShowGameOverPanel();
         isStageTimerRunning = false;
-        ShowGameOverPanel();
+        yield break; // Stop silently — player continues
+
     }
 
 
@@ -640,6 +667,28 @@ public class CableConnectionManager : MonoBehaviour
                     LoadStage(currentStage);
                 });
             }
+            if (stageCompleteReturnToMapButton != null)
+            {
+                stageCompleteReturnToMapButton.onClick.RemoveAllListeners();
+                stageCompleteReturnToMapButton.onClick.AddListener(() =>
+                {
+                    Debug.Log("Returning to Map from Stage Complete Panel...");
+                    ReturnToMap();
+                });
+            }
+
+            if (stageCompleteStrategyButton != null)
+            {
+                stageCompleteStrategyButton.onClick.RemoveAllListeners();
+                stageCompleteStrategyButton.onClick.AddListener(() =>
+                {
+                    if (strategyManager != null)
+                    {
+                        strategyManager.ShowNextStrategy();
+                    }
+                });
+            }
+
         }
     }
 

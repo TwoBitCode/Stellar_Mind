@@ -380,8 +380,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: d942700472141724c846a2179d0f41d2, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -583,7 +583,7 @@ MonoBehaviour:
   - SpaceEquipmentRecoveryMission
   - SortingAsteroid
   gameNames:
-  - "\u05DE\u05D1\u05D7\u05E0\u05D5\u05EA \u05D4\u05EA\u05D1\u05DC\u05D2\u05E0\u05D5!
+  - "\u05DE\u05D1\u05D7\u05E0\u05D5\u05EA \u05D4\u05EA\u05E2\u05D5\u05E4\u05E4\u05D5!
     \u05D4\u05D0\u05DD \u05EA\u05E6\u05DC\u05D9\u05D7\u05D5 \u05DC\u05D4\u05D7\u05D6\u05D9\u05E8
     \u05D0\u05D5\u05EA\u05DF \u05DC\u05E1\u05D3\u05E8 \u05D4\u05E0\u05DB\u05D5\u05DF?"
   - "\u05D4\u05D7\u05DC\u05DC\u05D9\u05EA \u05D4\u05E9\u05EA\u05D1\u05E9\u05D4! \u05E8\u05E7
@@ -593,7 +593,7 @@ MonoBehaviour:
   - "\u05D4\u05E8\u05D5\u05D1\u05D5\u05D8 \u05E9\u05DC\u05E0\u05D5 \u05D4\u05EA\u05E4\u05E8\u05E7!
     \u05D4\u05D0\u05DD \u05EA\u05D5\u05DB\u05DC\u05D5 \u05DC\u05D4\u05E8\u05DB\u05D9\u05D1
     \u05D0\u05D5\u05EA\u05D5 \u05DE\u05D7\u05D3\u05E9 \u05D5\u05DC\u05D2\u05E8\u05D5\u05DD
-    \u05DC\u05D5 \u05DC\u05E2\u05D1\u05D5\u05D3 \u05DB\u05DE\u05D5 \u05D7\u05D3\u05E9?"
+    \u05DC\u05D5 \u05DC\u05E2\u05D1\u05D5\u05D3?"
   - "\u05D2\u05E9\u05DD \u05E9\u05DC \u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
     \u05DE\u05EA\u05E7\u05E8\u05D1! \u05D1\u05D5\u05D0\u05D5 \u05DC\u05E2\u05D6\u05D5\u05E8
     \u05DC\u05E0\u05D5 \u05DC\u05DE\u05D9\u05D9\u05DF \u05D0\u05D5\u05EA\u05DD \u05DC\u05E4\u05E0\u05D9
@@ -603,6 +603,16 @@ MonoBehaviour:
   completedGameSprite: {fileID: -909865976071554993, guid: 0df3078b6d07b0944abf3b0b4625497d, type: 3}
   defaultDoorText: "\u05D1\u05D7\u05E8\u05D5 \u05DB\u05D3\u05D5\u05E8 \u05E9\u05D9\u05E7\u05D7
     \u05D0\u05D5\u05EA\u05E0\u05D5 \u05DC\u05DE\u05E9\u05D9\u05DE\u05D4!"
+  girlHoverAudioClips:
+  - {fileID: 8300000, guid: 44e8066287e95e44d817740285ddc74d, type: 3}
+  - {fileID: 8300000, guid: d3e97e87190334c4085ddf723f8a23b0, type: 3}
+  - {fileID: 8300000, guid: 06cbb58cf7ed48c4ca3334af313e66eb, type: 3}
+  - {fileID: 8300000, guid: d8747794e17284c44b8a76f7ecdbd8b5, type: 3}
+  boyHoverAudioClips:
+  - {fileID: 8300000, guid: a18f8c328ab64bd409b2ce4f21407c32, type: 3}
+  - {fileID: 8300000, guid: 75e4c40dac5ad3449babe4c268a69760, type: 3}
+  - {fileID: 8300000, guid: d5ad35778bb821746aa37799697f25cc, type: 3}
+  - {fileID: 8300000, guid: 7de89be9d92fdfe409a05aabdf26a52e, type: 3}
   endGamePanel: {fileID: 582278479}
   finalScoreText: {fileID: 805494263}
   endSceneName: Final Scene
@@ -640,13 +650,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.15
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 71
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -2504,13 +2514,13 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 18af8c2a33bce404ca34d9579567b248, type: 3}
   m_Resource: {fileID: 8300000, guid: 18af8c2a33bce404ca34d9579567b248, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.12
+  m_Volume: 0.05
   m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 222
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -2718,7 +2728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -104.82005
+      value: -104.82002
       objectReference: {fileID: 0}
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_AnchoredPosition.y
