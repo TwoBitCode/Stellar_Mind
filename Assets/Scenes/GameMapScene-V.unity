@@ -380,8 +380,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: d942700472141724c846a2179d0f41d2, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -650,7 +650,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.121
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -2514,7 +2514,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 18af8c2a33bce404ca34d9579567b248, type: 3}
   m_Resource: {fileID: 8300000, guid: 18af8c2a33bce404ca34d9579567b248, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.023
+  m_Volume: 0.05
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2728,7 +2728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -104.820045
+      value: -104.82002
       objectReference: {fileID: 0}
     - target: {fileID: 2603929535629410270, guid: ae4fbd4a704c5d04782b73a0853454de, type: 3}
       propertyPath: m_AnchoredPosition.y

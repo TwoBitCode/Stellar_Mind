@@ -4,20 +4,27 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class TubesInstructionAudioButton : MonoBehaviour
 {
-    private AudioSource audioSource;
+    [Header("Audio Settings")]
+    public AudioSource instructionAudioSource; // <-- Specific AudioSource you assign manually
+
     private Button button;
 
     private void Awake()
     {
         button = GetComponent<Button>();
 
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
+        if (instructionAudioSource == null)
         {
-            audioSource = gameObject.AddComponent<AudioSource>();
+            Debug.LogWarning("Instruction AudioSource not assigned. Trying to find one on the GameObject.");
+            instructionAudioSource = GetComponent<AudioSource>();
+
+            if (instructionAudioSource == null)
+            {
+                instructionAudioSource = gameObject.AddComponent<AudioSource>();
+            }
         }
 
-        audioSource.loop = false;
+        instructionAudioSource.loop = false;
         button.onClick.AddListener(PlayInstructionAudio);
     }
 
@@ -43,9 +50,9 @@ public class TubesInstructionAudioButton : MonoBehaviour
 
         if (clip != null)
         {
-            audioSource.Stop();
-            audioSource.clip = clip;
-            audioSource.Play();
+            instructionAudioSource.Stop();
+            instructionAudioSource.clip = clip;
+            instructionAudioSource.Play();
         }
         else
         {

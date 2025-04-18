@@ -4,33 +4,41 @@ using TMPro;
 public class StrategyManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    public TextMeshProUGUI strategyText; // Text field to display the strategy
-    public GameObject strategyPanel; // Panel containing the strategy UI
+    public TextMeshProUGUI strategyText;
+    public GameObject strategyPanel;
 
     [Header("Strategies")]
     [TextArea(2, 5)]
-    public string[] strategies; // Bank of strategies for the mini-game
+    public string[] strategies;
+    public AudioClip[] strategyAudioClips; // <-- NEW: Audio clips for each strategy
 
-    private int currentStrategyIndex = 0; // Tracks the current strategy
+    [Header("Audio")]
+    public AudioSource audioSource; // <-- NEW: AudioSource to play strategy audios
+
+    private int currentStrategyIndex = 0;
 
     private void Start()
     {
-        // Hide the strategy panel initially
         if (strategyPanel != null)
         {
             strategyPanel.SetActive(false);
         }
 
-        // Ensure there's at least one strategy
         if (strategies.Length == 0)
         {
             Debug.LogWarning("No strategies found! Please add strategies in the Inspector.");
         }
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
     }
 
-    /// <summary>
-    /// Displays the next strategy when the button is clicked.
-    /// </summary>
     public void ShowNextStrategy()
     {
         if (strategies.Length == 0)
@@ -39,20 +47,35 @@ public class StrategyManager : MonoBehaviour
             return;
         }
 
-        // Show the panel if it’s not already active
         if (strategyPanel != null)
         {
             strategyPanel.SetActive(true);
         }
 
-        // Cycle through strategies
         strategyText.text = strategies[currentStrategyIndex];
-        currentStrategyIndex = (currentStrategyIndex + 1) % strategies.Length; // Loop back to the first strategy
+
+
+        currentStrategyIndex = (currentStrategyIndex + 1) % strategies.Length;
     }
 
-    /// <summary>
-    /// Hides the strategy panel.
-    /// </summary>
+    public void PlayCurrentStrategyAudio()
+    {
+        PlayStrategyAudio(currentStrategyIndex == 0 ? strategies.Length - 1 : currentStrategyIndex - 1);
+    }
+
+    private void PlayStrategyAudio(int index)
+    {
+        if (strategyAudioClips != null && index >= 0 && index < strategyAudioClips.Length)
+        {
+            audioSource.clip = strategyAudioClips[index];
+            audioSource.Play();
+        }
+        else
+        {
+            Debug.LogWarning($"No audio clip found for strategy index {index}.");
+        }
+    }
+
     public void HideStrategyPanel()
     {
         if (strategyPanel != null)
@@ -60,6 +83,7 @@ public class StrategyManager : MonoBehaviour
             strategyPanel.SetActive(false);
         }
     }
+
     public void ShowStrategyPanel()
     {
         if (strategyPanel != null)
@@ -67,5 +91,4 @@ public class StrategyManager : MonoBehaviour
             strategyPanel.SetActive(true);
         }
     }
-
 }

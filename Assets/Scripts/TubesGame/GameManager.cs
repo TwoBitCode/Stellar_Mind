@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource tickingAudioSource;
 
+    [Header("Instruction Audio")]
+    [SerializeField] private AudioSource instructionAudioSource; // Specific AudioSource for instruction sound
+
     public static GameManager Instance { get; private set; }
 
 
@@ -402,9 +405,18 @@ public class GameManager : MonoBehaviour
     }
     public void OnStartStageButtonClicked()
     {
+        // Stop instruction audio cleanly
+        if (instructionAudioSource != null && instructionAudioSource.isPlaying)
+        {
+            instructionAudioSource.Stop();
+            Debug.Log("Stopped instruction audio when starting the stage.");
+        }
+
         uiManager.HideInstructionPanel();
         StartStage();
     }
+
+
 
     private IEnumerator StartSortingTimer(Stage stage)
     {

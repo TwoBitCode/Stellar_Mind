@@ -60,6 +60,9 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private Button nextStageButton;
     [SerializeField] private TextMeshProUGUI stageCompleteBaseScoreText; // NEW: Base score display
     [SerializeField] private TextMeshProUGUI stageCompleteBonusScoreText; // NEW: Bonus score display
+    [SerializeField] private Button stageCompleteReturnToMapButton; // NEW
+    [SerializeField] private Button stageCompleteStrategyButton;    // NEW
+
 
 
     [SerializeField] private SparkEffectHandler sparkEffectHandler;
@@ -76,7 +79,10 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private GameObject startStagePanel; 
     [SerializeField] private Button startStageButton;
     [SerializeField] private Button dialogueNextButton; 
-    [SerializeField] private Canvas dialogueCanvas; 
+    [SerializeField] private Canvas dialogueCanvas;
+
+    [Header("Instruction Audio")]
+    [SerializeField] private AudioSource instructionAudioSource; // Specific audio source for instruction
 
 
     private int gameIndex = 1; // Set the correct game index
@@ -196,24 +202,38 @@ public class CableConnectionManager : MonoBehaviour
         }
     }
 
-
     public void OnStartStageButtonClick()
     {
-
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(false);
         }
-
 
         if (dialogueCanvas != null)
         {
             dialogueCanvas.gameObject.SetActive(false);
         }
 
+        // Stop the instruction audio cleanly
+        if (instructionAudioSource != null && instructionAudioSource.isPlaying)
+        {
+            instructionAudioSource.Stop();
+            Debug.Log("Stopped instruction audio on Start Stage button click.");
+        }
+
+        CableConnectionStage stage = stages[currentStage];
+        if (stage.dialoguePanel != null)
+        {
+            var dialogueAudioSource = stage.dialoguePanel.GetComponent<AudioSource>();
+            if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
+            {
+                dialogueAudioSource.Stop();
+                Debug.Log("Stopped dialogue audio from dialogue panel on Start Stage click.");
+            }
+        }
+
         StartMemoryCountdown();
     }
-
 
 
     private void StartMemoryCountdown()
@@ -647,6 +667,28 @@ public class CableConnectionManager : MonoBehaviour
                     LoadStage(currentStage);
                 });
             }
+            if (stageCompleteReturnToMapButton != null)
+            {
+                stageCompleteReturnToMapButton.onClick.RemoveAllListeners();
+                stageCompleteReturnToMapButton.onClick.AddListener(() =>
+                {
+                    Debug.Log("Returning to Map from Stage Complete Panel...");
+                    ReturnToMap();
+                });
+            }
+
+            if (stageCompleteStrategyButton != null)
+            {
+                stageCompleteStrategyButton.onClick.RemoveAllListeners();
+                stageCompleteStrategyButton.onClick.AddListener(() =>
+                {
+                    if (strategyManager != null)
+                    {
+                        strategyManager.ShowNextStrategy();
+                    }
+                });
+            }
+
         }
     }
 

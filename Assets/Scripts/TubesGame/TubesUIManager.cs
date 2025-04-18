@@ -38,6 +38,7 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private StrategyManager strategyManager;
 
 
+
     private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)
 
     private void Start()

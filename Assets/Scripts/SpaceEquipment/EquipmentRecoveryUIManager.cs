@@ -31,9 +31,14 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     public TextMeshProUGUI levelCompleteBaseScoreText;
     public TextMeshProUGUI levelCompleteBonusScoreText;
     public UnityEngine.UI.Button levelCompleteButton;
+    public UnityEngine.UI.Button levelCompleteReturnToMapButton; // NEW: Return to Map Button in Level Complete
+    public UnityEngine.UI.Button levelCompleteStrategyButton;    // NEW: Strategy Button in Level Complete
+
 
     [Header("Strategy Panel")]
     public StrategyManager strategyManager;
+
+    public AudioSource instructionAudioSource;
 
 
     private void Start()
@@ -93,6 +98,25 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
                 }
             });
         }
+        if (levelCompleteReturnToMapButton != null)
+        {
+            levelCompleteReturnToMapButton.onClick.AddListener(() =>
+            {
+                EquipmentRecoveryGameManager.Instance?.ReturnToMap();
+            });
+        }
+
+        if (levelCompleteStrategyButton != null)
+        {
+            levelCompleteStrategyButton.onClick.AddListener(() =>
+            {
+                if (strategyManager != null)
+                {
+                    strategyManager.ShowNextStrategy();
+                }
+            });
+        }
+
     }
 
     private void Awake()
@@ -106,11 +130,25 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
         dialoguePanel.SetActive(false); // Hide the dialogue panel
         workspaceStartButton.SetActive(false); // Hide the start button
 
+        // Stop intro dialogue audio
+        var intro = FindAnyObjectByType<EquipmentRecoveryIntro>();
+        if (intro != null && intro.dialogueAudioSource != null && intro.dialogueAudioSource.isPlaying)
+        {
+            intro.dialogueAudioSource.Stop();
+            Debug.Log("Stopped intro dialogue audio on workspace start.");
+        }
+
+        // Stop instruction audio (direct reference)
+        if (instructionAudioSource != null && instructionAudioSource.isPlaying)
+        {
+            instructionAudioSource.Stop();
+            Debug.Log("Stopped instruction audio from assigned AudioSource.");
+        }
+
         Debug.Log("Player can now interact with the robot parts!");
 
         if (EquipmentRecoveryGameManager.Instance != null)
         {
-            Debug.Log("Starting the stage...");
             EquipmentRecoveryGameManager.Instance.StartStage();
         }
         else
@@ -118,6 +156,8 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
             Debug.LogError("EquipmentRecoveryGameManager.Instance is null! Cannot start the stage.");
         }
     }
+
+
 
     public void ShowFeedback(string message, Color color)
     {

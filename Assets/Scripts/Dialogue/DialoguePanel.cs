@@ -14,10 +14,19 @@ public class DialoguePanel : MonoBehaviour
 
     private int currentDialogueIndex = 0;
     private Action onDialogueComplete;
-    private bool isTyping = false;
+    //private bool isTyping = false;
+
+    [Header("Dialogue Audio")]
+    [SerializeField] private AudioSource dialogueAudioSource; // NEW: Separate audio for dialogue
+    [SerializeField] private AudioClip[] girlDialogueAudioClips; // Girl voice clips
+    [SerializeField] private AudioClip[] boyDialogueAudioClips;  // Boy voice clips
+    private string selectedCharacter; // "Girl" or "Boy"
+
 
     void Start()
     {
+        selectedCharacter = GameProgressManager.Instance?.playerProgress?.selectedCharacter ?? "Girl"; // Default to Girl
+
         if (startButton != null)
         {
             startButton.SetActive(false); // Hide start button initially
@@ -40,31 +49,57 @@ public class DialoguePanel : MonoBehaviour
 
     public void StartDialogue(Action onComplete)
     {
+        selectedCharacter = GameProgressManager.Instance?.playerProgress?.selectedCharacter ?? "Girl";
+
         onDialogueComplete = onComplete;
         currentDialogueIndex = 0;
 
         if (!gameObject.activeSelf)
         {
-            gameObject.SetActive(true); // Ensure the dialogue panel is active before starting
+            gameObject.SetActive(true);
         }
 
         Canvas dialogueCanvas = GetComponentInParent<Canvas>();
         if (dialogueCanvas != null && !dialogueCanvas.gameObject.activeSelf)
         {
-            dialogueCanvas.gameObject.SetActive(true); // Ensure the dialogue canvas is active
+            dialogueCanvas.gameObject.SetActive(true);
         }
 
         Debug.Log("Starting dialogue sequence.");
-        DisplayNextDialogue();
+        StartCoroutine(AutoPlayDialogue());
     }
+
+    private IEnumerator AutoPlayDialogue()
+    {
+        while (currentDialogueIndex < dialogues.Length)
+        {
+            PlayCurrentDialogueAudio(currentDialogueIndex);
+            dialogueText.text = dialogues[currentDialogueIndex];
+
+            currentDialogueIndex++;
+
+            yield return new WaitForSeconds(3f); // Wait 2 seconds before next line
+        }
+
+        ShowStartButton();
+    }
+
+    private void ShowStartButton()
+    {
+        if (startButton != null)
+        {
+            startButton.SetActive(true);
+        }
+    }
+
 
     private void DisplayNextDialogue()
     {
         if (currentDialogueIndex < dialogues.Length)
         {
-            // Play sound at the start of the dialogue line
-            PlayTypingSound();
-            StartCoroutine(TypeDialogue(dialogues[currentDialogueIndex]));
+            PlayCurrentDialogueAudio(currentDialogueIndex); // Play matching voice
+
+            dialogueText.text = dialogues[currentDialogueIndex]; // Instantly show full line
             currentDialogueIndex++;
         }
         else
@@ -73,43 +108,22 @@ public class DialoguePanel : MonoBehaviour
         }
     }
 
+
     private IEnumerator TypeDialogue(string dialogue)
     {
-        isTyping = true;
-        dialogueText.text = "";
-        foreach (char letter in dialogue.ToCharArray())
-        {
-            dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
-        }
-        isTyping = false;
 
-        // Automatically move to the next dialogue after 1 second
-        yield return new WaitForSeconds(1f);
+        dialogueText.text = dialogue; // Instantly show full dialogue text
+
+        yield return new WaitForSeconds(1f); // Wait 1 second before moving to next dialogue
         DisplayNextDialogue();
     }
 
+
     public void OnClick()
     {
-        if (isTyping)
-        {
-            StopAllCoroutines();
-            dialogueText.text = dialogues[currentDialogueIndex - 1];
-            isTyping = false;
-        }
-        else
-        {
-            DisplayNextDialogue();
-        }
+        DisplayNextDialogue(); // On click, move to next line
     }
 
-    private void ShowStartButton()
-    {
-        if (startButton != null)
-        {
-            startButton.SetActive(true); // Show the start button
-        }
-    }
 
     private void PlayTypingSound()
     {
@@ -122,6 +136,30 @@ public class DialoguePanel : MonoBehaviour
             }
 
             typingAudioSource.PlayOneShot(typingSound);
+        }
+    }
+    private void PlayCurrentDialogueAudio(int index)
+    {
+        if (dialogueAudioSource == null) return;
+
+        dialogueAudioSource.Stop();
+        dialogueAudioSource.loop = false;
+
+        if (selectedCharacter == "Boy")
+        {
+            if (boyDialogueAudioClips != null && index < boyDialogueAudioClips.Length)
+            {
+                dialogueAudioSource.clip = boyDialogueAudioClips[index];
+                dialogueAudioSource.Play();
+            }
+        }
+        else // Assume Girl
+        {
+            if (girlDialogueAudioClips != null && index < girlDialogueAudioClips.Length)
+            {
+                dialogueAudioSource.clip = girlDialogueAudioClips[index];
+                dialogueAudioSource.Play();
+            }
         }
     }
 

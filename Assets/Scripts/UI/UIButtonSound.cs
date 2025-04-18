@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(Button))]
 public class UIButtonSound : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 {
-    public AudioSource audioSource; // Sound source
-    public AudioClip buttonClickSound; // Sound to play on click
-    public AudioClip hoverSound; // Sound to play on hover
+    public AudioSource audioSource;
+    public AudioClip buttonClickSound;
+    public AudioClip hoverSound;
 
     private void Awake()
     {
@@ -31,7 +31,10 @@ public class UIButtonSound : MonoBehaviour, IPointerClickHandler, IPointerEnterH
     {
         if (audioSource != null && clip != null)
         {
-            audioSource.PlayOneShot(clip);
+            audioSource.Stop();        
+            audioSource.clip = clip;    
+            audioSource.loop = false;
+            audioSource.Play();        
         }
     }
 }

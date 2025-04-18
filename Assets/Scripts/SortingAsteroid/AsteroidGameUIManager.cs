@@ -55,9 +55,15 @@ public class AsteroidGameUIManager : MonoBehaviour
         startButton.onClick.RemoveAllListeners();
         startButton.onClick.AddListener(() =>
         {
+            if (instructionsAudioSource != null && instructionsAudioSource.isPlaying)
+            {
+                instructionsAudioSource.Stop(); // <-- Add this line!
+            }
+
             instructionsPanel.SetActive(false); // Hide the panel
             onStartGame?.Invoke(); // Start the game
         });
+
 
         // NEW: Setup the sound button
         if (playInstructionsAudioButton != null)
