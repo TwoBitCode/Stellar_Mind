@@ -2,6 +2,10 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Services.CloudSave;
+using System.Threading.Tasks;
+using System;
+using Unity.Services.Authentication;
 
 public class GameProgressManager : MonoBehaviour
 {
@@ -14,17 +18,16 @@ public class GameProgressManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
 
-            CheckForReset();
-
-            StartCoroutine(LoadProgressCoroutine());
+            Debug.Log("GameProgressManager initialized.");
         }
         else
         {
             Destroy(gameObject);
         }
     }
+
+
     private void CheckForReset()
     {
         if (PlayerPrefs.HasKey("reset") && PlayerPrefs.GetInt("reset") == 1)
@@ -54,19 +57,19 @@ public class GameProgressManager : MonoBehaviour
         }
     }
 
-    private IEnumerator LoadProgressCoroutine()
-    {
-        yield return null;
+    //private IEnumerator LoadProgressCoroutine()
+    //{
+    //    yield return null;
 
-        LoadProgress();
+    //    LoadProgress();
 
-        yield return new WaitForSeconds(0.1f);
-        Debug.Log("Finished loading progress, now ready to use data.");
-    }
+    //    yield return new WaitForSeconds(0.1f);
+    //    Debug.Log("Finished loading progress, now ready to use data.");
+    //}
 
 
 
-    public void SaveProgress()
+    public async void SaveProgress()
     {
         if (playerProgress == null)
         {
@@ -75,69 +78,77 @@ public class GameProgressManager : MonoBehaviour
         }
 
         playerProgress.ConvertDictionaryToList();
+        string json = JsonUtility.ToJson(playerProgress);
 
-        string json = JsonUtility.ToJson(playerProgress, true);
-        File.WriteAllText(saveFilePath, json);
-        Debug.Log("Game progress successfully saved: " + json);
+        try
+        {
+            var data = new Dictionary<string, object> { { "playerProgress", json } };
+            await CloudSaveService.Instance.Data.Player.SaveAsync(data);
+            Debug.Log("Progress saved to Cloud Save.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Cloud Save failed: " + ex.Message);
+        }
     }
-    public void LoadProgress()
+
+    public async Task LoadProgress()
     {
-        if (File.Exists(saveFilePath))
+        try
         {
-            string json = File.ReadAllText(saveFilePath);
-            playerProgress = JsonUtility.FromJson<PlayerProgress>(json);
+            var data = await CloudSaveService.Instance.Data.Player.LoadAsync(new HashSet<string> { "playerProgress" });
 
-            if (playerProgress == null)
+            if (data.TryGetValue("playerProgress", out var item) && item?.Value != null)
             {
-                Debug.LogError("Failed to load progress! Creating new save.");
-                playerProgress = new PlayerProgress("", "");
-                SaveProgress();
-                return;
-            }
+                string json = item.Value.GetAs<string>();
 
-            // Ensure playerName is initialized if missing
-            if (string.IsNullOrEmpty(playerProgress.playerName))
-            {
-                playerProgress.playerName = "שחקן";  // Set a default name if empty
-                Debug.LogWarning("playerName was empty! Resetting to default.");
-            }
-
-            // Ensure gamesProgress is initialized
-            if (playerProgress.gamesProgress == null)
-            {
-                Debug.LogWarning("gamesProgress was null after loading! Initializing.");
-                playerProgress.gamesProgress = new Dictionary<int, GameProgress>();
-            }
-
-            // Ensure gamesProgressList is initialized
-            if (playerProgress.gamesProgressList == null || playerProgress.gamesProgressList.Count == 0)
-            {
-                Debug.LogWarning("gamesProgressList is empty! Initializing.");
-                playerProgress.gamesProgressList = new List<SerializableGameProgress>();
-
-                for (int i = 0; i < 4; i++)
+                if (!string.IsNullOrWhiteSpace(json))
                 {
-                    // Ensure Asteroid Game uses `GameProgress(3)`
-                    playerProgress.gamesProgressList.Add(new SerializableGameProgress
+                    var loadedProgress = JsonUtility.FromJson<PlayerProgress>(json);
+
+                    if (loadedProgress == null)
                     {
-                        gameIndex = i,
-                        progress = new GameProgress(i) // Pass game index 
-                    });
+                        Debug.LogWarning("FromJson returned null. Cloud data might be corrupted.");
+                    }
+                    else
+                    {
+                        playerProgress = loadedProgress;
+
+                        try
+                        {
+                            playerProgress.ConvertListToDictionary(); // safely guarded now
+                            Debug.Log("Progress loaded and converted from Cloud Save.");
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError(" Error during ConvertListToDictionary(): " + ex.Message);
+                        }
+                    }
                 }
+
+                // If we reach here, either no data was found or JSON was invalid
+                Debug.Log("No valid progress found. Creating new player progress.");
+                playerProgress = new PlayerProgress(GetDefaultPlayerName(), "");
+                SaveProgress();
             }
-
-            // Convert the list back into a dictionary for use in-game
-            playerProgress.ConvertListToDictionary();
-
-            Debug.Log($"Game progress loaded successfully. Player Name: {playerProgress.playerName}");
         }
-        else
+
+        catch (Exception ex)
         {
-            Debug.LogWarning("No save file found. Creating new progress.");
-            playerProgress = new PlayerProgress("", "");  // Initialize with an empty name
-            SaveProgress();
+            Debug.LogError("Failed to load progress from cloud: " + ex.Message);
+            // Do not overwrite playerProgress on cloud error
         }
     }
+
+
+    private string GetDefaultPlayerName()
+    {
+        // Try to use the signed-in username if possible
+        return AuthenticationService.Instance.IsSignedIn ? AuthenticationService.Instance.PlayerName : "Unknown";
+    }
+
+
 
 
 

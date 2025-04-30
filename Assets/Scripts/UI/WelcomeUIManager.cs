@@ -1,75 +1,94 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
-using System.Collections;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
+using System.Threading.Tasks;
 
 public class WelcomeUIManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    [SerializeField] private TMP_InputField playerNameInput;
-    [SerializeField] private TextMeshProUGUI welcomeMessage;
+    [SerializeField] private TMP_InputField usernameInput;
+    [SerializeField] private TMP_InputField passwordInput;
+    [SerializeField] private TextMeshProUGUI feedbackText;
     [SerializeField] private GameObject startButton;
 
-    private void Start()
+    private async void Start()
     {
-        StartCoroutine(InitializeUI());
+        await InitializeUnityServices();
     }
 
-    private IEnumerator InitializeUI()
+    private async Task InitializeUnityServices()
     {
-        // Wait a frame to ensure GameProgressManager is fully initialized
-        yield return null;
-
-        // Ensure GameProgressManager exists before accessing it
-        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
+        try
         {
-            Debug.LogError("GameProgressManager is missing or uninitialized!");
-            startButton.SetActive(false);
-            yield break;
+            await UnityServices.InitializeAsync();
+            feedbackText.text = "Unity Services Initialized.";
         }
-
-        string savedName = GameProgressManager.Instance.playerProgress.playerName;
-
-        // If a name is already saved, pre-fill the input field and activate the start button
-        if (!string.IsNullOrEmpty(savedName))
+        catch (System.Exception e)
         {
-            playerNameInput.text = savedName;
-
-            // Force UI refresh to properly display the text
-            yield return null;
-            playerNameInput.ForceLabelUpdate();
-
-            startButton.SetActive(true);
-        }
-        else
-        {
-            startButton.SetActive(false);
+            feedbackText.text = $"Failed to initialize services: {e.Message}";
         }
     }
 
-    public void OnNameInputChanged()
+    public async void OnRegisterClicked()
     {
-        // Enable the start button only when input is not empty
-        startButton.SetActive(!string.IsNullOrEmpty(playerNameInput.text.Trim()));
-    }
+        string username = usernameInput.text.Trim();
+        string password = passwordInput.text.Trim();
 
-    public void StartGame()
-    {
-        string playerName = playerNameInput.text.Trim();
-
-        if (string.IsNullOrEmpty(playerName))
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            Debug.LogWarning("Player name is empty! Cannot proceed.");
+            feedbackText.text = "Username and password are required.";
             return;
         }
 
-        // Save the player's name
-        GameProgressManager.Instance.playerProgress.playerName = playerName;
-        GameProgressManager.Instance.SaveProgress();
+        try
+        {
+            await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, password);
+            feedbackText.text = "Registration successful.";
 
-        Debug.Log($"Player name saved: {playerName}");
+            // New user  create and save fresh progress
+            GameProgressManager.Instance.playerProgress = new PlayerProgress(username, "");
+            GameProgressManager.Instance.SaveProgress();
 
-        // Move to the character selection scene
-        SceneManager.LoadScene("LioAndMayaScene");
+            SceneManager.LoadScene("LioAndMayaScene");
+        }
+        catch (AuthenticationException e)
+        {
+            feedbackText.text = $"Registration failed: {e.Message}";
+        }
+    }
+
+    public async void OnLoginClicked()
+    {
+        string username = usernameInput.text.Trim();
+        string password = passwordInput.text.Trim();
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            feedbackText.text = "Username and password are required.";
+            return;
+        }
+
+        try
+        {
+            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
+            feedbackText.text = "Login successful.";
+
+            await GameProgressManager.Instance.LoadProgress();
+
+            // If the cloud save had no name, inject the login username
+            if (string.IsNullOrWhiteSpace(GameProgressManager.Instance.playerProgress?.playerName))
+            {
+                GameProgressManager.Instance.playerProgress.playerName = username;
+                GameProgressManager.Instance.SaveProgress();
+            }
+
+            SceneManager.LoadScene("LioAndMayaScene");
+        }
+        catch (AuthenticationException e)
+        {
+            feedbackText.text = $"Login failed: {e.Message}";
+        }
     }
 }

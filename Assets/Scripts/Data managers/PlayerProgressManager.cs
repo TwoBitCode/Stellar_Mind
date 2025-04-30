@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 [System.Serializable]
 public class SerializableGameProgress
@@ -41,64 +42,60 @@ public class PlayerProgress
 
     public void ConvertListToDictionary()
     {
-        if (gamesProgressList == null || gamesProgressList.Count == 0)
-        {
-            Debug.LogError("ConvertListToDictionary: gamesProgressList is EMPTY! Initializing.");
-            gamesProgressList = new List<SerializableGameProgress>();
-
-            for (int i = 0; i < 4; i++) // Assuming 4 different games
-            {
-                gamesProgressList.Add(new SerializableGameProgress { gameIndex = i, progress = new GameProgress(i) });
-            }
-        }
+        if (gamesProgress == null)
+            gamesProgress = new Dictionary<int, GameProgress>();
 
         gamesProgress.Clear();
+
+        if (gamesProgressList == null || gamesProgressList.Count == 0)
+        {
+            Debug.LogWarning("ConvertListToDictionary: gamesProgressList is empty. Creating defaults.");
+            for (int i = 0; i < 4; i++)
+            {
+                gamesProgress[i] = new GameProgress(i);
+            }
+            return;
+        }
+
         foreach (var item in gamesProgressList)
         {
             if (item == null)
             {
-                Debug.LogError("ConvertListToDictionary: Found a NULL item in gamesProgressList!");
+                Debug.LogWarning("ConvertListToDictionary: found null game item. Skipping.");
                 continue;
             }
 
             if (item.progress == null)
             {
-                Debug.LogError($"ConvertListToDictionary: Game {item.gameIndex} has NULL progress! Creating new GameProgress.");
+                Debug.LogWarning($"ConvertListToDictionary: game {item.gameIndex} has null progress. Creating default.");
                 item.progress = new GameProgress(item.gameIndex);
             }
 
             item.progress.ConvertListToDictionary();
             gamesProgress[item.gameIndex] = item.progress;
         }
-
-        Debug.Log($"ConvertListToDictionary: gamesProgress now contains {gamesProgress.Count} games.");
     }
 
 
 
     public void ConvertDictionaryToList()
     {
-        if (gamesProgress == null || gamesProgress.Count == 0)
-        {
-            Debug.LogError("ConvertDictionaryToList: gamesProgress is EMPTY or NULL! Creating default data.");
-            gamesProgress = new Dictionary<int, GameProgress>();
+        if (gamesProgressList == null)
+            gamesProgressList = new List<SerializableGameProgress>();
+        else
+            gamesProgressList.Clear();
 
-            for (int i = 0; i < 4; i++) // Assuming 4 different games
-            {
-                if (i == 3) // Asteroid Game uses `AsteroidStageProgress`
-                    gamesProgress[i] = new GameProgress(3);
-                else
-                    gamesProgress[i] = new GameProgress(i);
-            }
-        }
-
-        gamesProgressList.Clear();
         foreach (var pair in gamesProgress)
         {
             pair.Value.ConvertDictionaryToList();
-            gamesProgressList.Add(new SerializableGameProgress { gameIndex = pair.Key, progress = pair.Value });
+            gamesProgressList.Add(new SerializableGameProgress
+            {
+                gameIndex = pair.Key,
+                progress = pair.Value
+            });
         }
     }
+
 
 
 
@@ -137,40 +134,63 @@ public class GameProgress
 
     public void ConvertDictionaryToList()
     {
+        if (stagesList == null)
+            stagesList = new List<SerializableStageProgress>();
+        else
+            stagesList.Clear();
+
         if (stages != null)
         {
-            stagesList.Clear();
             foreach (var pair in stages)
             {
-                stagesList.Add(new SerializableStageProgress { stageIndex = pair.Key, progress = pair.Value });
+                stagesList.Add(new SerializableStageProgress
+                {
+                    stageIndex = pair.Key,
+                    progress = pair.Value
+                });
             }
         }
     }
+
 
     public void ConvertListToDictionary()
     {
+        if (stages == null)
+            stages = new Dictionary<int, StageProgress>();
+
+        stages.Clear();
+
         if (stagesList == null || stagesList.Count == 0)
         {
-            Debug.LogWarning("ConvertListToDictionary: stagesList was EMPTY! Creating default stages.");
+            Debug.LogWarning("ConvertListToDictionary: stagesList was null or empty. Creating defaults.");
             stagesList = new List<SerializableStageProgress>();
-
             for (int i = 0; i < 3; i++)
             {
-                stagesList.Add(new SerializableStageProgress { stageIndex = i, progress = new StageProgress() });
+                stages[i] = new StageProgress();
             }
+            return;
         }
 
-        if (stages != null)
+        foreach (var item in stagesList)
         {
-            stages.Clear();
-            foreach (var item in stagesList)
+            if (item == null)
             {
-                stages[item.stageIndex] = item.progress;
+                Debug.LogWarning("ConvertListToDictionary: found null stage item. Skipping.");
+                continue;
             }
+
+            if (item.progress == null)
+            {
+                Debug.LogWarning($"ConvertListToDictionary: stage {item.stageIndex} has null progress. Creating default.");
+                item.progress = new StageProgress();
+            }
+
+            stages[item.stageIndex] = item.progress;
         }
-
-
     }
+
+
+
 
     public bool CheckIfCompleted()
     {
