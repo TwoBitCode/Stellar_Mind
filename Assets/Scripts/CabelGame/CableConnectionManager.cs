@@ -1,4 +1,4 @@
-using UnityEngine;
+ο»Ώusing UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.UI;
@@ -85,13 +85,19 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private AudioSource instructionAudioSource; // Specific audio source for instruction
 
 
+    [Header("Memory Time Buttons")]
+    [SerializeField] private Button timer15sButton;
+    [SerializeField] private Button timer20sButton;
+    [SerializeField] private Button timer25sButton;
+
+
 
     private int gameIndex = 1; // Set the correct game index
     private Color defaultTimerColor; // Store original color
     private float stageStartTime; // Tracks when the stage timer starts
     private int mistakesCount = 0; // Track mistakes per stage
 
-
+    private int selectedMemoryTime = 20;
     void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
@@ -126,6 +132,9 @@ public class CableConnectionManager : MonoBehaviour
         {
             Debug.LogError("GameProgressManager instance is missing! Defaulting to stage 0.");
         }
+        timer15sButton.onClick.AddListener(() => SetMemoryTime(15));
+        timer20sButton.onClick.AddListener(() => SetMemoryTime(20));
+        timer25sButton.onClick.AddListener(() => SetMemoryTime(25));
 
         if (startStagePanel != null)
         {
@@ -134,7 +143,11 @@ public class CableConnectionManager : MonoBehaviour
         currentStage = savedStage;
         LoadStage(currentStage);
     }
-
+    public void SetMemoryTime(int seconds)
+    {
+        selectedMemoryTime = seconds;
+        Debug.Log($"Memory time selected: {seconds}s");
+    }
 
     public void LoadStage(int stageIndex)
     {
@@ -147,7 +160,8 @@ public class CableConnectionManager : MonoBehaviour
         currentStage = stageIndex;
         mistakesCount = 0;
         CableConnectionStage stage = stages[currentStage];
-        // **Turn off all other stages' panels before enabling the current stage**
+
+        // Turn off all panels
         foreach (var s in stages)
         {
             if (s.connectedPanel != null) s.connectedPanel.SetActive(false);
@@ -155,56 +169,36 @@ public class CableConnectionManager : MonoBehaviour
             if (s.dialoguePanel != null) s.dialoguePanel.gameObject.SetActive(false);
         }
 
-        // Ensure connected panel is shown first
         if (stage.connectedPanel != null) stage.connectedPanel.SetActive(true);
         if (stage.disconnectedPanel != null) stage.disconnectedPanel.SetActive(false);
 
         stageTimeRemaining = stage.stageTimeLimit;
         isStageTimerRunning = false;
 
-        // Ensure the Dialogue Panel is turned off properly when returning mid-stage
-        if (stage.dialoguePanel != null)
+        // Always show the instruction panel before starting
+        if (startStagePanel != null)
         {
-            if (GameProgressManager.Instance.playerProgress.lastPlayedStage > 0)
-            {
-                Debug.Log("Returning mid-stage, ensuring dialogue panel is disabled.");
-                stage.dialoguePanel.gameObject.SetActive(false);
-                //Canvas dialogueCanvas = stage.dialoguePanel.GetComponentInParent<Canvas>();
-                //if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(false);
-            }
+            startStagePanel.SetActive(true);
         }
 
-        // Only show dialogue at the very first stage
-        if (currentStage == 0 && GameProgressManager.Instance.playerProgress.lastPlayedStage == 0)
+        if (dialogueCanvas != null)
         {
-            if (stage.dialoguePanel != null)
-            {
-                stage.dialoguePanel.gameObject.SetActive(true);
-                Canvas dialogueCanvas = stage.dialoguePanel.GetComponentInParent<Canvas>();
-                if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(true);
-
-                stage.dialoguePanel.StartDialogue(() =>
-                {
-                    stage.dialoguePanel.gameObject.SetActive(false);
-
-                    // δφβϊ δτΰπμ ωμ Start Stage αξχεν μδϊηιμ ιωψ ΰϊ δωμα
-                    if (startStagePanel != null)
-                    {
-                        startStagePanel.SetActive(true);
-                    }
-                });
-
-            }
+            dialogueCanvas.gameObject.SetActive(true);
         }
-        else
-        {
-            Debug.Log("Skipping dialogue, going straight to memory countdown.");
-            StartMemoryCountdown();
-        }
+
+        Debug.Log($"Loaded Stage {currentStage}. Awaiting memory time selection and start.");
     }
+
 
     public void OnStartStageButtonClick()
     {
+
+        if (selectedMemoryTime <= 0)
+        {
+            Debug.LogWarning("Please select a memory time before starting.");
+            return;
+        }
+
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(false);
@@ -215,7 +209,6 @@ public class CableConnectionManager : MonoBehaviour
             dialogueCanvas.gameObject.SetActive(false);
         }
 
-        // Stop the instruction audio cleanly
         if (instructionAudioSource != null && instructionAudioSource.isPlaying)
         {
             instructionAudioSource.Stop();
@@ -235,6 +228,7 @@ public class CableConnectionManager : MonoBehaviour
 
         StartMemoryCountdown();
     }
+
 
 
     private void StartMemoryCountdown()
@@ -258,7 +252,8 @@ public class CableConnectionManager : MonoBehaviour
 
         countdownTimer.StopCountdown();
         countdownTimer.timerText = timerText;
-        countdownTimer.StartCountdown(countdownTime);
+        countdownTimer.StartCountdown(selectedMemoryTime);
+
     }
 
 
@@ -349,7 +344,7 @@ public class CableConnectionManager : MonoBehaviour
 
         // ShowGameOverPanel();
         isStageTimerRunning = false;
-        yield break; // Stop silently — player continues
+        yield break; // Stop silently β€” player continues
 
     }
 
@@ -360,7 +355,7 @@ public class CableConnectionManager : MonoBehaviour
 
         CableConnectionStage stage = stages[currentStage];
 
-        // 1. ςφιψϊ λμ δθιιξψιν
+        // 1. ΧΆΧ¦Χ™Χ¨Χª Χ›Χ Χ”ΧΧ™Χ™ΧΧ¨Χ™Χ
         isStageTimerRunning = false;
         countdownTimer.StopCountdown();
 
@@ -369,7 +364,7 @@ public class CableConnectionManager : MonoBehaviour
         if (stageTimerUI != null)
             stageTimerUI.SetActive(false);
 
-        // 2. ΰιτερ λαμιν – ψχ ΰν disconnectedPanel τςιμ (λμεξψ λαψ δετιςε δλαμιν)
+        // 2. ΧΧ™Χ¤Χ•Χ΅ Χ›Χ‘ΧΧ™Χ β€“ Χ¨Χ§ ΧΧ disconnectedPanel Χ¤ΧΆΧ™Χ (Χ›ΧΧ•ΧΧ¨ Χ›Χ‘Χ¨ Χ”Χ•Χ¤Χ™ΧΆΧ• Χ”Χ›Χ‘ΧΧ™Χ)
         if (stage.disconnectedPanel != null && stage.disconnectedPanel.activeInHierarchy)
         {
             foreach (var cable in stage.cables)
@@ -380,20 +375,20 @@ public class CableConnectionManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Skipped cable reset — disconnectedPanel not active yet.");
+            Debug.Log("Skipped cable reset β€” disconnectedPanel not active yet.");
         }
 
-        // 3. λιαει βν ωμ connectedPanel εβν disconnectedPanel — μΰ ξωπδ ΰιτδ διιπε
+        // 3. Χ›Χ™Χ‘Χ•Χ™ Χ’Χ Χ©Χ connectedPanel Χ•Χ’Χ disconnectedPanel β€” ΧΧ ΧΧ©Χ Χ” ΧΧ™Χ¤Χ” Χ”Χ™Χ™Χ Χ•
         if (stage.connectedPanel != null)
             stage.connectedPanel.SetActive(false);
         if (stage.disconnectedPanel != null)
             stage.disconnectedPanel.SetActive(false);
 
-        // 4. δφβϊ τΰπμ Game Over
+        // 4. Χ”Χ¦Χ’Χª Χ¤ΧΧ Χ Game Over
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
 
-        // 5. λτϊεψ "πρδ ωεα"
+        // 5. Χ›Χ¤ΧªΧ•Χ¨ "Χ Χ΅Χ” Χ©Χ•Χ‘"
         if (restartButton != null)
         {
             restartButton.onClick.RemoveAllListeners();
@@ -405,7 +400,7 @@ public class CableConnectionManager : MonoBehaviour
             });
         }
 
-        // 6. λτϊεψ ηζψδ μξτδ
+        // 6. Χ›Χ¤ΧªΧ•Χ¨ Χ—Χ–Χ¨Χ” ΧΧΧ¤Χ”
         if (returnToMapButton != null)
         {
             returnToMapButton.onClick.RemoveAllListeners();
@@ -416,7 +411,7 @@ public class CableConnectionManager : MonoBehaviour
             });
         }
 
-        // 7. λτϊεψ ΰρθψθβιδ
+        // 7. Χ›Χ¤ΧªΧ•Χ¨ ΧΧ΅ΧΧ¨ΧΧ’Χ™Χ”
         if (strategyButton != null)
         {
             strategyButton.onClick.RemoveAllListeners();
@@ -439,18 +434,18 @@ public class CableConnectionManager : MonoBehaviour
 
         isStageTimerRunning = false;
 
-        // ςφιψϊ χΰεπθψ ζιλψεο
+        // ΧΆΧ¦Χ™Χ¨Χª Χ§ΧΧ•Χ ΧΧ¨ Χ–Χ™Χ›Χ¨Χ•Χ
         countdownTimer.StopCountdown();
 
-        // ωμιτϊ ωμα πεληι
+        // Χ©ΧΧ™Χ¤Χª Χ©ΧΧ‘ Χ Χ•Χ›Χ—Χ™
         CableConnectionStage stage = stages[currentStage];
         stageTimeRemaining = stage.stageTimeLimit;
 
-        // δρϊψϊ θιιξψιν
+        // Χ”Χ΅ΧªΧ¨Χª ΧΧ™Χ™ΧΧ¨Χ™Χ
         if (timerUI != null)
             timerUI.SetActive(false);
 
-        // ΰιτερ λαμιν — ψχ ΰν disconnectedPanel τςιμ (λμεξψ δλαμιν δετιςε)
+        // ΧΧ™Χ¤Χ•Χ΅ Χ›Χ‘ΧΧ™Χ β€” Χ¨Χ§ ΧΧ disconnectedPanel Χ¤ΧΆΧ™Χ (Χ›ΧΧ•ΧΧ¨ Χ”Χ›Χ‘ΧΧ™Χ Χ”Χ•Χ¤Χ™ΧΆΧ•)
         if (stage.disconnectedPanel != null && stage.disconnectedPanel.activeInHierarchy)
         {
             foreach (DragCable cable in stage.cables)
@@ -461,10 +456,10 @@ public class CableConnectionManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("No need to reset cables — disconnectedPanel not active yet.");
+            Debug.Log("No need to reset cables β€” disconnectedPanel not active yet.");
         }
 
-        // ωμιθδ ςμ δγιΰμεβ εδϊημδ ξηγω
+        // Χ©ΧΧ™ΧΧ” ΧΆΧ Χ”Χ“Χ™ΧΧΧ•Χ’ Χ•Χ”ΧªΧ—ΧΧ” ΧΧ—Χ“Χ©
         if (currentStage == 0)
         {
             if (stage.connectedPanel != null)
@@ -480,7 +475,6 @@ public class CableConnectionManager : MonoBehaviour
 
 
 
-
     public void OnCableConnected(DragCable cable, RectTransform target)
     {
         CableConnectionStage stage = stages[currentStage];
@@ -488,7 +482,7 @@ public class CableConnectionManager : MonoBehaviour
         if (IsCorrectConnection(cable, target))
         {
             Debug.Log($"Cable {cable.name} is connected to the correct target: {target.name}");
-            ShowFeedback("ιτδ!", correctFeedbackColor);
+            ShowFeedback("Χ™Χ¤Χ”!", correctFeedbackColor);
 
             if (AllCablesConnected(stage))
             {
@@ -496,26 +490,31 @@ public class CableConnectionManager : MonoBehaviour
 
                 if (OverallScoreManager.Instance != null)
                 {
-                    int finalScore = stage.scoreToAdd;
+                    float timeSpent = Time.time - stageStartTime;
 
-                    // Check if bonus should be awarded
-                    if (stageTimeRemaining >= stage.bonusThreshold)
-                    {
-                        Debug.Log($"Bonus achieved! Adding {stage.bonusPoints} points.");
-                        finalScore += stage.bonusPoints;
-                    }
+                    // Scoring logic
+                    int basePoints = 60;
+                    int timeBonus = selectedMemoryTime == 15 ? 20 :
+                                    selectedMemoryTime == 20 ? 10 : 0;
+                    int speedBonus = timeSpent <= selectedMemoryTime / 2f ? 10 : 0;
+
+                    int finalScore = basePoints + timeBonus + speedBonus;
+
+                    Debug.Log($"Score β†’ Base: {basePoints}, TimeBonus: {timeBonus}, SpeedBonus: {speedBonus}, Final: {finalScore}");
 
                     OverallScoreManager.Instance.AddScoreFromStage($"Stage {currentStage + 1}", finalScore);
+                    ShowStageCompletePanel(basePoints, timeBonus, speedBonus);
+
                 }
 
-                ShowStageCompletePanel();
+
+
             }
         }
         else
         {
-            mistakesCount++; // Increase mistakes count
+            mistakesCount++;
             Debug.Log($"Incorrect connection! Deducting {stage.mistakePenalty} points.");
-
 
             if (OverallScoreManager.Instance != null)
             {
@@ -523,7 +522,7 @@ public class CableConnectionManager : MonoBehaviour
                 StartCoroutine(FlashScorePenalty());
             }
 
-            ShowFeedback($"θςεϊ!", Color.red);
+            ShowFeedback($"ΧΧΆΧ•Χª!", Color.red);
         }
     }
 
@@ -593,26 +592,19 @@ public class CableConnectionManager : MonoBehaviour
         //    CableAudioManager.Instance.PlayOneShot(CableAudioManager.Instance.mistakeSound);
         //}
 
-        ShowFeedback($"θςεϊ!", Color.red);
+        ShowFeedback($"ΧΧΆΧ•Χª!", Color.red);
     }
 
 
 
-    private void ShowStageCompletePanel()
+    private void ShowStageCompletePanel(int baseScore, int timeBonus, int speedBonus)
     {
         isStageTimerRunning = false;
         Debug.Log("Stage completed! Hiding timer.");
 
-        isStageTimerRunning = false;
         // Hide timer UI
-        if (stageTimerText != null)
-        {
-            stageTimerText.color = defaultTimerColor;
-        }
-        if (timerUI != null)
-        {
-            timerUI.SetActive(false);
-        }
+        if (stageTimerText != null) stageTimerText.color = defaultTimerColor;
+        if (timerUI != null) timerUI.SetActive(false);
 
         CableConnectionStage currentStageData = stages[currentStage];
 
@@ -622,6 +614,7 @@ public class CableConnectionManager : MonoBehaviour
 
         // Update Progress
         var playerProgress = GameProgressManager.Instance.playerProgress;
+        float timeSpent = Time.time - stageStartTime;
 
         if (playerProgress.gamesProgress.ContainsKey(gameIndex))
         {
@@ -630,10 +623,7 @@ public class CableConnectionManager : MonoBehaviour
             if (gameProgress.stages.ContainsKey(currentStage))
             {
                 gameProgress.stages[currentStage].isCompleted = true;
-                // **Calculate the actual time spent on the stage**
-                float timeSpent = Time.time - stageStartTime;
                 GameProgressManager.Instance.SaveStageProgress(gameIndex, currentStage, timeSpent, mistakesCount);
-
                 Debug.Log($"Stage {currentStage} in Game {gameIndex} marked as completed.");
             }
 
@@ -652,19 +642,16 @@ public class CableConnectionManager : MonoBehaviour
 
         GameProgressManager.Instance.SaveProgress();
 
-        // Calculate base and bonus score
-        int baseScore = currentStageData.scoreToAdd;
-        int bonusScore = (stageTimeRemaining >= currentStageData.bonusThreshold) ? currentStageData.bonusPoints : 0;
-
-        // If it's the final stage, show the End Panel
+        // --- Show either final panel or stage panel ---
         if (currentStage >= stages.Length - 1)
         {
             Debug.Log("Final stage completed! Showing End Panel.");
+
             if (endPanel != null)
             {
                 endPanel.SetActive(true);
-                endBaseScoreText.text = $"{baseScore}"; // Show base score
-                endBonusScoreText.text = $"{bonusScore}"; // Show bonus score
+                endBaseScoreText.text = $"{baseScore + timeBonus}"; // Show full base + time bonus
+                endBonusScoreText.text = $"{speedBonus}";           // Show speed bonus
 
                 if (returnToMapButtonE != null)
                 {
@@ -679,16 +666,16 @@ public class CableConnectionManager : MonoBehaviour
         }
         else
         {
-            // Show stage complete panel for normal stage completion
             stageCompletePanel.SetActive(true);
+
             if (stageCompleteText != null)
             {
                 string message = currentStageData.completionMessage;
-                // stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
+                // Optional: stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
             }
 
-            stageCompleteBaseScoreText.text = $"{baseScore}"; // Show base score
-            stageCompleteBonusScoreText.text = $"{bonusScore}"; // Show bonus score
+            stageCompleteBaseScoreText.text = $"{baseScore + timeBonus}";
+            stageCompleteBonusScoreText.text = $"{speedBonus}";
 
             if (nextStageButton != null)
             {
@@ -700,6 +687,7 @@ public class CableConnectionManager : MonoBehaviour
                     LoadStage(currentStage);
                 });
             }
+
             if (stageCompleteReturnToMapButton != null)
             {
                 stageCompleteReturnToMapButton.onClick.RemoveAllListeners();
@@ -721,19 +709,19 @@ public class CableConnectionManager : MonoBehaviour
                     }
                 });
             }
-
         }
     }
 
+
     public void OnDialogueFinished()
     {
-        // λιαει λτϊεψ δγιΰμεβ λγι μξπες μηιφεϊ περτεϊ
+        // Χ›Χ™Χ‘Χ•Χ™ Χ›Χ¤ΧªΧ•Χ¨ Χ”Χ“Χ™ΧΧΧ•Χ’ Χ›Χ“Χ™ ΧΧΧ Χ•ΧΆ ΧΧ—Χ™Χ¦Χ•Χª Χ Χ•Χ΅Χ¤Χ•Χª
         if (dialogueNextButton != null)
         {
             dialogueNextButton.gameObject.SetActive(false);
         }
 
-        // δφβϊ δτΰπμ ωμ "Start Stage"
+        // Χ”Χ¦Χ’Χª Χ”Χ¤ΧΧ Χ Χ©Χ "Start Stage"
         if (startStagePanel != null)
         {
             startStagePanel.SetActive(true);
