@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     public bool IsInteractionAllowed => isInteractionAllowed; // Public getter
     private float stageStartTime; // Tracks when the stage timer starts
-
+    private int selectedMemoryTime = 16; // default
 
     public void SetInteractionAllowed(bool allowed)
     {
@@ -90,7 +90,11 @@ public class GameManager : MonoBehaviour
             });
         }
     }
-
+    public void SetMemoryTime(int seconds)
+    {
+        selectedMemoryTime = seconds;
+        Debug.Log($"Selected memory time: {seconds}s");
+    }
 
 
 
@@ -152,7 +156,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator CountdownAndSetupStage(Stage stage)
     {
-        int remainingTime = stage.timeLimit;
+        int remainingTime = selectedMemoryTime;
+
         isInteractionAllowed = false; // Disable interaction during memory countdown
 
         if (countdownBackground != null)
@@ -241,7 +246,7 @@ public class GameManager : MonoBehaviour
         if (isCorrect)
         {
             float timeSpent = Time.time - stageStartTime;
-            int score = CalculateScore(timeSpent, currentStage);
+            int score = CalculateScore((int)timeSpent, currentStage);
             OverallScoreManager.Instance.AddScore(score);
 
             uiManager.UpdateResultText("יפה מאוד");
@@ -270,10 +275,10 @@ public class GameManager : MonoBehaviour
         Stage currentStage = stages[currentStageIndex];
 
         float timeSpent = Time.time - stageStartTime;
-        bool earnedBonus = timeSpent <= currentStage.bonusTimeLimit;
+        bool earnedBonus = timeSpent <= (selectedMemoryTime / 2f);
 
         int baseScore = currentStage.scoreReward;
-        int bonusScore = earnedBonus ? 25 : 0;
+        int bonusScore = earnedBonus ? 10 : 0;
 
         Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Time Spent: {timeSpent:F2}s");
 
@@ -405,6 +410,14 @@ public class GameManager : MonoBehaviour
     }
     public void OnStartStageButtonClicked()
     {
+        // Block if no memory time selected
+        if (selectedMemoryTime <= 0)
+        {
+            Debug.LogWarning("Cannot start stage: No memory time selected!");
+         //   uiManager.UpdateResultText("בחר זמן לזיכרון לפני תחילת המשחק");
+            return;
+        }
+
         // Stop instruction audio cleanly
         if (instructionAudioSource != null && instructionAudioSource.isPlaying)
         {
@@ -415,8 +428,6 @@ public class GameManager : MonoBehaviour
         uiManager.HideInstructionPanel();
         StartStage();
     }
-
-
 
     private IEnumerator StartSortingTimer(Stage stage)
     {
@@ -433,14 +444,21 @@ public class GameManager : MonoBehaviour
         //ShowFailurePanel("הזמן לסידור המבחנות נגמר. נסה שוב!");
         yield break;
     }
-    private int CalculateScore(float timeSpent, Stage stage)
+    private int CalculateScore(int remainingTime, Stage stage)
     {
-        if (timeSpent <= stage.bonusTimeLimit)
-        {
-            return stage.scoreReward + 25;
-        }
-        return stage.scoreReward;
+        int basePoints = 60;
+        int timeBonus = selectedMemoryTime == 8 ? 20 :
+                        selectedMemoryTime == 16 ? 10 : 0;
+
+        int totalBase = basePoints + timeBonus;
+
+        // Convert selectedMemoryTime to float *explicitly* if needed
+        int bonus = remainingTime >= (int)(selectedMemoryTime / 2f) ? 10 : 0;
+
+        return totalBase + bonus;
     }
+
+
 
     private void ShowFailurePanel(string message)
     {

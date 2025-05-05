@@ -11,6 +11,10 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI sortingTimerText;
     [SerializeField] private TextMeshProUGUI instructionText;
     [SerializeField] private GameObject instructionPanel;
+    [SerializeField] private Button timer8sButton;
+    [SerializeField] private Button timer16sButton;
+    [SerializeField] private Button timer24sButton;
+
     [SerializeField] private Button checkAnswerButton;
 
     [Header("Failure Panel")]
@@ -45,6 +49,10 @@ public class TubesUIManager : MonoBehaviour
     {
         mainMenuButton.onClick.RemoveAllListeners();
         strategyButton.onClick.RemoveAllListeners();
+        timer8sButton.onClick.AddListener(() => GameManager.Instance.SetMemoryTime(8));
+        timer16sButton.onClick.AddListener(() => GameManager.Instance.SetMemoryTime(16));
+        timer24sButton.onClick.AddListener(() => GameManager.Instance.SetMemoryTime(24));
+
 
         strategyButton.onClick.AddListener(() =>
         {
