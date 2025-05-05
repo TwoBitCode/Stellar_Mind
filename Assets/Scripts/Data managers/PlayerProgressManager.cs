@@ -237,6 +237,7 @@ public class GameProgress
     {
         public int incorrectAsteroids;
         public int bonusAsteroids;
+        public float selectedTime;
     }
     public class EquipmentRecoveryStageProgress : StageProgress
     {

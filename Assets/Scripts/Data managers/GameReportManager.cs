@@ -16,6 +16,10 @@ public class GameReportManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI astroTimer3;
     [SerializeField] private TextMeshProUGUI astroMistakes3;
     [SerializeField] private TextMeshProUGUI astroBonus3;
+    [SerializeField] private TextMeshProUGUI astroSelectedTime1;
+    [SerializeField] private TextMeshProUGUI astroSelectedTime2;
+    [SerializeField] private TextMeshProUGUI astroSelectedTime3;
+
 
     [Header("Equipment Recovery Game Report UI References")]
     [SerializeField] private TextMeshProUGUI equipTimer1;
@@ -264,16 +268,19 @@ public class GameReportManager : MonoBehaviour
                         astroTimer1.text = $"{asteroidStage.timeTaken:F2}";
                         astroMistakes1.text = $"{asteroidStage.incorrectAsteroids}";
                         astroBonus1.text = $"{asteroidStage.bonusAsteroids}";
+                        astroSelectedTime1.text = $"{asteroidStage.selectedTime} שניות";
                         break;
                     case 2:
                         astroTimer2.text = $"{asteroidStage.timeTaken:F2}";
                         astroMistakes2.text = $"{asteroidStage.incorrectAsteroids}";
                         astroBonus2.text = $"{asteroidStage.bonusAsteroids}";
+                        astroSelectedTime2.text = $"{asteroidStage.selectedTime} שניות";
                         break;
                     case 3:
                         astroTimer3.text = $"{asteroidStage.timeTaken:F2}";
                         astroMistakes3.text = $"{asteroidStage.incorrectAsteroids}";
                         astroBonus3.text = $"{asteroidStage.bonusAsteroids}";
+                        astroSelectedTime3.text = $"{asteroidStage.selectedTime} שניות";
                         break;
                 }
             }

@@ -36,6 +36,7 @@ public class StageProgressConverter : JsonConverter
             jo["mistakes"] = asteroid.mistakes;
             jo["incorrectAsteroids"] = asteroid.incorrectAsteroids;
             jo["bonusAsteroids"] = asteroid.bonusAsteroids;
+            jo["selectedTime"] = asteroid.selectedTime;
         }
         else if (value is GameProgress.CableConnectionStageProgress cable)
         {

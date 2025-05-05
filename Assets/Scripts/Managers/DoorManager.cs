@@ -17,6 +17,7 @@ public class DoorManager : MonoBehaviour
     [SerializeField] private string defaultDoorText;
     [SerializeField] private AudioClip[] girlHoverAudioClips; // One clip per door
     [SerializeField] private AudioClip[] boyHoverAudioClips;  // One clip per door
+    [SerializeField] private ProgressRingController progressRingController;
 
     [Header("End Game Panel Settings")]
     [SerializeField] private GameObject endGamePanel;
@@ -164,6 +165,12 @@ public class DoorManager : MonoBehaviour
         }
 
         GameProgressManager.Instance.SaveProgress();
+        if (progressRingController != null)
+        {
+            int completedStages = CountCompletedStages();
+            progressRingController.UpdateProgress(completedStages);
+        }
+
     }
 
 
@@ -357,5 +364,27 @@ public class DoorManager : MonoBehaviour
             PlaySound(hoverSound); // fallback sound
         }
     }
+    private int CountCompletedStages()
+    {
+        int count = 0;
+        var games = GameProgressManager.Instance?.playerProgress?.gamesProgress;
+
+        if (games == null) return 0;
+
+        foreach (var game in games.Values)
+        {
+            if (game.stages == null) continue;
+
+            foreach (var stagePair in game.stages)
+            {
+                if (stagePair.Value.isCompleted)
+                    count++;
+            }
+        }
+
+        return count;
+    }
+
+
 
 }

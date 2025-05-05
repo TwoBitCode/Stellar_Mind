@@ -61,17 +61,13 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
         if (lastPlayedStage > 0)
         {
-            // **Skip the intro and activate the correct stage panel**
             Debug.Log($"Skipping intro, starting at stage {lastPlayedStage}");
-
             introPanel.SetActive(false);
             workspacePanel.SetActive(true);
-
-            // **Ensure we activate the correct panel for last played stage**
             EquipmentRecoveryGameManager.Instance?.ActivateStagePanel(lastPlayedStage);
-
-            StartCoroutine(ShowRobotBeforeTurningBlack());
+            // Instruction panel will be shown inside StartStage() and wait for time selection
         }
+
         else
         {
             // **Normal intro flow for first-time play**

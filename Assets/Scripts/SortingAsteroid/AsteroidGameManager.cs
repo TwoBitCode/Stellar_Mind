@@ -270,8 +270,15 @@ public class AsteroidGameManager : MonoBehaviour
         spawnTimer = 0f;
         uiManager.ShowTimerText();
 
-        // Set the timer duration based on the current challenge
-        timerManager.SetDuration(currentChallenge.timeLimit);
+        // Use caregiver-selected duration instead of default
+        float selectedTime = uiManager.SelectedDuration;
+        if (selectedTime <= 0f)
+        {
+            Debug.LogWarning("No selected duration found. Falling back to 30 seconds.");
+            selectedTime = 30f;
+        }
+
+        timerManager.SetDuration(selectedTime);
         timerManager.StartTimer();
 
         // Reset asteroid stats for this stage
@@ -280,9 +287,8 @@ public class AsteroidGameManager : MonoBehaviour
         incorrectAsteroidCount = 0;
         bonusAsteroidCount = 0;
 
-        Debug.Log($"Game started! Timer set to {currentChallenge.timeLimit} seconds.");
+        Debug.Log($"Game started! Timer set to {selectedTime} seconds.");
     }
-
 
 
 
@@ -492,18 +498,38 @@ public class AsteroidGameManager : MonoBehaviour
     {
         Debug.Log("Challenge completed successfully!");
 
-        int basePoints = currentChallenge.completionScore;
+        // === 1. Base score: 60 points if correctAsteroidCount >= required ===
+        int required = currentChallenge.minCorrectAsteroids;
+        int basePoints = (correctAsteroidCount >= required) ? 60 : 0;
         OverallScoreManager.Instance?.AddScore(basePoints);
 
-        // Update `bonusAsteroidCount` at the END of the challenge
-        bonusAsteroidCount = correctAsteroidCount - currentChallenge.minCorrectAsteroids;
+        // === 2. Bonus Asteroids ===
+        bonusAsteroidCount = correctAsteroidCount - required;
         if (bonusAsteroidCount < 0) bonusAsteroidCount = 0;
 
-        int bonusPoints = bonusAsteroidCount * currentChallenge.bonusScore;
+        // === 3. Use caregiver-selected time ===
+        float selectedTime = uiManager.SelectedDuration;
+        if (selectedTime <= 0f)
+        {
+            Debug.LogWarning("Selected duration not found. Falling back to 30.");
+            selectedTime = 30f;
+        }
+
+        // === 4. Bonus per asteroid based on selected time ===
+        int bonusPerAsteroid = selectedTime switch
+        {
+            <= 20f => 5,
+            <= 30f => 3,
+            _ => 2
+        };
+
+        // === 5. Calculate total bonus ===
+        int bonusPoints = bonusAsteroidCount * bonusPerAsteroid;
         OverallScoreManager.Instance?.AddScore(bonusPoints);
 
-        Debug.Log($"Challenge completed! Base Points: {basePoints}, Bonus Points: {bonusPoints}, Bonus Asteroids: {bonusAsteroidCount}");
+        Debug.Log($"Challenge completed! Base: {basePoints}, Bonus: {bonusPoints}, Bonus Asteroids: {bonusAsteroidCount}");
 
+        // === 6. Save progress ===
         int currentGameIndex = 3;
         GameProgress gameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex];
 
@@ -521,18 +547,18 @@ public class AsteroidGameManager : MonoBehaviour
             Debug.Log("All challenges in this game are completed!");
         }
 
-        // FINAL SAVE: Update progress now with CORRECT bonus count
         GameProgressManager.Instance.SaveStageProgress(
             currentGameIndex,
             currentChallengeIndex,
-            gameProgress.stages[currentChallengeIndex].timeTaken, // Keep the original saved time
+            gameProgress.stages[currentChallengeIndex].timeTaken,
             incorrectAsteroidCount,
             incorrectAsteroidCount,
-            bonusAsteroidCount // Now correctly updated with full bonus count
+            bonusAsteroidCount
         );
 
         GameProgressManager.Instance.SaveProgress();
 
+        // === 7. Show appropriate panel ===
         if (currentChallengeIndex < asteroidChallengeManager.Challenges.Count - 1)
         {
             uiManager.ShowStageSuccessPanel(basePoints, bonusPoints, () => StartCoroutine(ProceedToNextChallenge()));
@@ -542,6 +568,7 @@ public class AsteroidGameManager : MonoBehaviour
             uiManager.ShowCompletionPanel(basePoints, bonusPoints, ReturnToMainMenu);
         }
     }
+
 
 
 

@@ -207,6 +207,7 @@ public class GameProgressManager : MonoBehaviour
             asteroidStage.timeTaken = timeSpent;
             asteroidStage.incorrectAsteroids = incorrectAsteroids;
             asteroidStage.bonusAsteroids = bonusAsteroids;
+            asteroidStage.selectedTime = GameObject.FindAnyObjectByType<AsteroidGameUIManager>()?.SelectedDuration ?? 0f;
 
             Debug.Log($"Saved Asteroid Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
         }
