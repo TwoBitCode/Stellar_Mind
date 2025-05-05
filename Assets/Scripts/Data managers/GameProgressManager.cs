@@ -6,6 +6,7 @@ using Unity.Services.CloudSave;
 using System.Threading.Tasks;
 using System;
 using Unity.Services.Authentication;
+using Newtonsoft.Json;
 
 public class GameProgressManager : MonoBehaviour
 {
@@ -78,7 +79,14 @@ public class GameProgressManager : MonoBehaviour
         }
 
         playerProgress.ConvertDictionaryToList();
-        string json = JsonUtility.ToJson(playerProgress);
+
+        var settings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            TypeNameHandling = TypeNameHandling.Auto
+        };
+
+        string json = JsonConvert.SerializeObject(playerProgress, settings);
 
         try
         {
@@ -92,6 +100,7 @@ public class GameProgressManager : MonoBehaviour
         }
     }
 
+
     public async Task LoadProgress()
     {
         try
@@ -104,11 +113,16 @@ public class GameProgressManager : MonoBehaviour
 
                 if (!string.IsNullOrWhiteSpace(json))
                 {
-                    var loadedProgress = JsonUtility.FromJson<PlayerProgress>(json);
+                    var settings = new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto
+                    };
+
+                    var loadedProgress = JsonConvert.DeserializeObject<PlayerProgress>(json, settings);
 
                     if (loadedProgress == null)
                     {
-                        Debug.LogWarning("FromJson returned null. Cloud data might be corrupted.");
+                        Debug.LogWarning("Deserialization returned null. Cloud data might be corrupted.");
                     }
                     else
                     {
@@ -116,30 +130,29 @@ public class GameProgressManager : MonoBehaviour
 
                         try
                         {
-                            playerProgress.ConvertListToDictionary(); // safely guarded now
+                            playerProgress.ConvertListToDictionary();
                             Debug.Log("Progress loaded and converted from Cloud Save.");
                             return;
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError(" Error during ConvertListToDictionary(): " + ex.Message);
+                            Debug.LogError("Error during ConvertListToDictionary(): " + ex.Message);
                         }
                     }
                 }
 
-                // If we reach here, either no data was found or JSON was invalid
                 Debug.Log("No valid progress found. Creating new player progress.");
                 playerProgress = new PlayerProgress(GetDefaultPlayerName(), "");
                 SaveProgress();
             }
         }
-
         catch (Exception ex)
         {
             Debug.LogError("Failed to load progress from cloud: " + ex.Message);
             // Do not overwrite playerProgress on cloud error
         }
     }
+
 
 
     private string GetDefaultPlayerName()

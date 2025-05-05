@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System;
-
+using Newtonsoft.Json;
 [System.Serializable]
 public class SerializableGameProgress
 {
@@ -208,6 +208,7 @@ public class GameProgress
         return false;
     }
 
+    [JsonConverter(typeof(StageProgressConverter))]
     [System.Serializable]
     public class StageProgress
     {
