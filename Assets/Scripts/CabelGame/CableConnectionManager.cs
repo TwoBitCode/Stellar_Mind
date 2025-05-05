@@ -85,6 +85,7 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private AudioSource instructionAudioSource; // Specific audio source for instruction
 
 
+
     private int gameIndex = 1; // Set the correct game index
     private Color defaultTimerColor; // Store original color
     private float stageStartTime; // Tracks when the stage timer starts
@@ -353,24 +354,46 @@ public class CableConnectionManager : MonoBehaviour
     }
 
 
-    private void ShowGameOverPanel()
+    public void ShowGameOverPanel()
     {
-        Debug.Log("Time ran out! Showing Game Over Panel.");
+        Debug.Log("Game Over triggered. Stopping everything and showing panel.");
 
         CableConnectionStage stage = stages[currentStage];
 
-        // Hide disconnected panel when game over
+        // 1. עצירת כל הטיימרים
+        isStageTimerRunning = false;
+        countdownTimer.StopCountdown();
+
+        if (timerUI != null)
+            timerUI.SetActive(false);
+        if (stageTimerUI != null)
+            stageTimerUI.SetActive(false);
+
+        // 2. איפוס כבלים – רק אם disconnectedPanel פעיל (כלומר כבר הופיעו הכבלים)
+        if (stage.disconnectedPanel != null && stage.disconnectedPanel.activeInHierarchy)
+        {
+            foreach (var cable in stage.cables)
+            {
+                if (cable != null)
+                    cable.ResetToStartPosition();
+            }
+        }
+        else
+        {
+            Debug.Log("Skipped cable reset — disconnectedPanel not active yet.");
+        }
+
+        // 3. כיבוי גם של connectedPanel וגם disconnectedPanel — לא משנה איפה היינו
+        if (stage.connectedPanel != null)
+            stage.connectedPanel.SetActive(false);
         if (stage.disconnectedPanel != null)
-        {
             stage.disconnectedPanel.SetActive(false);
-        }
 
+        // 4. הצגת פאנל Game Over
         if (gameOverPanel != null)
-        {
             gameOverPanel.SetActive(true);
-        }
 
-        // Handle Restart Button
+        // 5. כפתור "נסה שוב"
         if (restartButton != null)
         {
             restartButton.onClick.RemoveAllListeners();
@@ -382,7 +405,7 @@ public class CableConnectionManager : MonoBehaviour
             });
         }
 
-        // Handle Return to Map Button
+        // 6. כפתור חזרה למפה
         if (returnToMapButton != null)
         {
             returnToMapButton.onClick.RemoveAllListeners();
@@ -392,8 +415,11 @@ public class CableConnectionManager : MonoBehaviour
                 ReturnToMap();
             });
         }
+
+        // 7. כפתור אסטרטגיה
         if (strategyButton != null)
         {
+            strategyButton.onClick.RemoveAllListeners();
             strategyButton.onClick.AddListener(() =>
             {
                 if (strategyManager != null)
@@ -405,38 +431,45 @@ public class CableConnectionManager : MonoBehaviour
     }
 
 
+
+
     public void RestartStage()
     {
         Debug.Log("Restarting Stage...");
 
         isStageTimerRunning = false;
 
-        // Reset the countdown timer properly
+        // עצירת קאונטר זיכרון
         countdownTimer.StopCountdown();
 
-        // Reset stage time limit
+        // שליפת שלב נוכחי
         CableConnectionStage stage = stages[currentStage];
         stageTimeRemaining = stage.stageTimeLimit;
 
-        // Reset the timer UI
+        // הסתרת טיימרים
         if (timerUI != null)
-        {
             timerUI.SetActive(false);
-        }
 
-        // Reset cables to their original positions
-        foreach (DragCable cable in stages[currentStage].cables)
+        // איפוס כבלים — רק אם disconnectedPanel פעיל (כלומר הכבלים הופיעו)
+        if (stage.disconnectedPanel != null && stage.disconnectedPanel.activeInHierarchy)
         {
-            cable.ResetToStartPosition();
+            foreach (DragCable cable in stage.cables)
+            {
+                if (cable != null)
+                    cable.ResetToStartPosition();
+            }
+        }
+        else
+        {
+            Debug.Log("No need to reset cables — disconnectedPanel not active yet.");
         }
 
-        // If retrying the first stage, skip dialogue and restart both countdowns
+        // שליטה על הדיאלוג והתחלה מחדש
         if (currentStage == 0)
         {
             if (stage.connectedPanel != null)
-            {
                 stage.connectedPanel.SetActive(true);
-            }
+
             StartMemoryCountdown();
         }
         else

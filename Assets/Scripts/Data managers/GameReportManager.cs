@@ -39,9 +39,16 @@ public class GameReportManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI cableTimer3;
     [SerializeField] private TextMeshProUGUI cableMistakes3;
 
-    private void Start()
+    private async void Start()
     {
         previousScene = PlayerPrefs.GetString("LastSceneBeforeReport", "GameMapScene-V");
+
+        //  Ensure cloud progress is loaded
+        if (GameProgressManager.Instance != null)
+        {
+            await GameProgressManager.Instance.LoadProgress();
+        }
+
         LoadAsteroidGameReport();
         LoadEquipmentRecoveryGameReport();
         LoadTubesGameReport();
