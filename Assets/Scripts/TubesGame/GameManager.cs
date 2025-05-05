@@ -52,6 +52,8 @@ public class GameManager : MonoBehaviour
     private float stageStartTime; // Tracks when the stage timer starts
     private int selectedMemoryTime = 16; // default
 
+    public int SelectedMemoryTime => selectedMemoryTime;
+
     public void SetInteractionAllowed(bool allowed)
     {
         isInteractionAllowed = allowed;

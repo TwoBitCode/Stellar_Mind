@@ -98,6 +98,8 @@ public class CableConnectionManager : MonoBehaviour
     private int mistakesCount = 0; // Track mistakes per stage
 
     private int selectedMemoryTime = 20;
+    public int SelectedMemoryTime => selectedMemoryTime;
+
     void Start()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(false);

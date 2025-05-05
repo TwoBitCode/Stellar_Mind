@@ -222,17 +222,21 @@ public class GameProgressManager : MonoBehaviour
         else if (stage is GameProgress.CableConnectionStageProgress cableStage)
         {
             cableStage.timeTaken = timeSpent;
-            cableStage.mistakes = mistakes; // Save mistakes
+            cableStage.mistakes = mistakes;
+            cableStage.selectedTime = GameObject.FindAnyObjectByType<CableConnectionManager>()?.SelectedMemoryTime ?? 0f;
 
-            Debug.Log($"Saved Cable Connection Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+            Debug.Log($"Saved Cable Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}, Selected Time {cableStage.selectedTime}s");
         }
+
         // Handle Tubes Game (no mistakes, only time)
         else if (stage is GameProgress.StageProgress tubesStage)
         {
             tubesStage.timeTaken = timeSpent;
+            tubesStage.selectedTime = GameObject.FindAnyObjectByType<GameManager>()?.SelectedMemoryTime ?? 0f;
 
-            Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s");
+            Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Selected Time {tubesStage.selectedTime}s");
         }
+
 
 
         else

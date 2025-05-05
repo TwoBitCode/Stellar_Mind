@@ -216,6 +216,7 @@ public class GameProgress
         public int score;
         public float timeTaken;
         public int mistakes;
+        public float selectedTime;
 
         public StageProgress()
         {
@@ -223,6 +224,7 @@ public class GameProgress
             score = 0;
             timeTaken = 0f;
             mistakes = 0;
+            selectedTime = 0f;
         }
     }
 
@@ -237,7 +239,6 @@ public class GameProgress
     {
         public int incorrectAsteroids;
         public int bonusAsteroids;
-        public float selectedTime;
     }
     public class EquipmentRecoveryStageProgress : StageProgress
     {
@@ -249,13 +250,13 @@ public class GameProgress
     [System.Serializable]
     public class CableConnectionStageProgress : StageProgress
     {
-
-
         public CableConnectionStageProgress()
         {
-            mistakes = 0; // Initialize mistakes to zero
+            mistakes = 0;
+            selectedTime = 0f;
         }
     }
+
 
 
 }

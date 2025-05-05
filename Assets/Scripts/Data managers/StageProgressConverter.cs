@@ -45,6 +45,7 @@ public class StageProgressConverter : JsonConverter
             jo["score"] = cable.score;
             jo["timeTaken"] = cable.timeTaken;
             jo["mistakes"] = cable.mistakes;
+            jo["selectedTime"] = cable.selectedTime;
         }
         else if (value is GameProgress.EquipmentRecoveryStageProgress equip)
         {
@@ -61,6 +62,7 @@ public class StageProgressConverter : JsonConverter
             jo["score"] = baseStage.score;
             jo["timeTaken"] = baseStage.timeTaken;
             jo["mistakes"] = baseStage.mistakes;
+            jo["selectedTime"] = baseStage.selectedTime;
         }
 
         jo.WriteTo(writer);
