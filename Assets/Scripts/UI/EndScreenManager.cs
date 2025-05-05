@@ -1,99 +1,72 @@
-using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Unity.Services.Authentication;
 
 public class EndScreenManager : MonoBehaviour
 {
-    public Button reportButton; // Reference to the report button
+    [Header("Buttons")]
+    public Button reportButton;         // Opens game report
+    public Button newCycleButton;       // Starts a new cycle and goes to game map
+    public Button logoutButton;         // Logs out and goes back to welcome screen
 
-    private string lastScene;
     private void Start()
     {
         PlayerPrefs.SetString("LastSceneBeforeReport", SceneManager.GetActiveScene().name);
         PlayerPrefs.Save();
 
+        if (newCycleButton != null)
+            newCycleButton.onClick.AddListener(StartNewCycle);
+        else
+            Debug.LogWarning("NewCycleButton is not assigned.");
 
+        if (logoutButton != null)
+            logoutButton.onClick.AddListener(LogoutAndReturnToLogin);
+        else
+            Debug.LogWarning("LogoutButton is not assigned.");
     }
+
     public void OpenGameReport()
     {
         Debug.Log("Opening Game Report");
         SceneManager.LoadScene("Player report");
     }
-    private void DestroyAllPersistentObjects()
-    {
-        // **Find all objects marked as DontDestroyOnLoad**
-        GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
-        foreach (GameObject obj in allObjects)
-        {
-            if (obj.scene.buildIndex == -1) // Objects in DontDestroyOnLoad
-            {
-                Debug.Log($"Destroying persistent object: {obj.name}");
-                Destroy(obj);
-            }
-        }
+    public void StartNewCycle()
+    {
+        Debug.Log("Start New Cycle button clicked.");
+        GameProgressManager.Instance.AdvanceToNextCycle();
+        SceneManager.LoadScene("GameMapScene-V");
     }
-    public void RestartGame()
+
+    public void LogoutAndReturnToLogin()
     {
-        Debug.Log("Restart button clicked! Resetting all data...");
+        var pp = GameProgressManager.Instance.playerProgress;
 
-        // סימון שהמשחק צריך להתאפס
-        PlayerPrefs.SetInt("reset", 1);
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
-
-#if UNITY_WEBGL
-        // מחיקת localStorage בדפדפן דרך JavaScript
-        ResetLocalStorage();
-#else
-
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
-
-        // מחיקת קובץ ההתקדמות
-        string saveFilePath = Path.Combine(Application.persistentDataPath, "playerProgress.json");
-        if (File.Exists(saveFilePath))
+        if (pp != null && AllGamesCompleted(pp))
         {
-            File.Delete(saveFilePath);
-            Debug.Log("Player progress file deleted.");
+            Debug.Log("Player completed all games — saving current cycle before logout.");
+            GameProgressManager.Instance.AdvanceToNextCycle();
         }
-        else
+
+        if (AuthenticationService.Instance.IsSignedIn)
         {
-            Debug.Log("No player progress file found.");
+            AuthenticationService.Instance.SignOut();
+            Debug.Log("User signed out from Unity Authentication.");
         }
-#endif
 
-
-        GameObject progressManager = GameObject.Find("GameProgressManager");
-        if (progressManager != null)
-        {
-            Debug.Log("Found and destroying GameProgressManager manually.");
-            Destroy(progressManager);
-        }
-        else if (GameProgressManager.Instance != null)
-        {
-            Debug.Log("Destroying GameProgressManager instance...");
-            Destroy(GameProgressManager.Instance.gameObject);
-        }
-        // **Destroy ALL DontDestroyOnLoad Objects**
-        DestroyAllPersistentObjects();
-
-        // **Force Full Scene Reload**
-        Debug.Log("Reloading first scene: WelcomeScene-vivi");
-        SceneManager.LoadScene("WelcomeScene-vivi");
-
-        // טעינת סצנת ההתחלה מחדש
-        Debug.Log("Loading first scene: WelcomeScene-vivi");
         SceneManager.LoadScene("WelcomeScene-vivi");
     }
 
-#if UNITY_WEBGL
-    private void ResetLocalStorage()
+    private bool AllGamesCompleted(PlayerProgress pp)
     {
-        Debug.Log("Resetting localStorage via JavaScript...");
-        Application.ExternalEval("localStorage.clear(); location.reload();");
+        foreach (var game in pp.gamesProgress.Values)
+        {
+            if (!game.isCompleted)
+                return false;
+        }
+        return true;
     }
-#endif
+
 }

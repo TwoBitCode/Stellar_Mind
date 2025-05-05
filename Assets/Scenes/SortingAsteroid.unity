@@ -3592,8 +3592,8 @@ MonoBehaviour:
   asteroidChallenges:
   - challengeName: Color
     sortingRule: {fileID: 11400000, guid: 35f8ac06321f696409f62de6193e83a7, type: 2}
-    spawnDelay: 1
-    spawnInterval: 0.5
+    spawnDelay: 0
+    spawnInterval: 1
     maxAsteroids: 60
     instructionsHebrew: "\u05DE\u05D9\u05D9\u05E0\u05D5 \u05D0\u05EA \u05D4\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
       \u05DC\u05E4\u05D9 \u05D4\u05E1\u05D3\u05E8 \u05D4\u05D1\u05D0:\n\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
@@ -3623,8 +3623,8 @@ MonoBehaviour:
     mixedConditions: []
   - challengeName: Size
     sortingRule: {fileID: 11400000, guid: 9125431c5ff70f341828cfa9f79032a9, type: 2}
-    spawnDelay: 0.5
-    spawnInterval: 0.5
+    spawnDelay: 0
+    spawnInterval: 1
     maxAsteroids: 60
     instructionsHebrew: "\u05DE\u05D9\u05D9\u05E0\u05D5 \u05D0\u05EA \u05D4\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
       \u05DC\u05E4\u05D9 \u05D4\u05E1\u05D3\u05E8 \u05D4\u05D1\u05D0:\n\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
@@ -3652,8 +3652,8 @@ MonoBehaviour:
     mixedConditions: []
   - challengeName: Mixed Challenge
     sortingRule: {fileID: 0}
-    spawnDelay: 0.6
-    spawnInterval: 0.7
+    spawnDelay: 0
+    spawnInterval: 1
     maxAsteroids: 60
     instructionsHebrew: "\u05DE\u05D9\u05D9\u05E0\u05D5 \u05D0\u05EA \u05D4\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD
       \u05DC\u05E4\u05D9 \u05D4\u05E1\u05D3\u05E8 \u05D4\u05D1\u05D0:\n\u05D0\u05E1\u05D8\u05E8\u05D5\u05D0\u05D9\u05D3\u05D9\u05DD

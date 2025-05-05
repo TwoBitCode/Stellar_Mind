@@ -721,16 +721,36 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
         // Start the correct stage after activation
         currentStageIndex = stageIndex;
-        StartStage();
+        //StartStage();
     }
     public void SelectMemoryTime(float time)
     {
         Debug.Log($"Memory time selected: {time} seconds");
         selectedTimeForCurrentStage = time;
 
-        if (currentStartButton != null)
-            currentStartButton.interactable = true;
+        // 🔧 Re-fetch the button explicitly from the panel
+        var panel = stagePanels[currentStageIndex];
+        var instructions = panel.transform.Find("InstructionPanel");
+        if (instructions != null)
+        {
+            var startBtn = instructions.transform.Find("StartButton")?.GetComponent<Button>();
+            if (startBtn != null)
+            {
+                startBtn.interactable = true;
+                currentStartButton = startBtn;
+                Debug.Log("Start button enabled after memory time selection.");
+            }
+            else
+            {
+                Debug.LogError("StartButton not found inside InstructionPanel.");
+            }
+        }
+        else
+        {
+            Debug.LogError("InstructionPanel not found on current stage panel.");
+        }
     }
+
 
     public void ConfirmStartMemory()
     {

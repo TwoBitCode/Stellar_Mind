@@ -11,6 +11,16 @@ public class SerializableGameProgress
 }
 
 [System.Serializable]
+public class CycleSummary
+{
+    public int cycleNumber;
+    public int totalScore;
+    public string startDate;
+    public string endDate;
+    public List<SerializableGameProgress> gamesSnapshot;
+}
+
+[System.Serializable]
 public class PlayerProgress
 {
     public string playerName;
@@ -18,6 +28,10 @@ public class PlayerProgress
     public int totalScore;
     public int lastPlayedGame;
     public int lastPlayedStage;
+    public int currentCycle = 1;
+    public string currentCycleStartDate;
+    public List<CycleSummary> cycleHistory = new List<CycleSummary>();
+
     public List<SerializableGameProgress> gamesProgressList = new List<SerializableGameProgress>();
     public Dictionary<int, GameProgress> gamesProgress = new Dictionary<int, GameProgress>();
 
@@ -28,6 +42,8 @@ public class PlayerProgress
         totalScore = 100;
         lastPlayedGame = -1;
         lastPlayedStage = -1;
+        currentCycle = 1;
+        currentCycleStartDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
         gamesProgress = new Dictionary<int, GameProgress>();
 
         for (int i = 0; i < 4; i++) // Assuming 4 different games
@@ -37,7 +53,7 @@ public class PlayerProgress
             else
                 gamesProgress[i] = new GameProgress(i);
         }
-
+        cycleHistory = new List<CycleSummary>(); // Initialize empty history
     }
 
     public void ConvertListToDictionary()
@@ -131,7 +147,6 @@ public class GameProgress
     }
 
 
-
     public void ConvertDictionaryToList()
     {
         if (stagesList == null)
@@ -143,14 +158,26 @@ public class GameProgress
         {
             foreach (var pair in stages)
             {
+                var settings = new JsonSerializerSettings
+                {
+                    Converters = new List<JsonConverter> { new StageProgressConverter() }
+                };
+
+                string json = JsonConvert.SerializeObject(pair.Value, settings);
+                var converted = (StageProgress)JsonConvert.DeserializeObject(json, typeof(StageProgress), settings);
+
+                // Log for debug
+               // Debug.Log($"[ConvertDictionaryToList] stageIndex {pair.Key}  {converted.GetType().Name}, json: {json}");
+
                 stagesList.Add(new SerializableStageProgress
                 {
                     stageIndex = pair.Key,
-                    progress = pair.Value
+                    progress = converted
                 });
             }
         }
     }
+
 
 
     public void ConvertListToDictionary()
@@ -173,19 +200,17 @@ public class GameProgress
 
         foreach (var item in stagesList)
         {
-            if (item == null)
+            if (item == null || item.progress == null)
             {
                 Debug.LogWarning("ConvertListToDictionary: found null stage item. Skipping.");
                 continue;
             }
 
-            if (item.progress == null)
-            {
-                Debug.LogWarning($"ConvertListToDictionary: stage {item.stageIndex} has null progress. Creating default.");
-                item.progress = new StageProgress();
-            }
+            // Force re-casting using JSON roundtrip
+            string json = JsonConvert.SerializeObject(item.progress);
+            var correctType = (StageProgress)JsonConvert.DeserializeObject(json, typeof(StageProgress), new StageProgressConverter());
 
-            stages[item.stageIndex] = item.progress;
+            stages[item.stageIndex] = correctType;
         }
     }
 

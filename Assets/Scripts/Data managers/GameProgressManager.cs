@@ -68,6 +68,81 @@ public class GameProgressManager : MonoBehaviour
     //    Debug.Log("Finished loading progress, now ready to use data.");
     //}
 
+    public void AdvanceToNextCycle()
+    {
+        if (playerProgress == null)
+        {
+            Debug.LogError("AdvanceToNextCycle: Player progress is null!");
+            return;
+        }
+
+        // Create deep copy of game progress list
+        playerProgress.ConvertDictionaryToList(); // make sure list is up-to-date
+        List<SerializableGameProgress> snapshotCopy = new List<SerializableGameProgress>();
+
+        foreach (var game in playerProgress.gamesProgressList)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(
+                    game.progress,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Converters = new List<JsonConverter> { new StageProgressConverter() }
+                    });
+
+                var progressCopy = JsonConvert.DeserializeObject<GameProgress>(
+                    json,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Converters = new List<JsonConverter> { new StageProgressConverter() }
+                    });
+
+                var copiedGame = new SerializableGameProgress
+                {
+                    gameIndex = game.gameIndex,
+                    progress = progressCopy
+                };
+
+                snapshotCopy.Add(copiedGame);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to serialize/deserialize game {game.gameIndex}: {ex.Message}");
+            }
+        }
+
+        // Save current cycle to history
+        playerProgress.cycleHistory.Add(new CycleSummary
+        {
+            cycleNumber = playerProgress.currentCycle,
+            totalScore = playerProgress.totalScore,
+            startDate = playerProgress.currentCycleStartDate,
+            endDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+            gamesSnapshot = snapshotCopy
+        });
+
+        // Reset for next cycle
+        playerProgress.currentCycle++;
+        playerProgress.currentCycleStartDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        playerProgress.totalScore = 0;
+        playerProgress.lastPlayedGame = -1;
+        playerProgress.lastPlayedStage = -1;
+
+        playerProgress.gamesProgress.Clear();
+        for (int i = 0; i < 4; i++)
+        {
+            playerProgress.gamesProgress[i] = new GameProgress(i);
+        }
+
+        playerProgress.ConvertDictionaryToList();
+        SaveProgress();
+
+        Debug.Log($"New cycle {playerProgress.currentCycle} started and previous one saved.");
+    }
+
 
 
     public async void SaveProgress()
