@@ -29,44 +29,6 @@ public class GameProgressManager : MonoBehaviour
     }
 
 
-    private void CheckForReset()
-    {
-        if (PlayerPrefs.HasKey("reset") && PlayerPrefs.GetInt("reset") == 1)
-        {
-            Debug.Log("Reset detected! Clearing all saved progress...");
-            PlayerPrefs.DeleteAll();
-            PlayerPrefs.Save();
-
-#if UNITY_WEBGL
-            Debug.Log("Clearing localStorage for WebGL...");
-            Application.ExternalEval("localStorage.clear(); location.reload();");
-#endif
-
-
-#if !UNITY_WEBGL
-            if (File.Exists(saveFilePath))
-            {
-                File.Delete(saveFilePath);
-                Debug.Log("Deleted progress file: " + saveFilePath);
-            }
-#endif
-
-
-            playerProgress = new PlayerProgress("", "");
-            SaveProgress();
-            PlayerPrefs.SetInt("reset", 0);
-        }
-    }
-
-    //private IEnumerator LoadProgressCoroutine()
-    //{
-    //    yield return null;
-
-    //    LoadProgress();
-
-    //    yield return new WaitForSeconds(0.1f);
-    //    Debug.Log("Finished loading progress, now ready to use data.");
-    //}
 
     public void AdvanceToNextCycle()
     {

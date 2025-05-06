@@ -642,7 +642,6 @@ GameObject:
   - component: {fileID: 220993060}
   - component: {fileID: 220993059}
   - component: {fileID: 220993061}
-  - component: {fileID: 220993062}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -826,18 +825,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &220993062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 220993057}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1e5c3f9bc3fc08498b444b18804e5ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &221132706 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2130769891330608597, guid: 179fdde70c2b3cb4a99d1cf2af35bf01, type: 3}
@@ -1548,6 +1535,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 623856555}
   m_CullTransparentMesh: 1
+--- !u!1 &645618871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 645618873}
+  - component: {fileID: 645618872}
+  m_Layer: 0
+  m_Name: MapLogout
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &645618872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645618871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e5c3f9bc3fc08498b444b18804e5ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &645618873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645618871}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.60077137, y: 1.7977761, z: 31.25539}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &647936200
 GameObject:
   m_ObjectHideFlags: 0
@@ -2622,7 +2653,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 220993062}
+      - m_Target: {fileID: 645618872}
         m_TargetAssemblyTypeName: MapLogoutHandler, Assembly-CSharp
         m_MethodName: LogoutFromMap
         m_Mode: 1
@@ -3925,3 +3956,4 @@ SceneRoots:
   - {fileID: 1486379667}
   - {fileID: 162552666}
   - {fileID: 1556064101}
+  - {fileID: 645618873}

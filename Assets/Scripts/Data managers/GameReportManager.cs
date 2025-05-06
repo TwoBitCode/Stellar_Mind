@@ -98,7 +98,7 @@ public class GameReportManager : MonoBehaviour
         var cycle = cycleHistory[index];
       //  Debug.Log($"---- DISPLAYING CYCLE {cycle.cycleNumber} ({cycle.startDate} → {cycle.endDate}) ----");
 
-        cycleHeaderText.text = $"סבב {cycle.cycleNumber} ({cycle.startDate} - {cycle.endDate})";
+        cycleHeaderText.text = $" {cycle.cycleNumber} ({cycle.startDate} - {cycle.endDate})";
 
         Dictionary<int, GameProgress> games = new Dictionary<int, GameProgress>();
         foreach (var item in cycle.gamesSnapshot)

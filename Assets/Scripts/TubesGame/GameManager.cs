@@ -279,8 +279,12 @@ public class GameManager : MonoBehaviour
         float timeSpent = Time.time - stageStartTime;
         bool earnedBonus = timeSpent <= (selectedMemoryTime / 2f);
 
-        int baseScore = currentStage.scoreReward;
-        int bonusScore = earnedBonus ? 10 : 0;
+        int baseScore = 60; // fixed base
+        int memoryTimeBonus = selectedMemoryTime == 8 ? 20 :
+                              selectedMemoryTime == 16 ? 10 : 0;
+        int earlyBonus = earnedBonus ? 10 : 0;
+        int bonusScore = memoryTimeBonus + earlyBonus;
+
 
         Debug.Log($"Base Score: {baseScore}, Bonus Score: {bonusScore}, Time Spent: {timeSpent:F2}s");
 
@@ -310,10 +314,13 @@ public class GameManager : MonoBehaviour
         // Skip waiting, move immediately to next UI action
         if (currentStageIndex < stages.Count - 1)
         {
-            uiManager.ShowStageSuccessPanel(baseScore, bonusScore, () =>
-            {
-                ProgressToNextStage();
-            });
+            uiManager.ShowStageSuccessPanel(
+                baseScore,
+                bonusScore,
+                () => { ProgressToNextStage(); },
+                ReturnToMainMenu
+            );
+
         }
         else
         {

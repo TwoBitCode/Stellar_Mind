@@ -45,6 +45,20 @@ public class WelcomeUIManager : MonoBehaviour
             return;
         }
 
+        // Username must contain only lowercase letters and digits
+        if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"^[a-z0-9]+$"))
+        {
+            feedbackText.text = "שם משתמש יכיל רק אותיות קטנות באנגלית ומספרים";
+            return;
+        }
+
+        // Password must have at least 6 characters, including lowercase, uppercase, digit, special char
+        if (!System.Text.RegularExpressions.Regex.IsMatch(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{6,}$"))
+        {
+            feedbackText.text = "הסיסמה חייבת להכיל לפחות 6 תווים, כולל אות קטנה, אות גדולה, מספר ותו מיוחד.";
+            return;
+        }
+
         try
         {
             await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, password);
@@ -75,7 +89,7 @@ public class WelcomeUIManager : MonoBehaviour
                 cycleNumber = pp.currentCycle,
                 totalScore = pp.totalScore,
                 startDate = pp.currentCycleStartDate,
-                endDate = pp.currentCycleStartDate, // optional, could update later
+                endDate = pp.currentCycleStartDate, 
                 gamesSnapshot = initialSnapshot
             });
 
@@ -88,6 +102,7 @@ public class WelcomeUIManager : MonoBehaviour
             feedbackText.text = $"הרשמה נכשלה: {e.Message}";
         }
     }
+
 
 
     public async void OnLoginClicked()

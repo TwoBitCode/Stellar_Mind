@@ -37,6 +37,8 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI baseScoreText;
     [SerializeField] private TextMeshProUGUI bonusScoreText;
     [SerializeField] private Button nextStageButton;
+    [SerializeField] private Button returnToMapFromStageSuccessButton; // New
+
 
     [Header("Strategy Panel")]
     [SerializeField] private StrategyManager strategyManager;
@@ -212,7 +214,8 @@ public class TubesUIManager : MonoBehaviour
             });
         }
     }
-    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
+    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage, System.Action returnToMap)
+
     {
         if (stageSuccessPanel != null)
         {
@@ -226,7 +229,20 @@ public class TubesUIManager : MonoBehaviour
                 stageSuccessPanel.SetActive(false);
                 onNextStage.Invoke();
             });
+
+            if (returnToMapFromStageSuccessButton != null)
+            {
+                returnToMapFromStageSuccessButton.onClick.RemoveAllListeners();
+                returnToMapFromStageSuccessButton.onClick.AddListener(() =>
+                {
+                    stageSuccessPanel.SetActive(false);
+                    returnToMap.Invoke();
+                });
+
+                returnToMapFromStageSuccessButton.gameObject.SetActive(true);
+            }
         }
+
     }
     public int GetCurrentSortingTime()
     {

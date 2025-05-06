@@ -561,7 +561,13 @@ public class AsteroidGameManager : MonoBehaviour
         // === 7. Show appropriate panel ===
         if (currentChallengeIndex < asteroidChallengeManager.Challenges.Count - 1)
         {
-            uiManager.ShowStageSuccessPanel(basePoints, bonusPoints, () => StartCoroutine(ProceedToNextChallenge()));
+            uiManager.ShowStageSuccessPanel(
+     basePoints,
+     bonusPoints,
+     () => StartCoroutine(ProceedToNextChallenge()),
+     ReturnToMainMenu // <== this is the missing fourth argument
+ );
+
         }
         else
         {

@@ -16,6 +16,8 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI baseScoreText;
     [SerializeField] private TextMeshProUGUI bonusScoreText;
     [SerializeField] private Button nextStageButton;
+    [SerializeField] private Button returnToMapFromStageSuccessButton; // NEW: Return to map button in success panel
+
 
     [SerializeField] private GameObject completionPanel;
     [SerializeField] private TextMeshProUGUI completionBaseScoreText;
@@ -90,7 +92,7 @@ public class AsteroidGameUIManager : MonoBehaviour
         }
     }
 
-    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
+    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage, System.Action returnToMap)
     {
         if (stageSuccessPanel != null)
         {
@@ -103,8 +105,19 @@ public class AsteroidGameUIManager : MonoBehaviour
             {
                 StartCoroutine(TransitionToNextStage(onNextStage));
             });
+
+            if (returnToMapFromStageSuccessButton != null)
+            {
+                returnToMapFromStageSuccessButton.onClick.RemoveAllListeners();
+                returnToMapFromStageSuccessButton.onClick.AddListener(() =>
+                {
+                    stageSuccessPanel.SetActive(false);
+                    returnToMap.Invoke();
+                });
+            }
         }
     }
+
 
     private IEnumerator TransitionToNextStage(System.Action onNextStage)
     {
