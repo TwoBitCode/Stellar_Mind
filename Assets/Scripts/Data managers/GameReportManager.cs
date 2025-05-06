@@ -1,111 +1,223 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using System;
 
 public class GameReportManager : MonoBehaviour
 {
     private string previousScene;
 
-    [Header("Asteroid Game Report UI References")]
-    [SerializeField] private TextMeshProUGUI astroTimer1;
-    [SerializeField] private TextMeshProUGUI astroMistakes1;
-    [SerializeField] private TextMeshProUGUI astroBonus1;
-    [SerializeField] private TextMeshProUGUI astroTimer2;
-    [SerializeField] private TextMeshProUGUI astroMistakes2;
-    [SerializeField] private TextMeshProUGUI astroBonus2;
-    [SerializeField] private TextMeshProUGUI astroTimer3;
-    [SerializeField] private TextMeshProUGUI astroMistakes3;
-    [SerializeField] private TextMeshProUGUI astroBonus3;
+    [Header("Cycle Navigation")]
+    [SerializeField] private TextMeshProUGUI cycleHeaderText;
+    [SerializeField] private Button nextCycleButton;
+    [SerializeField] private Button prevCycleButton;
 
-    [Header("Equipment Recovery Game Report UI References")]
-    [SerializeField] private TextMeshProUGUI equipTimer1;
-    [SerializeField] private TextMeshProUGUI equipMistakes1;
-    [SerializeField] private TextMeshProUGUI equipTimer2;
-    [SerializeField] private TextMeshProUGUI equipMistakes2;
-    [SerializeField] private TextMeshProUGUI equipTimer3;
-    [SerializeField] private TextMeshProUGUI equipMistakes3;
+    [Header("Asteroid Game Report")]
+    [SerializeField] private TextMeshProUGUI astroTimer1, astroMistakes1, astroBonus1, astroSelectedTime1;
+    [SerializeField] private TextMeshProUGUI astroTimer2, astroMistakes2, astroBonus2, astroSelectedTime2;
+    [SerializeField] private TextMeshProUGUI astroTimer3, astroMistakes3, astroBonus3, astroSelectedTime3;
 
+    [Header("Equipment Recovery Game Report")]
+    [SerializeField] private TextMeshProUGUI equipTimer1, equipMistakes1, equipSelectedTime1;
+    [SerializeField] private TextMeshProUGUI equipTimer2, equipMistakes2, equipSelectedTime2;
+    [SerializeField] private TextMeshProUGUI equipTimer3, equipMistakes3, equipSelectedTime3;
 
-    [Header("Tubes Game Report UI References")]
-    [SerializeField] private TextMeshProUGUI tubesTimer1;
-    [SerializeField] private TextMeshProUGUI tubesTimer2;
-    [SerializeField] private TextMeshProUGUI tubesTimer3;
+    [Header("Tubes Game Report")]
+    [SerializeField] private TextMeshProUGUI tubesTimer1, tubesSelectedTime1;
+    [SerializeField] private TextMeshProUGUI tubesTimer2, tubesSelectedTime2;
+    [SerializeField] private TextMeshProUGUI tubesTimer3, tubesSelectedTime3;
 
-    [Header("Cable Connection Game Report UI References")]
-    [SerializeField] private TextMeshProUGUI cableTimer1;
-    [SerializeField] private TextMeshProUGUI cableMistakes1;
-    [SerializeField] private TextMeshProUGUI cableTimer2;
-    [SerializeField] private TextMeshProUGUI cableMistakes2;
-    [SerializeField] private TextMeshProUGUI cableTimer3;
-    [SerializeField] private TextMeshProUGUI cableMistakes3;
+    [Header("Cable Connection Game Report")]
+    [SerializeField] private TextMeshProUGUI cableTimer1, cableMistakes1, cableSelectedTime1;
+    [SerializeField] private TextMeshProUGUI cableTimer2, cableMistakes2, cableSelectedTime2;
+    [SerializeField] private TextMeshProUGUI cableTimer3, cableMistakes3, cableSelectedTime3;
+
+    private List<CycleSummary> cycleHistory;
+    private int currentCycleIndex = 0;
 
     private async void Start()
     {
         previousScene = PlayerPrefs.GetString("LastSceneBeforeReport", "GameMapScene-V");
 
-        //  Ensure cloud progress is loaded
         if (GameProgressManager.Instance != null)
         {
             await GameProgressManager.Instance.LoadProgress();
         }
 
-        LoadAsteroidGameReport();
-        LoadEquipmentRecoveryGameReport();
-        LoadTubesGameReport();
-        LoadCableGameReport();
+        var playerProgress = GameProgressManager.Instance.playerProgress;
+
+        // Initialize cycleHistory list including completed + current cycle
+        cycleHistory = new List<CycleSummary>();
+
+        // Add all completed cycles
+        if (playerProgress.cycleHistory != null)
+        {
+            cycleHistory.AddRange(playerProgress.cycleHistory);
+        }
+
+        // Add the current in-progress cycle
+        var liveGames = new List<SerializableGameProgress>();
+        foreach (var kvp in playerProgress.gamesProgress)
+        {
+            kvp.Value.ConvertDictionaryToList();
+            liveGames.Add(new SerializableGameProgress
+            {
+                gameIndex = kvp.Key,
+                progress = kvp.Value
+            });
+        }
+
+        cycleHistory.Add(new CycleSummary
+        {
+            cycleNumber = playerProgress.currentCycle,
+            startDate = playerProgress.currentCycleStartDate,
+            endDate = "(כעת מתבצע)",  // Hebrew: "Currently in progress"
+            gamesSnapshot = liveGames
+        });
+
+        // Enable navigation if needed
+        nextCycleButton.onClick.AddListener(() => ChangeCycle(1));
+        prevCycleButton.onClick.AddListener(() => ChangeCycle(-1));
+
+        currentCycleIndex = cycleHistory.Count - 1; // Start by showing the current one
+        DisplayCycle(currentCycleIndex);
     }
 
-    private void LoadCableGameReport()
+
+    private void ChangeCycle(int direction)
     {
-        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
+        int total = cycleHistory.Count;
+        currentCycleIndex = (currentCycleIndex + direction + total) % total;
+        DisplayCycle(currentCycleIndex);
+    }
+    private void DisplayCycle(int index)
+    {
+        var cycle = cycleHistory[index];
+      //  Debug.Log($"---- DISPLAYING CYCLE {cycle.cycleNumber} ({cycle.startDate} → {cycle.endDate}) ----");
+
+        cycleHeaderText.text = $" {cycle.cycleNumber} ({cycle.startDate} - {cycle.endDate})";
+
+        Dictionary<int, GameProgress> games = new Dictionary<int, GameProgress>();
+        foreach (var item in cycle.gamesSnapshot)
         {
-            Debug.LogError("GameProgressManager or PlayerProgress is missing!");
-            return;
-        }
+            // Force fix stages with correct subclass via StageProgressConverter
+            item.progress.stages = new Dictionary<int, GameProgress.StageProgress>();
 
-        int gameIndex = 1; // Cable Connection Game Index
-        if (!GameProgressManager.Instance.playerProgress.gamesProgress.ContainsKey(gameIndex))
-        {
-            Debug.LogError("Cable game progress not found!");
-            return;
-        }
-
-        var cableGameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[gameIndex];
-
-        if (cableGameProgress.stages.Count == 0)
-        {
-            Debug.LogError("No Cable game stages found!");
-            return;
-        }
-
-        for (int i = 1; i <= 3; i++)
-        {
-            if (!cableGameProgress.stages.ContainsKey(i - 1)) continue;
-
-            var stageData = cableGameProgress.stages[i - 1];
-
-            if (stageData is GameProgress.StageProgress cableStage)
+            foreach (var stageEntry in item.progress.stagesList)
             {
-                switch (i)
+                try
                 {
-                    case 1:
-                        cableTimer1.text = $"{cableStage.timeTaken:F2}";
-                        cableMistakes1.text = $"{cableStage.mistakes}";
-                        break;
-                    case 2:
-                        cableTimer2.text = $"{cableStage.timeTaken:F2}";
-                        cableMistakes2.text = $"{cableStage.mistakes}";
-                        break;
-                    case 3:
-                        cableTimer3.text = $"{cableStage.timeTaken:F2}";
-                        cableMistakes3.text = $"{cableStage.mistakes}";
-                        break;
+                    string stageJson = JsonConvert.SerializeObject(stageEntry.progress);
+                    var converted = (GameProgress.StageProgress)JsonConvert.DeserializeObject(
+                        stageJson,
+                        typeof(GameProgress.StageProgress),
+                        new StageProgressConverter()
+                    );
+
+                    item.progress.stages[stageEntry.stageIndex] = converted;
+
+                    //Debug.Log($"Game {item.gameIndex}, Stage {stageEntry.stageIndex} → " +
+                    //          $"Type: {converted.GetType().Name}, TimeTaken: {converted.timeTaken}, Score: {converted.score}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Deserialization failed for Game {item.gameIndex}, Stage {stageEntry.stageIndex}: {ex.Message}");
+                }
+            }
+
+            games[item.gameIndex] = item.progress;
+        }
+
+        LoadAsteroidGameReport(games[3]);
+        LoadEquipmentRecoveryGameReport(games[2]);
+        LoadTubesGameReport(games[0]);
+        LoadCableGameReport(games[1]);
+    }
+
+
+    private void LoadAsteroidGameReport(GameProgress game)
+    {
+        Debug.Log("Loading Asteroid report...");
+        for (int i = 0; i < 3; i++)
+        {
+            if (game.stages.TryGetValue(i, out var data))
+            {
+               // Debug.Log($"Asteroid Stage {i} Type: {data.GetType().Name}");
+                if (data is GameProgress.AsteroidStageProgress s)
+                {
+                   // Debug.Log($"  Time: {s.timeTaken}, Mistakes: {s.incorrectAsteroids}, Bonus: {s.bonusAsteroids}, SelTime: {s.selectedTime}");
+                    switch (i)
+                    {
+                        case 0: astroTimer1.text = s.timeTaken.ToString("F2"); astroMistakes1.text = s.incorrectAsteroids.ToString(); astroBonus1.text = s.bonusAsteroids.ToString(); astroSelectedTime1.text = s.selectedTime + ""; break;
+                        case 1: astroTimer2.text = s.timeTaken.ToString("F2"); astroMistakes2.text = s.incorrectAsteroids.ToString(); astroBonus2.text = s.bonusAsteroids.ToString(); astroSelectedTime2.text = s.selectedTime + ""; break;
+                        case 2: astroTimer3.text = s.timeTaken.ToString("F2"); astroMistakes3.text = s.incorrectAsteroids.ToString(); astroBonus3.text = s.bonusAsteroids.ToString(); astroSelectedTime3.text = s.selectedTime + ""; break;
+                    }
+                }
+                else
+                {
+                   // Debug.LogWarning($"Asteroid stage {i} is not AsteroidStageProgress. Actual type: {data.GetType().Name}");
                 }
             }
             else
             {
-                Debug.LogError($"Stage {i - 1} is not of type StageProgress! Data may not display correctly.");
-                Debug.Log($"Stage {i - 1} actual type: {stageData.GetType().Name}");
+                //Debug.LogWarning($"Asteroid stage {i} not found in dictionary.");
+            }
+        }
+    }
+
+    private void LoadEquipmentRecoveryGameReport(GameProgress game)
+    {
+       // Debug.Log("Loading Equipment Recovery report...");
+        for (int i = 0; i < 3; i++)
+        {
+            if (game.stages.TryGetValue(i, out var data) && data is GameProgress.EquipmentRecoveryStageProgress s)
+            {
+               // Debug.Log($"Equip Stage {i}  Time: {s.timeTaken}, Mistakes: {s.mistakes}, SelTime: {s.selectedTime}");
+                switch (i)
+                {
+                    case 0: equipTimer1.text = s.timeTaken.ToString("F2"); equipMistakes1.text = s.mistakes.ToString(); equipSelectedTime1.text = s.selectedTime + ""; break;
+                    case 1: equipTimer2.text = s.timeTaken.ToString("F2"); equipMistakes2.text = s.mistakes.ToString(); equipSelectedTime2.text = s.selectedTime + ""; break;
+                    case 2: equipTimer3.text = s.timeTaken.ToString("F2"); equipMistakes3.text = s.mistakes.ToString(); equipSelectedTime3.text = s.selectedTime + ""; break;
+                }
+            }
+        }
+    }
+
+    private void LoadTubesGameReport(GameProgress game)
+    {
+        Debug.Log("Loading Tubes report...");
+        for (int i = 0; i < 3; i++)
+        {
+            if (game.stages.TryGetValue(i, out var data) && data is GameProgress.StageProgress s)
+            {
+               // Debug.Log($"Tubes Stage {i}  Time: {s.timeTaken}, SelTime: {s.selectedTime}");
+                switch (i)
+                {
+                    case 0: tubesTimer1.text = s.timeTaken.ToString("F2"); tubesSelectedTime1.text = s.selectedTime + ""; break;
+                    case 1: tubesTimer2.text = s.timeTaken.ToString("F2"); tubesSelectedTime2.text = s.selectedTime + ""; break;
+                    case 2: tubesTimer3.text = s.timeTaken.ToString("F2"); tubesSelectedTime3.text = s.selectedTime + ""; break;
+                }
+            }
+        }
+    }
+
+    private void LoadCableGameReport(GameProgress game)
+    {
+        Debug.Log("Loading Cable report...");
+        for (int i = 0; i < 3; i++)
+        {
+            if (game.stages.TryGetValue(i, out var data) && data is GameProgress.CableConnectionStageProgress s)
+            {
+              //  Debug.Log($"Cable Stage {i}  Time: {s.timeTaken}, Mistakes: {s.mistakes}, SelTime: {s.selectedTime}");
+                switch (i)
+                {
+                    case 0: cableTimer1.text = s.timeTaken.ToString("F2"); cableMistakes1.text = s.mistakes.ToString(); cableSelectedTime1.text = s.selectedTime + ""; break;
+                    case 1: cableTimer2.text = s.timeTaken.ToString("F2"); cableMistakes2.text = s.mistakes.ToString(); cableSelectedTime2.text = s.selectedTime + ""; break;
+                    case 2: cableTimer3.text = s.timeTaken.ToString("F2"); cableMistakes3.text = s.mistakes.ToString(); cableSelectedTime3.text = s.selectedTime + ""; break;
+                }
             }
         }
     }
@@ -114,174 +226,4 @@ public class GameReportManager : MonoBehaviour
     {
         SceneManager.LoadScene(previousScene);
     }
-    private void LoadEquipmentRecoveryGameReport()
-    {
-        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
-        {
-            Debug.LogError("GameProgressManager or PlayerProgress is missing!");
-            return;
-        }
-
-        int gameIndex = 2; // Equipment Recovery Game Index
-        if (!GameProgressManager.Instance.playerProgress.gamesProgress.ContainsKey(gameIndex))
-        {
-            Debug.LogError("Equipment Recovery game progress not found!");
-            return;
-        }
-
-        var equipGameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[gameIndex];
-
-        if (equipGameProgress.stages.Count == 0)
-        {
-            Debug.LogError("No Equipment Recovery game stages found!");
-            return;
-        }
-
-        for (int i = 1; i <= 3; i++)
-        {
-            if (!equipGameProgress.stages.ContainsKey(i - 1)) continue;
-
-            var stageData = equipGameProgress.stages[i - 1];
-
-            // ry explicit conversion (fallback in case of incorrect save format)
-            if (stageData is GameProgress.EquipmentRecoveryStageProgress equipStage)
-            {
-                switch (i)
-                {
-                    case 1:
-                        equipTimer1.text = $"{equipStage.timeTaken:F2}";
-                        equipMistakes1.text = $"{equipStage.mistakes}";
-                        break;
-                    case 2:
-                        equipTimer2.text = $"{equipStage.timeTaken:F2}";
-                        equipMistakes2.text = $"{equipStage.mistakes} ";
-                        break;
-                    case 3:
-                        equipTimer3.text = $"{equipStage.timeTaken:F2}";
-                        equipMistakes3.text = $"{equipStage.mistakes}";
-                        break;
-                }
-            }
-            else
-            {
-                Debug.LogError($"Stage {i - 1} is not of type EquipmentRecoveryStageProgress! Data may not display correctly.");
-                Debug.Log($"Stage {i - 1} actual type: {stageData.GetType().Name}"); // Debugging Line
-            }
-        }
-    }
-    private void LoadTubesGameReport()
-    {
-        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
-        {
-            Debug.LogError("GameProgressManager or PlayerProgress is missing!");
-            return;
-        }
-
-        int gameIndex = 0; // Tubes Game Index (adjust if needed)
-        if (!GameProgressManager.Instance.playerProgress.gamesProgress.ContainsKey(gameIndex))
-        {
-            Debug.LogError("Tubes game progress not found!");
-            return;
-        }
-
-        var tubesGameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[gameIndex];
-
-        if (tubesGameProgress.stages.Count == 0)
-        {
-            Debug.LogError("No Tubes game stages found!");
-            return;
-        }
-
-        // Loop through the first 3 stages
-        for (int i = 1; i <= 3; i++)
-        {
-            if (!tubesGameProgress.stages.ContainsKey(i - 1)) continue;
-
-            var stageData = tubesGameProgress.stages[i - 1];
-
-            // Ensure it's StageProgress before accessing timeTaken
-            if (stageData is GameProgress.StageProgress tubesStage)
-            {
-                switch (i)
-                {
-                    case 1:
-                        tubesTimer1.text = $"{tubesStage.timeTaken:F2}";
-                        break;
-                    case 2:
-                        tubesTimer2.text = $"{tubesStage.timeTaken:F2}";
-                        break;
-                    case 3:
-                        tubesTimer3.text = $"{tubesStage.timeTaken:F2}";
-                        break;
-                }
-            }
-            else
-            {
-                Debug.LogError($"Stage {i - 1} is not of type StageProgress! Data may not display correctly.");
-                Debug.Log($"Stage {i - 1} actual type: {stageData.GetType().Name}"); // Debugging Line
-            }
-        }
-    }
-
-
-    private void LoadAsteroidGameReport()
-    {
-        if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
-        {
-            Debug.LogError("GameProgressManager or PlayerProgress is missing!");
-            return;
-        }
-
-        int gameIndex = 3; // Asteroid Game Index
-        if (!GameProgressManager.Instance.playerProgress.gamesProgress.ContainsKey(gameIndex))
-        {
-            Debug.LogError("Asteroid game progress not found!");
-            return;
-        }
-
-        var asteroidGameProgress = GameProgressManager.Instance.playerProgress.gamesProgress[gameIndex];
-
-        // Ensure that stages exist
-        if (asteroidGameProgress.stages.Count == 0)
-        {
-            Debug.LogError("No asteroid game stages found!");
-            return;
-        }
-
-        // Loop through the first 3 stages (adjust if needed)
-        for (int i = 1; i <= 3; i++)
-        {
-            if (!asteroidGameProgress.stages.ContainsKey(i - 1)) continue;
-
-            var stageData = asteroidGameProgress.stages[i - 1];
-
-            // Ensure we are working with AsteroidStageProgress
-            if (stageData is GameProgress.AsteroidStageProgress asteroidStage)
-            {
-                switch (i)
-                {
-                    case 1:
-                        astroTimer1.text = $"{asteroidStage.timeTaken:F2}";
-                        astroMistakes1.text = $"{asteroidStage.incorrectAsteroids}";
-                        astroBonus1.text = $"{asteroidStage.bonusAsteroids}";
-                        break;
-                    case 2:
-                        astroTimer2.text = $"{asteroidStage.timeTaken:F2}";
-                        astroMistakes2.text = $"{asteroidStage.incorrectAsteroids}";
-                        astroBonus2.text = $"{asteroidStage.bonusAsteroids}";
-                        break;
-                    case 3:
-                        astroTimer3.text = $"{asteroidStage.timeTaken:F2}";
-                        astroMistakes3.text = $"{asteroidStage.incorrectAsteroids}";
-                        astroBonus3.text = $"{asteroidStage.bonusAsteroids}";
-                        break;
-                }
-            }
-            else
-            {
-                Debug.LogError($"Stage {i - 1} is not of type AsteroidStageProgress!");
-            }
-        }
-    }
-
 }

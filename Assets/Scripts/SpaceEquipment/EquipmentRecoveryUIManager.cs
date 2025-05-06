@@ -149,7 +149,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
 
         if (EquipmentRecoveryGameManager.Instance != null)
         {
-            EquipmentRecoveryGameManager.Instance.StartStage();
+            //EquipmentRecoveryGameManager.Instance.StartStage();
         }
         else
         {

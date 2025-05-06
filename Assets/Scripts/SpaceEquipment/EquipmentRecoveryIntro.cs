@@ -56,25 +56,19 @@ public class EquipmentRecoveryIntro : MonoBehaviour
 
     private void Start()
     {
-        selectedCharacter = GameProgressManager.Instance?.playerProgress?.selectedCharacter ?? "Girl"; // Default to Girl
+        selectedCharacter = GameProgressManager.Instance?.playerProgress?.selectedCharacter ?? "Girl";
         int lastPlayedStage = GameProgressManager.Instance?.GetLastPlayedStage() ?? 0;
 
         if (lastPlayedStage > 0)
         {
-            // **Skip the intro and activate the correct stage panel**
             Debug.Log($"Skipping intro, starting at stage {lastPlayedStage}");
-
             introPanel.SetActive(false);
             workspacePanel.SetActive(true);
-
-            // **Ensure we activate the correct panel for last played stage**
-            EquipmentRecoveryGameManager.Instance?.ActivateStagePanel(lastPlayedStage);
-
-            StartCoroutine(ShowRobotBeforeTurningBlack());
+            EquipmentRecoveryGameManager.Instance?.StartStage(); //
         }
         else
         {
-            // **Normal intro flow for first-time play**
+            // Normal intro flow
             startButton.onClick.AddListener(OnStartButtonClicked);
             introPanel.SetActive(true);
             workspacePanel.SetActive(false);

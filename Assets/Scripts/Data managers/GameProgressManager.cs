@@ -29,44 +29,81 @@ public class GameProgressManager : MonoBehaviour
     }
 
 
-    private void CheckForReset()
+
+    public void AdvanceToNextCycle()
     {
-        if (PlayerPrefs.HasKey("reset") && PlayerPrefs.GetInt("reset") == 1)
+        if (playerProgress == null)
         {
-            Debug.Log("Reset detected! Clearing all saved progress...");
-            PlayerPrefs.DeleteAll();
-            PlayerPrefs.Save();
-
-#if UNITY_WEBGL
-            Debug.Log("Clearing localStorage for WebGL...");
-            Application.ExternalEval("localStorage.clear(); location.reload();");
-#endif
-
-
-#if !UNITY_WEBGL
-            if (File.Exists(saveFilePath))
-            {
-                File.Delete(saveFilePath);
-                Debug.Log("Deleted progress file: " + saveFilePath);
-            }
-#endif
-
-
-            playerProgress = new PlayerProgress("", "");
-            SaveProgress();
-            PlayerPrefs.SetInt("reset", 0);
+            Debug.LogError("AdvanceToNextCycle: Player progress is null!");
+            return;
         }
+
+        // Create deep copy of game progress list
+        playerProgress.ConvertDictionaryToList(); // make sure list is up-to-date
+        List<SerializableGameProgress> snapshotCopy = new List<SerializableGameProgress>();
+
+        foreach (var game in playerProgress.gamesProgressList)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(
+                    game.progress,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Converters = new List<JsonConverter> { new StageProgressConverter() }
+                    });
+
+                var progressCopy = JsonConvert.DeserializeObject<GameProgress>(
+                    json,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Converters = new List<JsonConverter> { new StageProgressConverter() }
+                    });
+
+                var copiedGame = new SerializableGameProgress
+                {
+                    gameIndex = game.gameIndex,
+                    progress = progressCopy
+                };
+
+                snapshotCopy.Add(copiedGame);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to serialize/deserialize game {game.gameIndex}: {ex.Message}");
+            }
+        }
+
+        // Save current cycle to history
+        playerProgress.cycleHistory.Add(new CycleSummary
+        {
+            cycleNumber = playerProgress.currentCycle,
+            totalScore = playerProgress.totalScore,
+            startDate = playerProgress.currentCycleStartDate,
+            endDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+            gamesSnapshot = snapshotCopy
+        });
+
+        // Reset for next cycle
+        playerProgress.currentCycle++;
+        playerProgress.currentCycleStartDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        playerProgress.totalScore = 0;
+        playerProgress.lastPlayedGame = -1;
+        playerProgress.lastPlayedStage = -1;
+
+        playerProgress.gamesProgress.Clear();
+        for (int i = 0; i < 4; i++)
+        {
+            playerProgress.gamesProgress[i] = new GameProgress(i);
+        }
+
+        playerProgress.ConvertDictionaryToList();
+        SaveProgress();
+
+        Debug.Log($"New cycle {playerProgress.currentCycle} started and previous one saved.");
     }
-
-    //private IEnumerator LoadProgressCoroutine()
-    //{
-    //    yield return null;
-
-    //    LoadProgress();
-
-    //    yield return new WaitForSeconds(0.1f);
-    //    Debug.Log("Finished loading progress, now ready to use data.");
-    //}
 
 
 
@@ -207,6 +244,7 @@ public class GameProgressManager : MonoBehaviour
             asteroidStage.timeTaken = timeSpent;
             asteroidStage.incorrectAsteroids = incorrectAsteroids;
             asteroidStage.bonusAsteroids = bonusAsteroids;
+            asteroidStage.selectedTime = GameObject.FindAnyObjectByType<AsteroidGameUIManager>()?.SelectedDuration ?? 0f;
 
             Debug.Log($"Saved Asteroid Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
         }
@@ -221,17 +259,21 @@ public class GameProgressManager : MonoBehaviour
         else if (stage is GameProgress.CableConnectionStageProgress cableStage)
         {
             cableStage.timeTaken = timeSpent;
-            cableStage.mistakes = mistakes; // Save mistakes
+            cableStage.mistakes = mistakes;
+            cableStage.selectedTime = GameObject.FindAnyObjectByType<CableConnectionManager>()?.SelectedMemoryTime ?? 0f;
 
-            Debug.Log($"Saved Cable Connection Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+            Debug.Log($"Saved Cable Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}, Selected Time {cableStage.selectedTime}s");
         }
+
         // Handle Tubes Game (no mistakes, only time)
         else if (stage is GameProgress.StageProgress tubesStage)
         {
             tubesStage.timeTaken = timeSpent;
+            tubesStage.selectedTime = GameObject.FindAnyObjectByType<GameManager>()?.SelectedMemoryTime ?? 0f;
 
-            Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s");
+            Debug.Log($"Saved Tubes Game Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Selected Time {tubesStage.selectedTime}s");
         }
+
 
 
         else

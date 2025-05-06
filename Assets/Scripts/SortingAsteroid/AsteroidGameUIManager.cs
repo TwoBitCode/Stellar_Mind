@@ -16,6 +16,8 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI baseScoreText;
     [SerializeField] private TextMeshProUGUI bonusScoreText;
     [SerializeField] private Button nextStageButton;
+    [SerializeField] private Button returnToMapFromStageSuccessButton; // NEW: Return to map button in success panel
+
 
     [SerializeField] private GameObject completionPanel;
     [SerializeField] private TextMeshProUGUI completionBaseScoreText;
@@ -34,6 +36,9 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private List<AudioClip> instructionAudioClips; // One per challenge
 
     [SerializeField] private StrategyManager strategyManager;
+    [SerializeField] private Button startChallengeButton;
+
+    public float SelectedDuration { get; private set; } = 0f;
     public void ShowInstructions(string instructions, System.Action onStartGame)
     {
         if (instructionsPanel == null || instructionsText == null)
@@ -52,26 +57,27 @@ public class AsteroidGameUIManager : MonoBehaviour
             return;
         }
 
+        startButton.interactable = false;
+
         startButton.onClick.RemoveAllListeners();
         startButton.onClick.AddListener(() =>
         {
             if (instructionsAudioSource != null && instructionsAudioSource.isPlaying)
             {
-                instructionsAudioSource.Stop(); // <-- Add this line!
+                instructionsAudioSource.Stop();
             }
 
-            instructionsPanel.SetActive(false); // Hide the panel
-            onStartGame?.Invoke(); // Start the game
+            instructionsPanel.SetActive(false); // הסתרת פאנל ההוראות
+            onStartGame?.Invoke();              // התחלת המשחק
         });
 
-
-        // NEW: Setup the sound button
         if (playInstructionsAudioButton != null)
         {
             playInstructionsAudioButton.onClick.RemoveAllListeners();
             playInstructionsAudioButton.onClick.AddListener(PlayInstructionsAudio);
         }
-        }
+    }
+
 
 
     public void UpdateTimer(string timeText)
@@ -86,7 +92,7 @@ public class AsteroidGameUIManager : MonoBehaviour
         }
     }
 
-    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
+    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage, System.Action returnToMap)
     {
         if (stageSuccessPanel != null)
         {
@@ -99,8 +105,19 @@ public class AsteroidGameUIManager : MonoBehaviour
             {
                 StartCoroutine(TransitionToNextStage(onNextStage));
             });
+
+            if (returnToMapFromStageSuccessButton != null)
+            {
+                returnToMapFromStageSuccessButton.onClick.RemoveAllListeners();
+                returnToMapFromStageSuccessButton.onClick.AddListener(() =>
+                {
+                    stageSuccessPanel.SetActive(false);
+                    returnToMap.Invoke();
+                });
+            }
         }
     }
+
 
     private IEnumerator TransitionToNextStage(System.Action onNextStage)
     {
@@ -248,6 +265,14 @@ public class AsteroidGameUIManager : MonoBehaviour
         {
             Debug.LogWarning("No instruction audio clip found for this challenge.");
         }
+    }
+    public void SelectDuration(float duration)
+    {
+        SelectedDuration = duration;
+        Debug.Log($"Selected duration set to: {duration}");
+
+        if (startChallengeButton != null)
+            startChallengeButton.interactable = true;
     }
 
 

@@ -11,6 +11,10 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI sortingTimerText;
     [SerializeField] private TextMeshProUGUI instructionText;
     [SerializeField] private GameObject instructionPanel;
+    [SerializeField] private Button timer8sButton;
+    [SerializeField] private Button timer16sButton;
+    [SerializeField] private Button timer24sButton;
+
     [SerializeField] private Button checkAnswerButton;
 
     [Header("Failure Panel")]
@@ -33,6 +37,8 @@ public class TubesUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI baseScoreText;
     [SerializeField] private TextMeshProUGUI bonusScoreText;
     [SerializeField] private Button nextStageButton;
+    [SerializeField] private Button returnToMapFromStageSuccessButton; // New
+
 
     [Header("Strategy Panel")]
     [SerializeField] private StrategyManager strategyManager;
@@ -45,6 +51,10 @@ public class TubesUIManager : MonoBehaviour
     {
         mainMenuButton.onClick.RemoveAllListeners();
         strategyButton.onClick.RemoveAllListeners();
+        timer8sButton.onClick.AddListener(() => GameManager.Instance.SetMemoryTime(8));
+        timer16sButton.onClick.AddListener(() => GameManager.Instance.SetMemoryTime(16));
+        timer24sButton.onClick.AddListener(() => GameManager.Instance.SetMemoryTime(24));
+
 
         strategyButton.onClick.AddListener(() =>
         {
@@ -204,7 +214,8 @@ public class TubesUIManager : MonoBehaviour
             });
         }
     }
-    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage)
+    public void ShowStageSuccessPanel(int baseScore, int bonusScore, System.Action onNextStage, System.Action returnToMap)
+
     {
         if (stageSuccessPanel != null)
         {
@@ -218,7 +229,20 @@ public class TubesUIManager : MonoBehaviour
                 stageSuccessPanel.SetActive(false);
                 onNextStage.Invoke();
             });
+
+            if (returnToMapFromStageSuccessButton != null)
+            {
+                returnToMapFromStageSuccessButton.onClick.RemoveAllListeners();
+                returnToMapFromStageSuccessButton.onClick.AddListener(() =>
+                {
+                    stageSuccessPanel.SetActive(false);
+                    returnToMap.Invoke();
+                });
+
+                returnToMapFromStageSuccessButton.gameObject.SetActive(true);
+            }
         }
+
     }
     public int GetCurrentSortingTime()
     {
