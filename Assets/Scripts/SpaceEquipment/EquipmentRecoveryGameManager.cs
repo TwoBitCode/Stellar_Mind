@@ -496,15 +496,15 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     public void RestartStage()
     {
         Debug.Log($" Restarting Stage {currentStageIndex}...");
+        SaveOriginalPositions();
 
         if (EquipmentRecoveryUIManager.Instance != null)
         {
             EquipmentRecoveryUIManager.Instance.HideGameOverPanel();
         }
 
-        StopAllCoroutines(); // Stop any running timers or coroutines
+        StopAllCoroutines();
 
-        // **Ensure the correct panel is active**
         foreach (var panel in stagePanels)
         {
             panel.SetActive(false);
@@ -522,14 +522,12 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
         RestoreRobotImage();
 
-        // **Reset all parts to their original positions and enable BLOCKRAYCASTS**
         if (stageOriginalPositions.ContainsKey(currentStageIndex))
         {
             foreach (var part in stageOriginalPositions[currentStageIndex])
             {
                 part.Key.transform.position = part.Value;
 
-                // **Enable BLOCKRAYCASTS if CanvasGroup exists**
                 CanvasGroup canvasGroup = part.Key.GetComponent<CanvasGroup>();
                 if (canvasGroup != null)
                 {
@@ -543,7 +541,6 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             Debug.LogError($"No original positions found for Stage {currentStageIndex}! Objects cannot reset.");
         }
 
-        // **Reset game state variables**
         correctPartsPlaced = 0;
         placedParts.Clear();
         penalizedParts.Clear();
@@ -552,8 +549,21 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         gameTimerUI.SetActive(false);
         countdownTimerUI.SetActive(false);
 
+        selectedTimeForCurrentStage = 0f;
+
+        selectedTimeForCurrentStage = 0f;
+
+        var instructionPanel = stagePanels[currentStageIndex].transform.Find("InstructionPanel");
+        if (instructionPanel != null)
+        {
+            instructionPanel.gameObject.SetActive(true); // ❗ מציג את הפאנל מחדש
+
+            currentStartButton = instructionPanel.Find("StartButton")?.GetComponent<Button>();
+        }
+
         Debug.Log($" Restarting memory phase for Stage {currentStageIndex}...");
         ShowStageInstructionPanel(currentStageIndex);
+
 
     }
 
