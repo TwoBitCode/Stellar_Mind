@@ -123,7 +123,6 @@ public class WelcomeUIManager : MonoBehaviour
 
             await GameProgressManager.Instance.LoadProgress();
 
-            // If the cloud save had no name, inject the login username
             if (string.IsNullOrWhiteSpace(GameProgressManager.Instance.playerProgress?.playerName))
             {
                 GameProgressManager.Instance.playerProgress.playerName = username;
@@ -134,7 +133,7 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (AuthenticationException e)
         {
-            if (e.Message.Contains("WRONG_USERNAME_PASSWORD"))
+            if (e.Message.ToLower().Contains("wrong_username_password") || e.Message.ToLower().Contains("invalid_parameters"))
             {
                 feedbackText.text = "שם משתמש או סיסמה שגויים. אם זו הפעם הראשונה שלך, לחץ על 'הרשמה'.";
             }
@@ -143,6 +142,9 @@ public class WelcomeUIManager : MonoBehaviour
                 feedbackText.text = $"התחברות נכשלה: {e.Message}";
             }
         }
-
+        catch (RequestFailedException e)
+        {
+            feedbackText.text = $"שגיאה כללית בהתחברות: {e.Message}";
+        }
     }
 }
