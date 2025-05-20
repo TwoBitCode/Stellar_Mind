@@ -38,6 +38,15 @@ public class GameReportManager : MonoBehaviour
     private List<CycleSummary> cycleHistory;
     private int currentCycleIndex = 0;
 
+    [SerializeField] private TextMeshProUGUI cycleLabelText;    
+    [SerializeField] private TextMeshProUGUI cycleNumberValue; 
+    [SerializeField] private TextMeshProUGUI startLabelText;    
+    [SerializeField] private TextMeshProUGUI startDateValue;    
+    [SerializeField] private TextMeshProUGUI endLabelText;     
+    [SerializeField] private TextMeshProUGUI endDateValue;      
+
+
+
     private async void Start()
     {
         previousScene = PlayerPrefs.GetString("LastSceneBeforeReport", "GameMapScene-V");
@@ -88,7 +97,7 @@ public class GameReportManager : MonoBehaviour
         }
         else
         {
-            cycleHeaderText.text = "No cycles yet. Start playing to see your progress.";
+            cycleHeaderText.text = "";
             nextCycleButton.interactable = false;
             prevCycleButton.interactable = false;
         }
@@ -104,9 +113,23 @@ public class GameReportManager : MonoBehaviour
     private void DisplayCycle(int index)
     {
         var cycle = cycleHistory[index];
-      //  Debug.Log($"---- DISPLAYING CYCLE {cycle.cycleNumber} ({cycle.startDate} → {cycle.endDate}) ----");
 
-        cycleHeaderText.text = $" {cycle.cycleNumber} ({cycle.startDate} - {cycle.endDate})";
+        string start = FormatDateOnly(cycle.startDate);
+        string end = string.IsNullOrEmpty(cycle.endDate) || cycle.endDate.Contains("כעת") ? "" : FormatDateOnly(cycle.endDate);
+
+        // טקסטים סטטיים
+        cycleLabelText.text = "סבב";
+        startLabelText.text = "התחלה";
+        endLabelText.text = "סיום";
+
+        // ערכים מספריים / תאריכים
+        cycleNumberValue.text = cycle.cycleNumber.ToString();
+        startDateValue.text = start;
+        endDateValue.text = end;
+
+        // אם אין תאריך סיום - להסתיר את השדה
+        endLabelText.gameObject.SetActive(!string.IsNullOrEmpty(end));
+        endDateValue.gameObject.SetActive(!string.IsNullOrEmpty(end));
 
         Dictionary<int, GameProgress> games = new Dictionary<int, GameProgress>();
         foreach (var item in cycle.gamesSnapshot)
@@ -234,4 +257,11 @@ public class GameReportManager : MonoBehaviour
     {
         SceneManager.LoadScene(previousScene);
     }
+    private string FormatDateOnly(string date)
+    {
+        if (DateTime.TryParse(date, out var parsed))
+            return parsed.ToString("dd/MM/yyyy");
+        return date;
+    }
+
 }

@@ -222,7 +222,7 @@ public class GameProgressManager : MonoBehaviour
     {
         return playerProgress.lastPlayedGame;
     }
-    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int mistakes = 0, int incorrectAsteroids = 0, int bonusAsteroids = 0)
+    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int mistakes = 0, int incorrectAsteroids = 0, int bonusAsteroids = 0, int score = 0)
     {
         if (playerProgress == null)
         {
@@ -255,6 +255,7 @@ public class GameProgressManager : MonoBehaviour
             asteroidStage.incorrectAsteroids = incorrectAsteroids;
             asteroidStage.bonusAsteroids = bonusAsteroids;
             asteroidStage.selectedTime = GameObject.FindAnyObjectByType<AsteroidGameUIManager>()?.SelectedDuration ?? 0f;
+            stage.score = score;
 
             Debug.Log($"Saved Asteroid Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
         }
@@ -262,10 +263,14 @@ public class GameProgressManager : MonoBehaviour
         else if (stage is GameProgress.EquipmentRecoveryStageProgress equipStage)
         {
             equipStage.timeTaken = timeSpent;
-            equipStage.mistakes = mistakes; // Store mistakes separately
+            equipStage.mistakes = mistakes;
+            equipStage.selectedTime = EquipmentRecoveryGameManager.Instance?.SelectedTimeForCurrentStage ?? 0f;
+            equipStage.score = score;
 
-            Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+
+            Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}, Selected Time {equipStage.selectedTime}");
         }
+
         else if (stage is GameProgress.CableConnectionStageProgress cableStage)
         {
             cableStage.timeTaken = timeSpent;

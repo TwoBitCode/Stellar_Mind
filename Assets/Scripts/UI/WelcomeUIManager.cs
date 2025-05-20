@@ -134,7 +134,15 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (AuthenticationException e)
         {
-            feedbackText.text = $"התחברות נכשלה: {e.Message}";
+            if (e.Message.Contains("WRONG_USERNAME_PASSWORD"))
+            {
+                feedbackText.text = "שם משתמש או סיסמה שגויים. אם זו הפעם הראשונה שלך, לחץ על 'הרשמה'.";
+            }
+            else
+            {
+                feedbackText.text = $"התחברות נכשלה: {e.Message}";
+            }
         }
+
     }
 }
