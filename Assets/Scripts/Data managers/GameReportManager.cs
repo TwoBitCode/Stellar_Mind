@@ -49,41 +49,49 @@ public class GameReportManager : MonoBehaviour
 
         var playerProgress = GameProgressManager.Instance.playerProgress;
 
-        // Initialize cycleHistory list including completed + current cycle
         cycleHistory = new List<CycleSummary>();
 
-        // Add all completed cycles
         if (playerProgress.cycleHistory != null)
         {
             cycleHistory.AddRange(playerProgress.cycleHistory);
         }
 
-        // Add the current in-progress cycle
-        var liveGames = new List<SerializableGameProgress>();
-        foreach (var kvp in playerProgress.gamesProgress)
+        if (playerProgress.hasStartedCurrentCycle)
         {
-            kvp.Value.ConvertDictionaryToList();
-            liveGames.Add(new SerializableGameProgress
+            var liveGames = new List<SerializableGameProgress>();
+            foreach (var kvp in playerProgress.gamesProgress)
             {
-                gameIndex = kvp.Key,
-                progress = kvp.Value
+                kvp.Value.ConvertDictionaryToList();
+                liveGames.Add(new SerializableGameProgress
+                {
+                    gameIndex = kvp.Key,
+                    progress = kvp.Value
+                });
+            }
+
+            cycleHistory.Add(new CycleSummary
+            {
+                cycleNumber = playerProgress.currentCycle,
+                startDate = playerProgress.currentCycleStartDate,
+                endDate = "(כעת מתבצע)",
+                gamesSnapshot = liveGames
             });
         }
 
-        cycleHistory.Add(new CycleSummary
-        {
-            cycleNumber = playerProgress.currentCycle,
-            startDate = playerProgress.currentCycleStartDate,
-            endDate = "(כעת מתבצע)",  // Hebrew: "Currently in progress"
-            gamesSnapshot = liveGames
-        });
-
-        // Enable navigation if needed
         nextCycleButton.onClick.AddListener(() => ChangeCycle(1));
         prevCycleButton.onClick.AddListener(() => ChangeCycle(-1));
 
-        currentCycleIndex = cycleHistory.Count - 1; // Start by showing the current one
-        DisplayCycle(currentCycleIndex);
+        if (cycleHistory.Count > 0)
+        {
+            currentCycleIndex = cycleHistory.Count - 1;
+            DisplayCycle(currentCycleIndex);
+        }
+        else
+        {
+            cycleHeaderText.text = "No cycles yet. Start playing to see your progress.";
+            nextCycleButton.interactable = false;
+            prevCycleButton.interactable = false;
+        }
     }
 
 

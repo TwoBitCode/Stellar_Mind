@@ -38,7 +38,6 @@ public class GameProgressManager : MonoBehaviour
             return;
         }
 
-        // Create deep copy of game progress list
         playerProgress.ConvertDictionaryToList(); // make sure list is up-to-date
         List<SerializableGameProgress> snapshotCopy = new List<SerializableGameProgress>();
 
@@ -76,22 +75,30 @@ public class GameProgressManager : MonoBehaviour
             }
         }
 
-        // Save current cycle to history
-        playerProgress.cycleHistory.Add(new CycleSummary
-        {
-            cycleNumber = playerProgress.currentCycle,
-            totalScore = playerProgress.totalScore,
-            startDate = playerProgress.currentCycleStartDate,
-            endDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-            gamesSnapshot = snapshotCopy
-        });
 
-        // Reset for next cycle
+        if (playerProgress.hasStartedCurrentCycle)
+        {
+            playerProgress.cycleHistory.Add(new CycleSummary
+            {
+                cycleNumber = playerProgress.currentCycle,
+                totalScore = playerProgress.totalScore,
+                startDate = playerProgress.currentCycleStartDate,
+                endDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+                gamesSnapshot = snapshotCopy
+            });
+        }
+        else
+        {
+            Debug.Log("Skipped saving cycle history — player did not start any games.");
+        }
+
+
         playerProgress.currentCycle++;
         playerProgress.currentCycleStartDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
         playerProgress.totalScore = 0;
         playerProgress.lastPlayedGame = -1;
         playerProgress.lastPlayedStage = -1;
+        playerProgress.hasStartedCurrentCycle = false; // איפוס הדגל
 
         playerProgress.gamesProgress.Clear();
         for (int i = 0; i < 4; i++)
@@ -102,8 +109,9 @@ public class GameProgressManager : MonoBehaviour
         playerProgress.ConvertDictionaryToList();
         SaveProgress();
 
-        Debug.Log($"New cycle {playerProgress.currentCycle} started and previous one saved.");
+        Debug.Log($"New cycle {playerProgress.currentCycle} started.");
     }
+
 
 
 
@@ -180,7 +188,7 @@ public class GameProgressManager : MonoBehaviour
 
                 Debug.Log("No valid progress found. Creating new player progress.");
                 playerProgress = new PlayerProgress(GetDefaultPlayerName(), "");
-                SaveProgress();
+                //SaveProgress();
             }
         }
         catch (Exception ex)
@@ -218,10 +226,12 @@ public class GameProgressManager : MonoBehaviour
     {
         if (playerProgress == null)
         {
+
+
             Debug.LogError("SaveStageProgress: playerProgress is null!");
             return;
         }
-
+        playerProgress.hasStartedCurrentCycle = true;
         if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
         {
             Debug.LogError($"SaveStageProgress: Invalid game index {gameIndex}");

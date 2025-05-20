@@ -34,6 +34,8 @@ public class PlayerProgress
 
     public List<SerializableGameProgress> gamesProgressList = new List<SerializableGameProgress>();
     public Dictionary<int, GameProgress> gamesProgress = new Dictionary<int, GameProgress>();
+    public bool hasStartedCurrentCycle = false;
+
 
     public PlayerProgress(string name, string character)
     {
