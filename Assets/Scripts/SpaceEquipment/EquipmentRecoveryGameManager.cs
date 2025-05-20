@@ -36,6 +36,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
     private Button currentStartButton;
     private float selectedTimeForCurrentStage = 0f;
+    private Button lastSelectedTimeButton;
+    public float SelectedTimeForCurrentStage => selectedTimeForCurrentStage;
+
 
     public bool isInteractionAllowed = false; // Prevent dragging until allowed
     private void Awake()
@@ -44,7 +47,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         Debug.Log("EquipmentRecoveryGameManager started!");
     }
 
-    private EquipmentRecoveryStage CurrentStage => stages[currentStageIndex];
+    public EquipmentRecoveryStage CurrentStage => stages[currentStageIndex];
 
     private Dictionary<GameObject, Vector3> originalPositions = new Dictionary<GameObject, Vector3>();
 
@@ -55,7 +58,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     public void StartStage()
     {
         Debug.Log("StartStage() called!");
-
+        selectedTimeForCurrentStage = 0f;
         if (stages == null || stages.Count == 0)
         {
             Debug.LogError("Stages list is empty!");
@@ -377,19 +380,15 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
         // === 2. Scoring Logic ===
         int baseScore = 60;
+        float selectedTime = selectedTimeForCurrentStage;
 
-        float selectedTime = initialCountdownTime; // caregiver's selected memory time
-
-        // Memory time bonus
         int memoryBonus = selectedTime switch
         {
             <= 10f => 20,
             <= 15f => 10,
-            _ =>0
+            _ => 0
         };
 
-
-        // Bonus for solving in half the time
         bool solvedFast = timeSpent <= (selectedTime / 2f);
         int speedBonus = solvedFast ? 10 : 0;
 
@@ -397,28 +396,33 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
         Debug.Log($"Scoring  Base: {baseScore}, Memory Bonus: {memoryBonus}, Speed Bonus: {speedBonus}, Total: {totalScore}");
 
-        // === 3. Save Progress ===
+        // === 3. Update Progress BEFORE saving ===
         int currentGameIndex = GetCurrentGameIndex();
         int currentStage = currentStageIndex;
 
+        var stageData = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].stages[currentStage];
+        stageData.isCompleted = true;
+        stageData.score = totalScore;
+        stageData.selectedTime = selectedTimeForCurrentStage;
+        OverallScoreManager.Instance?.AddScore(totalScore); 
+
+        Debug.Log($"Added {totalScore} to totalScore. New total: {GameProgressManager.Instance.playerProgress.totalScore}");
+
+        // === 4. Save AFTER everything is updated ===
         GameProgressManager.Instance.SaveStageProgress(
             currentGameIndex,
             currentStage,
             timeSpent,
             mistakes,
             mistakes,
-            (int)selectedTime // optionally save selected time
+            totalScore
         );
-
-        var stageData = GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].stages[currentStage];
-        stageData.isCompleted = true;
-        stageData.score = totalScore;
 
         GameProgressManager.Instance.SaveProgress();
 
         Debug.Log($"Stage {currentStage} saved! Time: {timeSpent:F2} sec, Mistakes: {mistakes}");
 
-        // === 4. Completion UI ===
+        // === 5. Completion UI ===
         if (GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].CheckIfCompleted())
         {
             Debug.Log("All stages completed! Marking the entire mini-game as completed...");
@@ -429,13 +433,12 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             return;
         }
 
-        // === 5. Show reward panel if more stages remain ===
+        // === 6. Show reward panel if more stages remain ===
         if (currentStageIndex < stages.Count - 1)
         {
             EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(baseScore + memoryBonus, speedBonus);
         }
     }
-
 
 
 
@@ -725,10 +728,9 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
     }
     public void SelectMemoryTime(float time)
     {
-        Debug.Log($"Memory time selected: {time} seconds");
+        Debug.Log($"SelectMemoryTime CALLED with: {time}");
         selectedTimeForCurrentStage = time;
 
-        // 🔧 Re-fetch the button explicitly from the panel
         var panel = stagePanels[currentStageIndex];
         var instructions = panel.transform.Find("InstructionPanel");
         if (instructions != null)
@@ -745,20 +747,19 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
                 Debug.LogError("StartButton not found inside InstructionPanel.");
             }
         }
-        else
-        {
-            Debug.LogError("InstructionPanel not found on current stage panel.");
-        }
     }
+
 
 
     public void ConfirmStartMemory()
     {
         if (selectedTimeForCurrentStage <= 0)
         {
-            Debug.LogWarning("Start clicked but no time selected!");
+            Debug.LogWarning(" Start clicked but no time selected — BLOCKED.");
             return;
         }
+
+        Debug.Log($"ConfirmStartMemory: using time {selectedTimeForCurrentStage}");
 
         initialCountdownTime = selectedTimeForCurrentStage;
 
@@ -769,6 +770,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
 
         StartCoroutine(PreGameCountdown());
     }
+
 
 
 

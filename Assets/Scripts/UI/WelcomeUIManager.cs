@@ -68,30 +68,30 @@ public class WelcomeUIManager : MonoBehaviour
             GameProgressManager.Instance.playerProgress = new PlayerProgress(username, "");
             var pp = GameProgressManager.Instance.playerProgress;
 
-            // Convert and snapshot Cycle 1
-            pp.ConvertDictionaryToList();
-            var initialSnapshot = new List<SerializableGameProgress>();
-            foreach (var game in pp.gamesProgressList)
-            {
-                var copiedGame = new SerializableGameProgress
-                {
-                    gameIndex = game.gameIndex,
-                    progress = JsonConvert.DeserializeObject<GameProgress>(
-                        JsonConvert.SerializeObject(game.progress,
-                        new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
-                    )
-                };
-                initialSnapshot.Add(copiedGame);
-            }
+            //// Convert and snapshot Cycle 1
+            //pp.ConvertDictionaryToList();
+            //var initialSnapshot = new List<SerializableGameProgress>();
+            //foreach (var game in pp.gamesProgressList)
+            //{
+            //    var copiedGame = new SerializableGameProgress
+            //    {
+            //        gameIndex = game.gameIndex,
+            //        progress = JsonConvert.DeserializeObject<GameProgress>(
+            //            JsonConvert.SerializeObject(game.progress,
+            //            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
+            //        )
+            //    };
+            //    initialSnapshot.Add(copiedGame);
+            //}
 
-            pp.cycleHistory.Add(new CycleSummary
-            {
-                cycleNumber = pp.currentCycle,
-                totalScore = pp.totalScore,
-                startDate = pp.currentCycleStartDate,
-                endDate = pp.currentCycleStartDate, 
-                gamesSnapshot = initialSnapshot
-            });
+            //pp.cycleHistory.Add(new CycleSummary
+            //{
+            //    cycleNumber = pp.currentCycle,
+            //    totalScore = pp.totalScore,
+            //    startDate = pp.currentCycleStartDate,
+            //    endDate = pp.currentCycleStartDate, 
+            //    gamesSnapshot = initialSnapshot
+            //});
 
             GameProgressManager.Instance.SaveProgress();
 
@@ -134,7 +134,15 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (AuthenticationException e)
         {
-            feedbackText.text = $"התחברות נכשלה: {e.Message}";
+            if (e.Message.Contains("WRONG_USERNAME_PASSWORD"))
+            {
+                feedbackText.text = "שם משתמש או סיסמה שגויים. אם זו הפעם הראשונה שלך, לחץ על 'הרשמה'.";
+            }
+            else
+            {
+                feedbackText.text = $"התחברות נכשלה: {e.Message}";
+            }
         }
+
     }
 }

@@ -37,6 +37,10 @@ public class EndScreenManager : MonoBehaviour
     {
         Debug.Log("Start New Cycle button clicked.");
         GameProgressManager.Instance.AdvanceToNextCycle();
+
+
+        OverallScoreManager.Instance?.ResetScore();
+
         SceneManager.LoadScene("GameMapScene-V");
     }
 
@@ -48,6 +52,9 @@ public class EndScreenManager : MonoBehaviour
         {
             Debug.Log("Player completed all games — saving current cycle before logout.");
             GameProgressManager.Instance.AdvanceToNextCycle();
+
+
+            OverallScoreManager.Instance?.ResetScore();
         }
 
         if (AuthenticationService.Instance.IsSignedIn)

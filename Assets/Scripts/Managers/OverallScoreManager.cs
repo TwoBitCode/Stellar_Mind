@@ -59,9 +59,18 @@ public class OverallScoreManager : MonoBehaviour
     // Method to reset the overall score
     public void ResetScore()
     {
-        OverallScore = 0;
-        Debug.Log("OverallScore has been reset.");
+        if (GameProgressManager.Instance != null && GameProgressManager.Instance.playerProgress != null)
+        {
+            OverallScore = GameProgressManager.Instance.playerProgress.totalScore;
+            Debug.Log($"OverallScore has been reset to: {OverallScore} (from playerProgress)");
+        }
+        else
+        {
+            OverallScore = 100;
+            Debug.Log("OverallScore reset to 100 (fallback)");
+        }
     }
+
 
     // Initialize target score from PlayerDataManager
 

@@ -38,7 +38,6 @@ public class GameProgressManager : MonoBehaviour
             return;
         }
 
-        // Create deep copy of game progress list
         playerProgress.ConvertDictionaryToList(); // make sure list is up-to-date
         List<SerializableGameProgress> snapshotCopy = new List<SerializableGameProgress>();
 
@@ -76,22 +75,30 @@ public class GameProgressManager : MonoBehaviour
             }
         }
 
-        // Save current cycle to history
-        playerProgress.cycleHistory.Add(new CycleSummary
-        {
-            cycleNumber = playerProgress.currentCycle,
-            totalScore = playerProgress.totalScore,
-            startDate = playerProgress.currentCycleStartDate,
-            endDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-            gamesSnapshot = snapshotCopy
-        });
 
-        // Reset for next cycle
+        if (playerProgress.hasStartedCurrentCycle)
+        {
+            playerProgress.cycleHistory.Add(new CycleSummary
+            {
+                cycleNumber = playerProgress.currentCycle,
+                totalScore = playerProgress.totalScore,
+                startDate = playerProgress.currentCycleStartDate,
+                endDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+                gamesSnapshot = snapshotCopy
+            });
+        }
+        else
+        {
+            Debug.Log("Skipped saving cycle history — player did not start any games.");
+        }
+
+
         playerProgress.currentCycle++;
         playerProgress.currentCycleStartDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-        playerProgress.totalScore = 0;
+        playerProgress.totalScore = 100;
         playerProgress.lastPlayedGame = -1;
         playerProgress.lastPlayedStage = -1;
+        playerProgress.hasStartedCurrentCycle = false; // איפוס הדגל
 
         playerProgress.gamesProgress.Clear();
         for (int i = 0; i < 4; i++)
@@ -102,8 +109,9 @@ public class GameProgressManager : MonoBehaviour
         playerProgress.ConvertDictionaryToList();
         SaveProgress();
 
-        Debug.Log($"New cycle {playerProgress.currentCycle} started and previous one saved.");
+        Debug.Log($"New cycle {playerProgress.currentCycle} started.");
     }
+
 
 
 
@@ -180,7 +188,7 @@ public class GameProgressManager : MonoBehaviour
 
                 Debug.Log("No valid progress found. Creating new player progress.");
                 playerProgress = new PlayerProgress(GetDefaultPlayerName(), "");
-                SaveProgress();
+                //SaveProgress();
             }
         }
         catch (Exception ex)
@@ -214,14 +222,16 @@ public class GameProgressManager : MonoBehaviour
     {
         return playerProgress.lastPlayedGame;
     }
-    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int mistakes = 0, int incorrectAsteroids = 0, int bonusAsteroids = 0)
+    public void SaveStageProgress(int gameIndex, int stageIndex, float timeSpent, int mistakes = 0, int incorrectAsteroids = 0, int bonusAsteroids = 0, int score = 0)
     {
         if (playerProgress == null)
         {
+
+
             Debug.LogError("SaveStageProgress: playerProgress is null!");
             return;
         }
-
+        playerProgress.hasStartedCurrentCycle = true;
         if (!playerProgress.gamesProgress.ContainsKey(gameIndex))
         {
             Debug.LogError($"SaveStageProgress: Invalid game index {gameIndex}");
@@ -245,6 +255,7 @@ public class GameProgressManager : MonoBehaviour
             asteroidStage.incorrectAsteroids = incorrectAsteroids;
             asteroidStage.bonusAsteroids = bonusAsteroids;
             asteroidStage.selectedTime = GameObject.FindAnyObjectByType<AsteroidGameUIManager>()?.SelectedDuration ?? 0f;
+            stage.score = score;
 
             Debug.Log($"Saved Asteroid Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Incorrect {incorrectAsteroids}, Bonus {bonusAsteroids}");
         }
@@ -252,10 +263,14 @@ public class GameProgressManager : MonoBehaviour
         else if (stage is GameProgress.EquipmentRecoveryStageProgress equipStage)
         {
             equipStage.timeTaken = timeSpent;
-            equipStage.mistakes = mistakes; // Store mistakes separately
+            equipStage.mistakes = mistakes;
+            equipStage.selectedTime = EquipmentRecoveryGameManager.Instance?.SelectedTimeForCurrentStage ?? 0f;
+            equipStage.score = score;
 
-            Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}");
+
+            Debug.Log($"Saved Equipment Recovery Stage {stageIndex} for Game {gameIndex}: Time {timeSpent:F2}s, Mistakes {mistakes}, Selected Time {equipStage.selectedTime}");
         }
+
         else if (stage is GameProgress.CableConnectionStageProgress cableStage)
         {
             cableStage.timeTaken = timeSpent;
