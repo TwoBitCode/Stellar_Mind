@@ -118,9 +118,9 @@ public class GameReportManager : MonoBehaviour
         string end = string.IsNullOrEmpty(cycle.endDate) || cycle.endDate.Contains("כעת") ? "" : FormatDateOnly(cycle.endDate);
 
         // טקסטים סטטיים
-        cycleLabelText.text = "סבב";
-        startLabelText.text = "התחלה";
-        endLabelText.text = "סיום";
+       // cycleLabelText.text = "סבב";
+        //startLabelText.text = "התחלה";
+       // endLabelText.text = "סיום";
 
         // ערכים מספריים / תאריכים
         cycleNumberValue.text = cycle.cycleNumber.ToString();

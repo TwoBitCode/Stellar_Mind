@@ -95,7 +95,7 @@ public class GameProgressManager : MonoBehaviour
 
         playerProgress.currentCycle++;
         playerProgress.currentCycleStartDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-        playerProgress.totalScore = 0;
+        playerProgress.totalScore = 100;
         playerProgress.lastPlayedGame = -1;
         playerProgress.lastPlayedStage = -1;
         playerProgress.hasStartedCurrentCycle = false; // איפוס הדגל
