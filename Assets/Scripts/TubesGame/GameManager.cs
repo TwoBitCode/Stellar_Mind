@@ -134,6 +134,7 @@ public class GameManager : MonoBehaviour
 
         Stage currentStage = stages[stageIndex];
         Debug.Log($"Stage {stageIndex + 1}: {currentStage.instructionText}");
+        uiManager.UpdateStageNumber(stageIndex, stages.Count);
         uiManager.ShowInstructionPanel(currentStage.instructionText);
     }
 

@@ -43,6 +43,7 @@ public class TubesUIManager : MonoBehaviour
     [Header("Strategy Panel")]
     [SerializeField] private StrategyManager strategyManager;
 
+    [SerializeField] private TextMeshProUGUI stageNumberText;
 
 
     private int gameIndex = 0; // Tubes Game index (should match DoorManager setup)
@@ -267,6 +268,13 @@ public class TubesUIManager : MonoBehaviour
         if (timerBackground != null)
         {
             timerBackground.enabled = true;
+        }
+    }
+    public void UpdateStageNumber(int current, int total)
+    {
+        if (stageNumberText != null)
+        {
+            stageNumberText.text = $"{current + 1}/{total}";
         }
     }
 

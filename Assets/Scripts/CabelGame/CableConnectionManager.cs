@@ -90,6 +90,7 @@ public class CableConnectionManager : MonoBehaviour
     [SerializeField] private Button timer20sButton;
     [SerializeField] private Button timer25sButton;
 
+    [SerializeField] private TextMeshProUGUI stageNumberText;
 
 
     private int gameIndex = 1; // Set the correct game index
@@ -160,8 +161,26 @@ public class CableConnectionManager : MonoBehaviour
         }
 
         currentStage = stageIndex;
+        if (stageNumberText != null)
+        {
+            stageNumberText.text = $"{currentStage + 1}/{stages.Length}";
+        }
+
         mistakesCount = 0;
         CableConnectionStage stage = stages[currentStage];
+        // Show intro only for first stage
+        if (currentStage == 0 && stage.dialoguePanel != null)
+        {
+            if (dialogueCanvas != null) dialogueCanvas.gameObject.SetActive(true);
+            stage.dialoguePanel.gameObject.SetActive(true);
+
+
+            stage.dialoguePanel.StartDialogue(OnDialogueFinished);
+
+            if (dialogueNextButton != null)
+                dialogueNextButton.gameObject.SetActive(true);
+            return;
+        }
 
         // Turn off all panels
         foreach (var s in stages)

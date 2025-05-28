@@ -52,46 +52,24 @@ public class WelcomeUIManager : MonoBehaviour
             return;
         }
 
-        // Password must have at least 6 characters, including lowercase, uppercase, digit, special char
-        if (!System.Text.RegularExpressions.Regex.IsMatch(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{6,}$"))
+        if (password.Length < 4)
         {
-            feedbackText.text = "הסיסמה חייבת להכיל לפחות 6 תווים, כולל אות קטנה, אות גדולה, מספר ותו מיוחד.";
+            feedbackText.text = "הסיסמה חייבת להכיל לפחות 4 תווים.";
             return;
         }
 
+        string finalPassword = MakePasswordCompliant(password); 
+
+
         try
         {
-            await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, password);
+            await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, finalPassword);
             feedbackText.text = "הרשמה הושלמה בהצלחה.";
 
             // New user - create and save fresh progress
             GameProgressManager.Instance.playerProgress = new PlayerProgress(username, "");
             var pp = GameProgressManager.Instance.playerProgress;
 
-            //// Convert and snapshot Cycle 1
-            //pp.ConvertDictionaryToList();
-            //var initialSnapshot = new List<SerializableGameProgress>();
-            //foreach (var game in pp.gamesProgressList)
-            //{
-            //    var copiedGame = new SerializableGameProgress
-            //    {
-            //        gameIndex = game.gameIndex,
-            //        progress = JsonConvert.DeserializeObject<GameProgress>(
-            //            JsonConvert.SerializeObject(game.progress,
-            //            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
-            //        )
-            //    };
-            //    initialSnapshot.Add(copiedGame);
-            //}
-
-            //pp.cycleHistory.Add(new CycleSummary
-            //{
-            //    cycleNumber = pp.currentCycle,
-            //    totalScore = pp.totalScore,
-            //    startDate = pp.currentCycleStartDate,
-            //    endDate = pp.currentCycleStartDate, 
-            //    gamesSnapshot = initialSnapshot
-            //});
 
             GameProgressManager.Instance.SaveProgress();
 
@@ -99,8 +77,23 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (AuthenticationException e)
         {
-            feedbackText.text = $"הרשמה נכשלה: {e.Message}";
+            //Debug.LogError($"Request failed: {e.Message}");
+
+            if (e.Message.ToLower().Contains("username already exists") || e.Message.Contains("409"))
+            {
+                feedbackText.text = "שם המשתמש כבר קיים. אנא הירשמו עם שם אחר.";
+            }
+            else
+            {
+                feedbackText.text = "הרשמה נכשלה";
+            }
         }
+
+    }
+
+    private string MakePasswordCompliant(string rawPassword)
+    {
+        return rawPassword + "Aa1!";
     }
 
 
@@ -116,9 +109,11 @@ public class WelcomeUIManager : MonoBehaviour
             return;
         }
 
+        string finalPassword = MakePasswordCompliant(password);
+
         try
         {
-            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
+            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, finalPassword);
             feedbackText.text = "התחברות הצליחה.";
 
             await GameProgressManager.Instance.LoadProgress();
@@ -133,18 +128,22 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (AuthenticationException e)
         {
+            Debug.LogWarning($"Login failed: {e.Message}");
+
             if (e.Message.ToLower().Contains("wrong_username_password") || e.Message.ToLower().Contains("invalid_parameters"))
             {
                 feedbackText.text = "שם משתמש או סיסמה שגויים. אם זו הפעם הראשונה שלך, לחץ על 'הרשמה'.";
             }
             else
             {
-                feedbackText.text = $"התחברות נכשלה: {e.Message}";
+                feedbackText.text = $"התחברות נכשלה";
             }
         }
         catch (RequestFailedException e)
         {
-            feedbackText.text = $"שגיאה כללית בהתחברות: {e.Message}";
+            Debug.LogWarning($"Request failed: {e.Message}");
+            feedbackText.text = $"אנא וודאו ששם המשתמש והסיסמא נכונים";
         }
     }
+
 }

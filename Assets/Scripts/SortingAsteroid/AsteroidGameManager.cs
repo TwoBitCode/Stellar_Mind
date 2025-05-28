@@ -193,7 +193,9 @@ public class AsteroidGameManager : MonoBehaviour
         AssignDropZoneTypes();
         SetupDropZones(currentChallenge.dropZones);
 
-        // **Fix:** Generate the correct instructions AFTER setting the challenge
+        // Update stage number text (e.g., 1/3)
+        int totalStages = asteroidChallengeManager.GetChallengeCount();
+        uiManager.UpdateStageNumber(currentChallengeIndex, totalStages);
         string instructions = GenerateInstructions();
         Debug.Log($"Updating instructions: {instructions}");
         uiManager.ShowInstructions(instructions, StartGame);
