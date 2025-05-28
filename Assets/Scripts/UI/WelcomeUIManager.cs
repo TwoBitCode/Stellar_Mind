@@ -128,7 +128,7 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (AuthenticationException e)
         {
-            Debug.LogError($"Login failed: {e.Message}");
+            Debug.LogWarning($"Login failed: {e.Message}");
 
             if (e.Message.ToLower().Contains("wrong_username_password") || e.Message.ToLower().Contains("invalid_parameters"))
             {
@@ -141,8 +141,8 @@ public class WelcomeUIManager : MonoBehaviour
         }
         catch (RequestFailedException e)
         {
-            Debug.LogError($"Request failed: {e.Message}");
-            feedbackText.text = $"שגיאה כללית בהתחברות";
+            Debug.LogWarning($"Request failed: {e.Message}");
+            feedbackText.text = $"אנא וודאו ששם המשתמש והסיסמא נכונים";
         }
     }
 

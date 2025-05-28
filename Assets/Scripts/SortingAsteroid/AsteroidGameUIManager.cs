@@ -38,6 +38,8 @@ public class AsteroidGameUIManager : MonoBehaviour
     [SerializeField] private StrategyManager strategyManager;
     [SerializeField] private Button startChallengeButton;
 
+    [SerializeField] private TextMeshProUGUI stageNumberText;
+
     public float SelectedDuration { get; private set; } = 0f;
     public void ShowInstructions(string instructions, System.Action onStartGame)
     {
@@ -274,6 +276,15 @@ public class AsteroidGameUIManager : MonoBehaviour
         if (startChallengeButton != null)
             startChallengeButton.interactable = true;
     }
+
+    public void UpdateStageNumber(int currentIndex, int totalCount)
+    {
+        if (stageNumberText != null)
+        {
+            stageNumberText.text = $"{currentIndex + 1}/{totalCount}";
+        }
+    }
+
 
 
 
