@@ -429,14 +429,14 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].isCompleted = true;
             GameProgressManager.Instance.SaveProgress();
 
-            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(baseScore + memoryBonus, speedBonus);
+            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(baseScore, speedBonus+memoryBonus);
             return;
         }
 
         // === 6. Show reward panel if more stages remain ===
         if (currentStageIndex < stages.Count - 1)
         {
-            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(baseScore + memoryBonus, speedBonus);
+            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(baseScore, speedBonus+memoryBonus);
         }
     }
 

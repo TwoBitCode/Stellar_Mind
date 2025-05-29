@@ -263,7 +263,7 @@ public class GameManager : MonoBehaviour
     }
     private int GetRemainingTime()
     {
-        return Mathf.Max(0, uiManager.GetCurrentSortingTime()); // שולף את הזמן מהטיימר במסך
+        return Mathf.Max(0, uiManager.GetCurrentSortingTime());
     }
 
 

@@ -671,8 +671,8 @@ public class CableConnectionManager : MonoBehaviour
             if (endPanel != null)
             {
                 endPanel.SetActive(true);
-                endBaseScoreText.text = $"{baseScore + timeBonus}"; // Show full base + time bonus
-                endBonusScoreText.text = $"{speedBonus}";           // Show speed bonus
+                endBaseScoreText.text = $"{baseScore}"; // Show full base + time bonus
+                endBonusScoreText.text = $"{speedBonus + timeBonus}";           // Show speed bonus
 
                 if (returnToMapButtonE != null)
                 {
@@ -695,8 +695,8 @@ public class CableConnectionManager : MonoBehaviour
                 // Optional: stageCompleteText.text = string.IsNullOrEmpty(message) ? "Well done!" : message;
             }
 
-            stageCompleteBaseScoreText.text = $"{baseScore + timeBonus}";
-            stageCompleteBonusScoreText.text = $"{speedBonus}";
+            stageCompleteBaseScoreText.text = $"{baseScore}";
+            stageCompleteBonusScoreText.text = $"{speedBonus + timeBonus}";
 
             if (nextStageButton != null)
             {
