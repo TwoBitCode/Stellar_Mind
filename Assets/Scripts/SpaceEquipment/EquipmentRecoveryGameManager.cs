@@ -404,7 +404,7 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
         stageData.isCompleted = true;
         stageData.score = totalScore;
         stageData.selectedTime = selectedTimeForCurrentStage;
-        OverallScoreManager.Instance?.AddScore(totalScore); 
+        OverallScoreManager.Instance?.AddScore(totalScore);
 
         Debug.Log($"Added {totalScore} to totalScore. New total: {GameProgressManager.Instance.playerProgress.totalScore}");
 
@@ -429,14 +429,14 @@ public class EquipmentRecoveryGameManager : MonoBehaviour
             GameProgressManager.Instance.playerProgress.gamesProgress[currentGameIndex].isCompleted = true;
             GameProgressManager.Instance.SaveProgress();
 
-            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(baseScore, speedBonus+memoryBonus);
+            EquipmentRecoveryUIManager.Instance?.ShowLevelCompletePanel(baseScore, speedBonus + memoryBonus);
             return;
         }
 
         // === 6. Show reward panel if more stages remain ===
         if (currentStageIndex < stages.Count - 1)
         {
-            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(baseScore, speedBonus+memoryBonus);
+            EquipmentRecoveryUIManager.Instance?.ShowRewardPanel(baseScore, speedBonus + memoryBonus);
         }
     }
 

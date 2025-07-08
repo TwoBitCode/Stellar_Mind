@@ -31,10 +31,10 @@ public class UIButtonSound : MonoBehaviour, IPointerClickHandler, IPointerEnterH
     {
         if (audioSource != null && clip != null)
         {
-            audioSource.Stop();        
-            audioSource.clip = clip;    
+            audioSource.Stop();
+            audioSource.clip = clip;
             audioSource.loop = false;
-            audioSource.Play();        
+            audioSource.Play();
         }
     }
 }

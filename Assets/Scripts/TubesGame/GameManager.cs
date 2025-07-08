@@ -424,7 +424,7 @@ public class GameManager : MonoBehaviour
         if (selectedMemoryTime <= 0)
         {
             Debug.LogWarning("Cannot start stage: No memory time selected!");
-         //   uiManager.UpdateResultText("בחר זמן לזיכרון לפני תחילת המשחק");
+            //   uiManager.UpdateResultText("בחר זמן לזיכרון לפני תחילת המשחק");
             return;
         }
 

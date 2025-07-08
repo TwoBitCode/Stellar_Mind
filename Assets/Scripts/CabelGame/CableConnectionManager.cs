@@ -76,9 +76,9 @@ public class CableConnectionManager : MonoBehaviour
     [Header("Strategy Panel")]
     [SerializeField] private StrategyManager strategyManager;
     [Header("Start Stage Panel")]
-    [SerializeField] private GameObject startStagePanel; 
+    [SerializeField] private GameObject startStagePanel;
     [SerializeField] private Button startStageButton;
-    [SerializeField] private Button dialogueNextButton; 
+    [SerializeField] private Button dialogueNextButton;
     [SerializeField] private Canvas dialogueCanvas;
 
     [Header("Instruction Audio")]

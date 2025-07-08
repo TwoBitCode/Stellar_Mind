@@ -38,12 +38,12 @@ public class GameReportManager : MonoBehaviour
     private List<CycleSummary> cycleHistory;
     private int currentCycleIndex = 0;
 
-    [SerializeField] private TextMeshProUGUI cycleLabelText;    
-    [SerializeField] private TextMeshProUGUI cycleNumberValue; 
-    [SerializeField] private TextMeshProUGUI startLabelText;    
-    [SerializeField] private TextMeshProUGUI startDateValue;    
-    [SerializeField] private TextMeshProUGUI endLabelText;     
-    [SerializeField] private TextMeshProUGUI endDateValue;      
+    [SerializeField] private TextMeshProUGUI cycleLabelText;
+    [SerializeField] private TextMeshProUGUI cycleNumberValue;
+    [SerializeField] private TextMeshProUGUI startLabelText;
+    [SerializeField] private TextMeshProUGUI startDateValue;
+    [SerializeField] private TextMeshProUGUI endLabelText;
+    [SerializeField] private TextMeshProUGUI endDateValue;
 
 
 
@@ -118,9 +118,9 @@ public class GameReportManager : MonoBehaviour
         string end = string.IsNullOrEmpty(cycle.endDate) || cycle.endDate.Contains("כעת") ? "" : FormatDateOnly(cycle.endDate);
 
         // טקסטים סטטיים
-       // cycleLabelText.text = "סבב";
+        // cycleLabelText.text = "סבב";
         //startLabelText.text = "התחלה";
-       // endLabelText.text = "סיום";
+        // endLabelText.text = "סיום";
 
         // ערכים מספריים / תאריכים
         cycleNumberValue.text = cycle.cycleNumber.ToString();
@@ -176,10 +176,10 @@ public class GameReportManager : MonoBehaviour
         {
             if (game.stages.TryGetValue(i, out var data))
             {
-               // Debug.Log($"Asteroid Stage {i} Type: {data.GetType().Name}");
+                // Debug.Log($"Asteroid Stage {i} Type: {data.GetType().Name}");
                 if (data is GameProgress.AsteroidStageProgress s)
                 {
-                   // Debug.Log($"  Time: {s.timeTaken}, Mistakes: {s.incorrectAsteroids}, Bonus: {s.bonusAsteroids}, SelTime: {s.selectedTime}");
+                    // Debug.Log($"  Time: {s.timeTaken}, Mistakes: {s.incorrectAsteroids}, Bonus: {s.bonusAsteroids}, SelTime: {s.selectedTime}");
                     switch (i)
                     {
                         case 0: astroTimer1.text = s.timeTaken.ToString("F2"); astroMistakes1.text = s.incorrectAsteroids.ToString(); astroBonus1.text = s.bonusAsteroids.ToString(); astroSelectedTime1.text = s.selectedTime + ""; break;
@@ -189,7 +189,7 @@ public class GameReportManager : MonoBehaviour
                 }
                 else
                 {
-                   // Debug.LogWarning($"Asteroid stage {i} is not AsteroidStageProgress. Actual type: {data.GetType().Name}");
+                    // Debug.LogWarning($"Asteroid stage {i} is not AsteroidStageProgress. Actual type: {data.GetType().Name}");
                 }
             }
             else
@@ -201,12 +201,12 @@ public class GameReportManager : MonoBehaviour
 
     private void LoadEquipmentRecoveryGameReport(GameProgress game)
     {
-       // Debug.Log("Loading Equipment Recovery report...");
+        // Debug.Log("Loading Equipment Recovery report...");
         for (int i = 0; i < 3; i++)
         {
             if (game.stages.TryGetValue(i, out var data) && data is GameProgress.EquipmentRecoveryStageProgress s)
             {
-               // Debug.Log($"Equip Stage {i}  Time: {s.timeTaken}, Mistakes: {s.mistakes}, SelTime: {s.selectedTime}");
+                // Debug.Log($"Equip Stage {i}  Time: {s.timeTaken}, Mistakes: {s.mistakes}, SelTime: {s.selectedTime}");
                 switch (i)
                 {
                     case 0: equipTimer1.text = s.timeTaken.ToString("F2"); equipMistakes1.text = s.mistakes.ToString(); equipSelectedTime1.text = s.selectedTime + ""; break;
@@ -224,7 +224,7 @@ public class GameReportManager : MonoBehaviour
         {
             if (game.stages.TryGetValue(i, out var data) && data is GameProgress.StageProgress s)
             {
-               // Debug.Log($"Tubes Stage {i}  Time: {s.timeTaken}, SelTime: {s.selectedTime}");
+                // Debug.Log($"Tubes Stage {i}  Time: {s.timeTaken}, SelTime: {s.selectedTime}");
                 switch (i)
                 {
                     case 0: tubesTimer1.text = s.timeTaken.ToString("F2"); tubesSelectedTime1.text = s.selectedTime + ""; break;
@@ -242,7 +242,7 @@ public class GameReportManager : MonoBehaviour
         {
             if (game.stages.TryGetValue(i, out var data) && data is GameProgress.CableConnectionStageProgress s)
             {
-              //  Debug.Log($"Cable Stage {i}  Time: {s.timeTaken}, Mistakes: {s.mistakes}, SelTime: {s.selectedTime}");
+                //  Debug.Log($"Cable Stage {i}  Time: {s.timeTaken}, Mistakes: {s.mistakes}, SelTime: {s.selectedTime}");
                 switch (i)
                 {
                     case 0: cableTimer1.text = s.timeTaken.ToString("F2"); cableMistakes1.text = s.mistakes.ToString(); cableSelectedTime1.text = s.selectedTime + ""; break;

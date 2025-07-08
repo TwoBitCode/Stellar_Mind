@@ -169,7 +169,7 @@ public class GameProgress
                 var converted = (StageProgress)JsonConvert.DeserializeObject(json, typeof(StageProgress), settings);
 
                 // Log for debug
-               // Debug.Log($"[ConvertDictionaryToList] stageIndex {pair.Key}  {converted.GetType().Name}, json: {json}");
+                // Debug.Log($"[ConvertDictionaryToList] stageIndex {pair.Key}  {converted.GetType().Name}, json: {json}");
 
                 stagesList.Add(new SerializableStageProgress
                 {

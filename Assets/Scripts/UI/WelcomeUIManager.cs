@@ -58,7 +58,7 @@ public class WelcomeUIManager : MonoBehaviour
             return;
         }
 
-        string finalPassword = MakePasswordCompliant(password); 
+        string finalPassword = MakePasswordCompliant(password);
 
 
         try
