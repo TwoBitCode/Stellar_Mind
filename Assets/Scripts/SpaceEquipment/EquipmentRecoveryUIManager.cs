@@ -128,7 +128,7 @@ public class EquipmentRecoveryUIManager : MonoBehaviour
     public void OnWorkspaceStartClicked()
     {
         dialoguePanel.SetActive(false); // Hide the dialogue panel
-       // workspaceStartButton.SetActive(false); // Hide the start button
+                                        // workspaceStartButton.SetActive(false); // Hide the start button
 
         // Stop intro dialogue audio
         var intro = FindAnyObjectByType<EquipmentRecoveryIntro>();

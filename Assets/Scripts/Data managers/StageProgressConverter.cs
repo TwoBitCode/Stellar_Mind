@@ -54,7 +54,7 @@ public class StageProgressConverter : JsonConverter
             jo["score"] = equip.score;
             jo["timeTaken"] = equip.timeTaken;
             jo["mistakes"] = equip.mistakes;
-            jo["selectedTime"] = equip.selectedTime; 
+            jo["selectedTime"] = equip.selectedTime;
         }
 
         else if (value is GameProgress.StageProgress baseStage)

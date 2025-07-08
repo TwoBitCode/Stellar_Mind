@@ -164,7 +164,7 @@ public class TubesUIManager : MonoBehaviour
     {
         if (failureText != null)
         {
-            failureText.text = text; 
+            failureText.text = text;
         }
         else
         {
