@@ -14,7 +14,7 @@ public class CharacterDisplayManager : MonoBehaviour
 
     private void LoadCharacterSprite()
     {
-        // בדיקה אם יש גישה למנהל ההתקדמות
+
         if (GameProgressManager.Instance == null || GameProgressManager.Instance.playerProgress == null)
         {
             Debug.LogError(" GameProgressManager or playerProgress is missing! Cannot load character.");
@@ -26,10 +26,10 @@ public class CharacterDisplayManager : MonoBehaviour
         if (string.IsNullOrEmpty(selectedCharacter))
         {
             Debug.LogError("No character selection found! Defaulting to Boy.");
-            selectedCharacter = "Boy"; // דמות ברירת מחדל
+            selectedCharacter = "Boy"; 
         }
 
-        // טוען את התמונה לפי הדמות שנבחרה
+
         if (selectedCharacter == "Girl")
         {
             characterImage.sprite = girlSprite;

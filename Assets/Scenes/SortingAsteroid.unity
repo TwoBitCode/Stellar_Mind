@@ -4131,7 +4131,7 @@ MonoBehaviour:
     scorePenalty: 5
     bonusScore: 10
     timeLimit: 15
-    completionScore: 100
+    completionScore: 60
     instructionAudioClip: {fileID: 8300000, guid: f7b516e93ca8e894d96e0aeb538957bb, type: 3}
     dropZones:
     - RightArea
@@ -4163,7 +4163,7 @@ MonoBehaviour:
     scorePenalty: 5
     bonusScore: 10
     timeLimit: 20
-    completionScore: 100
+    completionScore: 60
     instructionAudioClip: {fileID: 8300000, guid: dd8cf9bcfb7fe1843bd0b11ad1e98daa, type: 3}
     dropZones:
     - RightArea
