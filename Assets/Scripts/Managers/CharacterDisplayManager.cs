@@ -26,7 +26,7 @@ public class CharacterDisplayManager : MonoBehaviour
         if (string.IsNullOrEmpty(selectedCharacter))
         {
             Debug.LogError("No character selection found! Defaulting to Boy.");
-            selectedCharacter = "Boy"; 
+            selectedCharacter = "Boy";
         }
 
 
